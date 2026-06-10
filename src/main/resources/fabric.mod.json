@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "trade-rush",
+	"version": "${version}",
+	"name": "Trade Rush",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/trade-rush/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"traderush.TradeRush"
+		],
+		"client": [
+			"traderush.client.TradeRushClient"
+		]
+	},
+	"mixins": [
+		"trade-rush.mixins.json",
+		{
+			"config": "trade-rush.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
