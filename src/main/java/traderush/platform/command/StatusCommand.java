@@ -1,4 +1,4 @@
-package traderush.command;
+package traderush.platform.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;

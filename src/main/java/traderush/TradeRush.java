@@ -2,11 +2,10 @@ package traderush;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import traderush.platform.command.StatusCommand;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import traderush.command.StatusCommand;
 
 public class TradeRush implements ModInitializer {
 	public static final String MOD_ID = "trade-rush";
