@@ -9,7 +9,7 @@ import traderush.game.player.PlayerId;
 public final class Team {
     private final TeamId id;
     private String name;
-    private final Set<PlayerId> members;
+    private final Set<PlayerId> players;
     private long score;
 
     public Team(String name) {
@@ -19,7 +19,7 @@ public final class Team {
 
         this.id = TeamId.fromUuid(UUID.randomUUID());
         this.name = name.trim();
-        this.members = new LinkedHashSet<>();
+        this.players = new LinkedHashSet<>();
         this.score = 0;
     }
 
@@ -31,36 +31,36 @@ public final class Team {
         return name;
     }
 
-    public Set<PlayerId> getMembers() {
-        return members;
+    public Set<PlayerId> getPlayers() {
+        return players;
     }
 
     public long getScore() {
         return score;
     }
 
-    public void addMember(PlayerId playerId) {
+    public void addPlayer(PlayerId playerId) {
         if (playerId == null) {
-            throw new IllegalArgumentException("Member cannot be null");
+            throw new IllegalArgumentException("Player cannot be null");
         }
 
-        if (members.contains(playerId)) {
-            throw new IllegalArgumentException("Member already exists");
+        if (players.contains(playerId)) {
+            throw new IllegalArgumentException("Player already exists");
         }
 
-        members.add(playerId);
+        players.add(playerId);
     }
     
-    public void removeMember(PlayerId playerId) {
+    public void removePlayer(PlayerId playerId) {
         if (playerId == null) {
-            throw new IllegalArgumentException("Member cannot be null");
+            throw new IllegalArgumentException("Player cannot be null");
         }
 
-        if (!members.contains(playerId)) {
-            throw new IllegalArgumentException("Member does not exist");
+        if (!players.contains(playerId)) {
+            throw new IllegalArgumentException("Player does not exist");
         }
 
-        members.remove(playerId);
+        players.remove(playerId);
     }
 
     public void addPoints(long points) {
