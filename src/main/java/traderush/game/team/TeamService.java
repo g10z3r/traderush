@@ -2,6 +2,8 @@ package traderush.game.team;
 
 import traderush.game.player.PlayerId;
 import java.util.Optional;
+import java.util.List;
+import java.util.Comparator;
 
 public final class TeamService {
     private static final int MIN_TEAM_NAME_LENGTH = 3;
@@ -32,7 +34,6 @@ public final class TeamService {
         teamRepository.put(team);
         onStateChanged.run();
 
-
         return TeamOperationResult.success(team);
     }
 
@@ -61,5 +62,30 @@ public final class TeamService {
         onStateChanged.run();
 
         return TeamOperationResult.success(team);
+    }
+
+    public TeamOperationResult<Team> leaveTeam(PlayerId playerId) {
+        Optional<Team> currentTeam = teamRepository.getByPlayerId(playerId);
+
+        if (currentTeam.isEmpty()) {
+            return TeamOperationResult.error(TeamError.PLAYER_NOT_IN_TEAM);
+        }
+
+        Team team = currentTeam.get();
+
+        team.removePlayer(playerId);
+        teamRepository.put(team);
+
+        onStateChanged.run();
+
+        return TeamOperationResult.success(team);
+    }
+
+    public List<Team> listTeams() {
+        return teamRepository.getAll().stream().sorted(
+                Comparator.comparingLong(Team::getScore)
+                        .reversed()
+                        .thenComparing(Team::getName, String.CASE_INSENSITIVE_ORDER))
+                .toList();
     }
 }
