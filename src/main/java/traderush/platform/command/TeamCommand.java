@@ -3,7 +3,11 @@ package traderush.platform.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -17,6 +21,8 @@ import traderush.game.team.TeamService;
 import traderush.platform.TeamMessages;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -40,16 +46,64 @@ public final class TeamCommand {
                                                 teamServiceSupplier.get(),
                                                 StringArgumentType.getString(context, "name")))))
                         .then(Commands.literal("join")
-                                .then(Commands.argument("name", StringArgumentType.greedyString())
+                                .then(teamNameArgument("name", teamServiceSupplier)
                                         .executes(context -> joinTeam(context.getSource(),
                                                 teamServiceSupplier.get(),
                                                 StringArgumentType.getString(context, "name")))))
                         .then(Commands.literal("leave")
                                 .executes(context -> leaveTeam(context.getSource(),
                                         teamServiceSupplier.get())))
+                        .then(Commands.literal("delete")
+                                .then(Commands.literal("force")
+                                        .then(teamNameArgument("name", teamServiceSupplier)
+                                                .executes(context -> deleteTeam(context.getSource(),
+                                                        teamServiceSupplier.get(),
+                                                        StringArgumentType.getString(context, "name"),
+                                                        true))))
+                                .then(teamNameArgument("name", teamServiceSupplier)
+                                        .executes(context -> deleteTeam(context.getSource(),
+                                                teamServiceSupplier.get(),
+                                                StringArgumentType.getString(context, "name"),
+                                                false))))
                         .then(Commands.literal("list")
                                 .executes(context -> listTeams(context.getSource(),
                                         teamServiceSupplier.get()))));
+    }
+
+    private static RequiredArgumentBuilder<CommandSourceStack, String> teamNameArgument(
+            String name,
+            Supplier<TeamService> teamServiceSupplier
+    ) {
+        return Commands.argument(name, StringArgumentType.greedyString())
+                .suggests(teamNameSuggestions(teamServiceSupplier));
+    }
+
+    private static SuggestionProvider<CommandSourceStack> teamNameSuggestions(
+            Supplier<TeamService> teamServiceSupplier
+    ) {
+        return (context, builder) -> suggestTeamNames(teamServiceSupplier, builder);
+    }
+
+    private static CompletableFuture<Suggestions> suggestTeamNames(
+            Supplier<TeamService> teamServiceSupplier,
+            SuggestionsBuilder builder
+    ) {
+        try {
+            TeamService teamService = teamServiceSupplier.get();
+            String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+
+            for (Team team : teamService.listTeams()) {
+                String teamName = team.getName();
+
+                if (teamName.toLowerCase(Locale.ROOT).startsWith(remaining)) {
+                    builder.suggest(teamName);
+                }
+            }
+        } catch (IllegalStateException ignored) {
+            // Runtime is not initialized yet.
+        }
+
+        return builder.buildFuture();
     }
 
     private static int createTeam(CommandSourceStack source, TeamService teamService, String name) {
@@ -81,6 +135,19 @@ public final class TeamCommand {
         return result.isSuccess() ? Command.SINGLE_SUCCESS : 0;
     }
 
+    private static int deleteTeam(
+            CommandSourceStack source,
+            TeamService teamService,
+            String name,
+            boolean force
+    ) {
+        TeamOperationResult<Team> result = teamService.deleteTeam(name, force);
+        String successPrefix = force ? "Force deleted team: " : "Deleted team: ";
+        sendTeamResult(source, result, successPrefix);
+
+        return result.isSuccess() ? Command.SINGLE_SUCCESS : 0;
+    }
+
     private static int listTeams(CommandSourceStack source, TeamService teamService) {
         List<Team> teams = teamService.listTeams();
 
@@ -100,15 +167,19 @@ public final class TeamCommand {
     }
 
     private static String formatTeamSummary(CommandSourceStack source, Team team) {
-        String members = team.getPlayers().isEmpty() ? "none"
-                : team.getPlayers()
-                        .stream()
+        var players = team.getPlayers();
+        String members = players.isEmpty()
+                ? "none"
+                : players.stream()
                         .map(playerId -> resolvePlayerName(source, playerId))
                         .collect(Collectors.joining(", "));
 
-        return "- " + team.getName() + " | id: " + team.getId() + " | members: "
-                + team.getPlayers().size()
-                + " | score: " + team.getScore() + System.lineSeparator() + "  " + members;
+        return "- " + team.getName()
+                + " | id: " + team.getId()
+                + " | members: " + players.size()
+                + " | score: " + team.getScore()
+                + System.lineSeparator()
+                + "  " + members;
     }
 
     private static String resolvePlayerName(CommandSourceStack source, PlayerId playerId) {

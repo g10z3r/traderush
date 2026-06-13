@@ -7,4 +7,5 @@ public enum TeamError {
 
     PLAYER_ALREADY_IN_TEAM,
     PLAYER_NOT_IN_TEAM,
+    TEAM_NOT_EMPTY,
 }

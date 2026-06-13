@@ -106,4 +106,33 @@ public final class TeamService {
                         .thenComparing(Team::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
+
+    public TeamOperationResult<Team> deleteTeam(String name) {
+        return deleteTeam(name, false);
+    }
+
+    public TeamOperationResult<Team> deleteTeam(String name, boolean force) {
+        String trimmedName = name == null ? null : name.trim();
+
+        if (trimmedName == null || trimmedName.isEmpty()) {
+            return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
+        }
+
+        Optional<Team> team = teamRepository.getByName(trimmedName);
+
+        if (team.isEmpty()) {
+            return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
+        }
+
+        Team toDelete = team.get();
+
+        if (!force && !toDelete.getPlayers().isEmpty()) {
+            return TeamOperationResult.error(TeamError.TEAM_NOT_EMPTY);
+        }
+
+        teamRepository.remove(toDelete.getId());
+        onStateChanged.run();
+
+        return TeamOperationResult.success(toDelete);
+    }
 }

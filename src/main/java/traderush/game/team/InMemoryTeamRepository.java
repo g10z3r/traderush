@@ -1,10 +1,11 @@
 package traderush.game.team;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ArrayList;
 
 import traderush.game.player.PlayerId;
 
@@ -16,10 +17,10 @@ public final class InMemoryTeamRepository implements TeamRepository {
     @Override
     public Team put(Team team) {
         TeamId id = team.getId();
-        String name = team.getName();
+        String nameKey = normalizeName(team.getName());
 
         teamsById.put(id, team);
-        teamsByName.put(name, id);
+        teamsByName.put(nameKey, id);
         teamsByPlayerId.entrySet().removeIf(entry -> entry.getValue().equals(id));
 
         for (PlayerId playerId : team.getPlayers()) {
@@ -36,7 +37,11 @@ public final class InMemoryTeamRepository implements TeamRepository {
 
     @Override
     public Optional<Team> getByName(String name) {
-        return Optional.ofNullable(teamsByName.get(name)).map(teamsById::get);
+        if (name == null || name.isBlank()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(teamsByName.get(normalizeName(name))).map(teamsById::get);
     }
 
     @Override
@@ -58,6 +63,17 @@ public final class InMemoryTeamRepository implements TeamRepository {
 
     @Override
     public void remove(TeamId id) {
-        teamsById.remove(id);
+        Team team = teamsById.remove(id);
+
+        if (team == null) {
+            return;
+        }
+
+        teamsByName.remove(normalizeName(team.getName()));
+        teamsByPlayerId.entrySet().removeIf(entry -> entry.getValue().equals(id));
+    }
+
+    private static String normalizeName(String name) {
+        return name.trim().toLowerCase(Locale.ROOT);
     }
 }

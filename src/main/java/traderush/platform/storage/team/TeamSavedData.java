@@ -13,7 +13,7 @@ import traderush.TradeRush;
 public final class TeamSavedData extends SavedData {
     private static final String DATA_PATH = "team_state";
 
-    private static final Codec<TeamSavedData> CODEC = TeamStateSnapshot.CODEC.xmap(
+    private static final Codec<TeamSavedData> CODEC = TeamStateSnapshotCodec.SNAPSHOT.xmap(
             TeamSavedData::new,
             TeamSavedData::snapshot
     );

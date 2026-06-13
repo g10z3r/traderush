@@ -13,6 +13,7 @@ public final class TeamMessages {
         case TEAM_NOT_FOUND -> "Team does not exist.";
         case PLAYER_ALREADY_IN_TEAM -> "You are already in a team.";
         case PLAYER_NOT_IN_TEAM -> "You are not in a team.";
+        case TEAM_NOT_EMPTY -> "Team cannot be deleted while it has members.";
         };
     }
 
