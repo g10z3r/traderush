@@ -25,7 +25,8 @@ public class TradeRush implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		TeamService teamService = new TeamService(new InMemoryTeamRepository(), () -> {});
+		TeamService teamService = new TeamService(new InMemoryTeamRepository(), () -> {
+		});
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			StatusCommand.register(dispatcher);
