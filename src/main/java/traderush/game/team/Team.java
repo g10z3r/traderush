@@ -23,6 +23,25 @@ public final class Team {
         this.score = 0;
     }
 
+    Team(TeamId id, String name, Set<PlayerId> players, long score) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+
+        if (score < 0) {
+            throw new IllegalArgumentException("Score cannot be negative");
+        }
+
+        this.id = id;
+        this.name = name.trim();
+        this.players = new LinkedHashSet<>(players == null ? Set.of() : players);
+        this.score = score;
+    }
+
     public TeamId getId() {
         return id;
     }

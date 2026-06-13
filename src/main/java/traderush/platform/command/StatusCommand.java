@@ -9,9 +9,11 @@ import traderush.TradeRush;
 public class StatusCommand {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher
-				.register(Commands.literal(TradeRush.COMMAND_ROOT).then(Commands.literal("status").executes(context -> {
-					context.getSource().sendSuccess(() -> Component.literal("Hello World!"), false);
-					return 1;
-				})));
+				.register(Commands.literal(TradeRush.COMMAND_ROOT)
+						.then(Commands.literal("status").executes(context -> {
+							context.getSource()
+									.sendSuccess(() -> Component.literal("Hello World!"), false);
+							return 1;
+						})));
 	}
 }

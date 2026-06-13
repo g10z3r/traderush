@@ -2,38 +2,58 @@ package traderush;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import traderush.game.team.InMemoryTeamRepository;
-import traderush.game.team.TeamService;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import traderush.platform.command.StatusCommand;
 import traderush.platform.command.TeamCommand;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import traderush.runtime.TradeRushRuntime;
+import net.minecraft.server.MinecraftServer;
+
 public class TradeRush implements ModInitializer {
 	public static final String MOD_ID = "trade-rush";
 	public static final String COMMAND_ROOT = MOD_ID.replace("-", "");
-
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	private static TradeRushRuntime runtime;
 
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+		LOGGER.info("Initializing TradeRush");
 
-		TeamService teamService = new TeamService(new InMemoryTeamRepository(), () -> {
-		});
+		ServerLifecycleEvents.SERVER_STARTED.register(this::startRuntime);
+		ServerLifecycleEvents.SERVER_STOPPING.register(this::stopRuntime);
+
+		TeamCommand.register(() -> runtime().teamService());
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			StatusCommand.register(dispatcher);
 		});
 
-		TeamCommand.register(() -> teamService);
-
 		LOGGER.info("Hello Fabric world!");
+	}
+
+	private void startRuntime(MinecraftServer server) {
+		runtime = TradeRushRuntime.create(server);
+		LOGGER.info("TradeRush runtime initialized");
+	}
+
+	private void stopRuntime(MinecraftServer server) {
+		if (runtime != null) {
+			runtime.saveStateSafely();
+			runtime = null;
+		}
+
+		LOGGER.info("TradeRush runtime stopped");
+	}
+
+	public static TradeRushRuntime runtime() {
+		if (runtime == null) {
+			throw new IllegalStateException("TradeRush runtime is not initialized yet");
+		}
+
+		return runtime;
 	}
 }

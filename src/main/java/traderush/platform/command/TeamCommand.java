@@ -36,16 +36,20 @@ public final class TeamCommand {
                 .then(Commands.literal("team")
                         .then(Commands.literal("create")
                                 .then(Commands.argument("name", StringArgumentType.greedyString())
-                                        .executes(context -> createTeam(context.getSource(), teamServiceSupplier.get(),
+                                        .executes(context -> createTeam(context.getSource(),
+                                                teamServiceSupplier.get(),
                                                 StringArgumentType.getString(context, "name")))))
                         .then(Commands.literal("join")
                                 .then(Commands.argument("name", StringArgumentType.greedyString())
-                                        .executes(context -> joinTeam(context.getSource(), teamServiceSupplier.get(),
+                                        .executes(context -> joinTeam(context.getSource(),
+                                                teamServiceSupplier.get(),
                                                 StringArgumentType.getString(context, "name")))))
                         .then(Commands.literal("leave")
-                                .executes(context -> leaveTeam(context.getSource(), teamServiceSupplier.get())))
+                                .executes(context -> leaveTeam(context.getSource(),
+                                        teamServiceSupplier.get())))
                         .then(Commands.literal("list")
-                                .executes(context -> listTeams(context.getSource(), teamServiceSupplier.get()))));
+                                .executes(context -> listTeams(context.getSource(),
+                                        teamServiceSupplier.get()))));
     }
 
     private static int createTeam(CommandSourceStack source, TeamService teamService, String name) {
@@ -66,7 +70,8 @@ public final class TeamCommand {
         return result.isSuccess() ? Command.SINGLE_SUCCESS : 0;
     }
 
-    private static int leaveTeam(CommandSourceStack source, TeamService teamService) throws CommandSyntaxException {
+    private static int leaveTeam(CommandSourceStack source, TeamService teamService)
+            throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         PlayerId playerId = PlayerId.fromUuid(player.getUUID());
 
@@ -96,16 +101,21 @@ public final class TeamCommand {
 
     private static String formatTeamSummary(CommandSourceStack source, Team team) {
         String members = team.getPlayers().isEmpty() ? "none"
-                : team.getPlayers().stream().map(playerId -> resolvePlayerName(source, playerId))
+                : team.getPlayers()
+                        .stream()
+                        .map(playerId -> resolvePlayerName(source, playerId))
                         .collect(Collectors.joining(", "));
 
-        return "- " + team.getName() + " | id: " + team.getId() + " | members: " + team.getPlayers().size()
+        return "- " + team.getName() + " | id: " + team.getId() + " | members: "
+                + team.getPlayers().size()
                 + " | score: " + team.getScore() + System.lineSeparator() + "  " + members;
     }
 
     private static String resolvePlayerName(CommandSourceStack source, PlayerId playerId) {
         if (source.getServer() != null) {
-            ServerPlayer onlinePlayer = source.getServer().getPlayerList().getPlayer(playerId.value());
+            ServerPlayer onlinePlayer = source.getServer()
+                    .getPlayerList()
+                    .getPlayer(playerId.value());
 
             if (onlinePlayer != null) {
                 return onlinePlayer.getGameProfile().name();
@@ -115,7 +125,8 @@ public final class TeamCommand {
         return playerId.toString();
     }
 
-    private static void sendTeamResult(CommandSourceStack source, TeamOperationResult<Team> result,
+    private static void sendTeamResult(CommandSourceStack source,
+            TeamOperationResult<Team> result,
             String successPrefix) {
         if (result.isSuccess()) {
             Team team = result.value();

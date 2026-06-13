@@ -11,5 +11,6 @@ public interface TeamRepository {
     Optional<Team> getByName(String name);
     Optional<Team> getByPlayerId(PlayerId playerId);
     List<Team> getAll();
+    void removeAll();
     void remove(TeamId id);
 }

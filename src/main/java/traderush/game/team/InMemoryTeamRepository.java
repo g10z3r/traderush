@@ -50,6 +50,13 @@ public final class InMemoryTeamRepository implements TeamRepository {
     }
 
     @Override
+    public void removeAll() {
+        teamsById.clear();
+        teamsByName.clear();
+        teamsByPlayerId.clear();
+    }
+
+    @Override
     public void remove(TeamId id) {
         teamsById.remove(id);
     }
