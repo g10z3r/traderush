@@ -18,23 +18,41 @@ public final class TeamService {
     }
 
     public TeamOperationResult<Team> createTeam(String name) {
-        if (name == null || name.isEmpty()) {
+        String trimmedName = name == null ? null : name.trim();
+
+        if (trimmedName == null || trimmedName.isEmpty()) {
             return TeamOperationResult.error(TeamError.TEAM_INVALID_NAME);
         }
 
-        if (name.length() < MIN_TEAM_NAME_LENGTH || name.length() > MAX_TEAM_NAME_LENGTH) {
+        if (trimmedName.length() < MIN_TEAM_NAME_LENGTH || trimmedName.length() > MAX_TEAM_NAME_LENGTH) {
             return TeamOperationResult.error(TeamError.TEAM_INVALID_NAME);
         }
 
-        if (teamRepository.getByName(name).isPresent()) {
+        if (teamRepository.getByName(trimmedName).isPresent()) {
             return TeamOperationResult.error(TeamError.TEAM_ALREADY_EXISTS);
         }
 
-        Team team = new Team(name);
+        Team team = new Team(trimmedName);
         teamRepository.put(team);
         onStateChanged.run();
 
         return TeamOperationResult.success(team);
+    }
+
+    public TeamOperationResult<Team> joinTeam(PlayerId playerId, String name) {
+        String trimmedName = name == null ? null : name.trim();
+
+        if (trimmedName == null || trimmedName.isEmpty()) {
+            return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
+        }
+
+        Optional<Team> targetTeam = teamRepository.getByName(trimmedName);
+
+        if (targetTeam.isEmpty()) {
+            return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
+        }
+
+        return joinTeam(playerId, targetTeam.get().getId());
     }
 
     public TeamOperationResult<Team> joinTeam(PlayerId playerId, TeamId teamId) {

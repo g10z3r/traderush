@@ -29,4 +29,16 @@ public final class TeamOperationResult<T> {
     public Optional<TeamError> getError() {
         return Optional.ofNullable(err);
     }
+
+    public boolean isSuccess() {
+        return err == null;
+    }
+
+    public T value() {
+        return Objects.requireNonNull(value, "no success value");
+    }
+
+    public TeamError error() {
+        return Objects.requireNonNull(err, "no error");
+    }
 }

@@ -20,7 +20,11 @@ public final class InMemoryTeamRepository implements TeamRepository {
 
         teamsById.put(id, team);
         teamsByName.put(name, id);
-        teamsByPlayerId.put(team.getPlayers().iterator().next(), id);
+        teamsByPlayerId.entrySet().removeIf(entry -> entry.getValue().equals(id));
+
+        for (PlayerId playerId : team.getPlayers()) {
+            teamsByPlayerId.put(playerId, id);
+        }
 
         return team;
     }

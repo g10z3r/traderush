@@ -50,7 +50,7 @@ public final class Team {
 
         players.add(playerId);
     }
-    
+
     public void removePlayer(PlayerId playerId) {
         if (playerId == null) {
             throw new IllegalArgumentException("Player cannot be null");

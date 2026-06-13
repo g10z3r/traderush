@@ -2,7 +2,10 @@ package traderush;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import traderush.game.team.InMemoryTeamRepository;
+import traderush.game.team.TeamService;
 import traderush.platform.command.StatusCommand;
+import traderush.platform.command.TeamCommand;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +25,13 @@ public class TradeRush implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		TeamService teamService = new TeamService(new InMemoryTeamRepository(), () -> {});
+
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			StatusCommand.register(dispatcher);
 		});
+
+		TeamCommand.register(() -> teamService);
 
 		LOGGER.info("Hello Fabric world!");
 	}
