@@ -1,0 +1,7 @@
+[tools]
+java = "temurin-25.0.3+9.0.LTS"
+"npm:@fission-ai/openspec" = "latest"
+
+[tasks]
+client = "./gradlew runClient"
+check = "./gradlew check"
