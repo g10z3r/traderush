@@ -6,6 +6,12 @@ A Fabric mod for Minecraft.
 
 For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
 
+## Team Management Block
+
+Trade Rush adds a `trade-rush:team_management_block` block and block item.
+
+The Team Management Block provides a UI for managing TradeRush teams through the team features described below.
+
 ## Commands
 
 Team commands are available under `/traderush` and the short alias `/tr`.

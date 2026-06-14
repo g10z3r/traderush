@@ -1,9 +1,8 @@
 package traderush.game.team;
 
-import traderush.game.player.PlayerId;
-
 import java.util.List;
 import java.util.Optional;
+import traderush.game.player.PlayerId;
 
 public interface TeamRepository {
     Team put(Team team);
@@ -11,6 +10,7 @@ public interface TeamRepository {
     Optional<Team> getByName(String name);
     Optional<Team> getByPlayerId(PlayerId playerId);
     List<Team> getAll();
+    Optional<Team> rename(TeamId id, String name);
     void removeAll();
     void remove(TeamId id);
 }

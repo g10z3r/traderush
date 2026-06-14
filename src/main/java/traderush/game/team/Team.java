@@ -3,10 +3,10 @@ package traderush.game.team;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
-
 import traderush.game.player.PlayerId;
 
 public final class Team {
+
     private final TeamId id;
     private String name;
     private final Set<PlayerId> players;
@@ -38,7 +38,9 @@ public final class Team {
 
         this.id = id;
         this.name = name.trim();
-        this.players = new LinkedHashSet<>(players == null ? Set.of() : players);
+        this.players = new LinkedHashSet<>(
+            players == null ? Set.of() : players
+        );
         this.score = score;
     }
 
@@ -48,6 +50,14 @@ public final class Team {
 
     public String getName() {
         return name;
+    }
+
+    public void rename(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+
+        this.name = name.trim();
     }
 
     public Set<PlayerId> getPlayers() {

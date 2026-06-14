@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-
 import traderush.game.player.PlayerId;
 
 public final class InMemoryTeamRepository implements TeamRepository {
+
     private final Map<TeamId, Team> teamsById = new LinkedHashMap<>();
     private final Map<String, TeamId> teamsByName = new LinkedHashMap<>();
     private final Map<PlayerId, TeamId> teamsByPlayerId = new LinkedHashMap<>();
@@ -20,8 +20,11 @@ public final class InMemoryTeamRepository implements TeamRepository {
         String nameKey = normalizeName(team.getName());
 
         teamsById.put(id, team);
+        teamsByName.entrySet().removeIf(entry -> entry.getValue().equals(id));
         teamsByName.put(nameKey, id);
-        teamsByPlayerId.entrySet().removeIf(entry -> entry.getValue().equals(id));
+        teamsByPlayerId
+            .entrySet()
+            .removeIf(entry -> entry.getValue().equals(id));
 
         for (PlayerId playerId : team.getPlayers()) {
             teamsByPlayerId.put(playerId, id);
@@ -41,17 +44,35 @@ public final class InMemoryTeamRepository implements TeamRepository {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(teamsByName.get(normalizeName(name))).map(teamsById::get);
+        return Optional.ofNullable(teamsByName.get(normalizeName(name))).map(
+            teamsById::get
+        );
     }
 
     @Override
     public Optional<Team> getByPlayerId(PlayerId playerId) {
-        return Optional.ofNullable(teamsByPlayerId.get(playerId)).map(teamsById::get);
+        return Optional.ofNullable(teamsByPlayerId.get(playerId)).map(
+            teamsById::get
+        );
     }
 
     @Override
     public List<Team> getAll() {
         return new ArrayList<>(teamsById.values());
+    }
+
+    @Override
+    public Optional<Team> rename(TeamId id, String name) {
+        Team team = teamsById.get(id);
+
+        if (team == null) {
+            return Optional.empty();
+        }
+
+        team.rename(name);
+        put(team);
+
+        return Optional.of(team);
     }
 
     @Override
@@ -70,7 +91,9 @@ public final class InMemoryTeamRepository implements TeamRepository {
         }
 
         teamsByName.remove(normalizeName(team.getName()));
-        teamsByPlayerId.entrySet().removeIf(entry -> entry.getValue().equals(id));
+        teamsByPlayerId
+            .entrySet()
+            .removeIf(entry -> entry.getValue().equals(id));
     }
 
     private static String normalizeName(String name) {
