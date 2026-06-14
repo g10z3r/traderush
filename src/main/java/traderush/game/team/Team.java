@@ -1,5 +1,6 @@
 package traderush.game.team;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -12,7 +13,7 @@ public final class Team {
     private final Set<PlayerId> players;
     private long score;
 
-    public Team(String name) {
+    Team(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -52,7 +53,7 @@ public final class Team {
         return name;
     }
 
-    public void rename(String name) {
+    void rename(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -61,14 +62,14 @@ public final class Team {
     }
 
     public Set<PlayerId> getPlayers() {
-        return players;
+        return Collections.unmodifiableSet(players);
     }
 
     public long getScore() {
         return score;
     }
 
-    public void addPlayer(PlayerId playerId) {
+    void addPlayer(PlayerId playerId) {
         if (playerId == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
@@ -80,7 +81,7 @@ public final class Team {
         players.add(playerId);
     }
 
-    public void removePlayer(PlayerId playerId) {
+    void removePlayer(PlayerId playerId) {
         if (playerId == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
@@ -92,7 +93,7 @@ public final class Team {
         players.remove(playerId);
     }
 
-    public void addPoints(long points) {
+    void addPoints(long points) {
         if (points < 0) {
             throw new IllegalArgumentException("Points cannot be negative");
         }

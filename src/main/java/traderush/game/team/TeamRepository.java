@@ -10,7 +10,6 @@ public interface TeamRepository {
     Optional<Team> getByName(String name);
     Optional<Team> getByPlayerId(PlayerId playerId);
     List<Team> getAll();
-    Optional<Team> rename(TeamId id, String name);
     void removeAll();
     void remove(TeamId id);
 }

@@ -62,20 +62,6 @@ public final class InMemoryTeamRepository implements TeamRepository {
     }
 
     @Override
-    public Optional<Team> rename(TeamId id, String name) {
-        Team team = teamsById.get(id);
-
-        if (team == null) {
-            return Optional.empty();
-        }
-
-        team.rename(name);
-        put(team);
-
-        return Optional.of(team);
-    }
-
-    @Override
     public void removeAll() {
         teamsById.clear();
         teamsByName.clear();

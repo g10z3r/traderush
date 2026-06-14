@@ -71,6 +71,7 @@ public final class TeamServiceDomainTest {
             harness.service.leaveTeam(player)
         );
 
+        assertSuccess(harness.service.deleteTeam("Alpha", false));
         assertError(
             TeamError.TEAM_NOT_FOUND,
             harness.service.joinTeam(player, "Alpha")

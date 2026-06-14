@@ -170,11 +170,8 @@ public final class TeamService {
             return TeamOperationResult.error(TeamError.TEAM_ALREADY_EXISTS);
         }
 
-        Team renamedTeam = teamRepository
-            .rename(teamId, trimmedNewName)
-            .orElseThrow(() ->
-                new IllegalStateException("Team disappeared during rename")
-            );
+        toRename.rename(trimmedNewName);
+        Team renamedTeam = teamRepository.put(toRename);
         onStateChanged.run();
 
         return TeamOperationResult.success(renamedTeam);
