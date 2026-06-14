@@ -5,22 +5,25 @@ import java.util.Optional;
 
 public final class TeamOperationResult<T> {
     private final T value;
-    private final TeamError err;
+    private final TeamError error;
 
-    private TeamOperationResult(T value, TeamError err) {
+    private TeamOperationResult(T value, TeamError error) {
         this.value = value;
-        this.err = err;
+        this.error = error;
     }
 
     public static <T> TeamOperationResult<T> success(T value) {
         return new TeamOperationResult<>(
                 Objects.requireNonNull(value, "success value cannot be null"),
-                null);
+                null
+        );
     }
 
-    public static <T> TeamOperationResult<T> error(TeamError err) {
-        return new TeamOperationResult<>(null,
-                Objects.requireNonNull(err, "error cannot be null"));
+    public static <T> TeamOperationResult<T> error(TeamError error) {
+        return new TeamOperationResult<>(
+                null,
+                Objects.requireNonNull(error, "error cannot be null")
+        );
     }
 
     public Optional<T> getValue() {
@@ -28,11 +31,11 @@ public final class TeamOperationResult<T> {
     }
 
     public Optional<TeamError> getError() {
-        return Optional.ofNullable(err);
+        return Optional.ofNullable(error);
     }
 
     public boolean isSuccess() {
-        return err == null;
+        return error == null;
     }
 
     public T value() {
@@ -40,6 +43,6 @@ public final class TeamOperationResult<T> {
     }
 
     public TeamError error() {
-        return Objects.requireNonNull(err, "no error");
+        return Objects.requireNonNull(error, "no error");
     }
 }
