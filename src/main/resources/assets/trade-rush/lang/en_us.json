@@ -14,7 +14,6 @@
   "screen.trade-rush.team_management.score_members": "Score: %s | Members: %s",
   "screen.trade-rush.team_management.members": "Members:",
   "screen.trade-rush.team_management.members_empty": "Members: none",
-  "screen.trade-rush.team_management.more_members": "+%s more",
   "screen.trade-rush.team_management.name_input": "Team name",
   "screen.trade-rush.team_management.name_hint": "Enter a team name",
   "screen.trade-rush.team_management.create_section": "Create team",
