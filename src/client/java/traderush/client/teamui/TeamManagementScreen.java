@@ -36,6 +36,8 @@ public final class TeamManagementScreen
     private static final int BUTTON_HEIGHT = 20;
     private static final int TEAM_ROW_STRIDE = 22;
     private static final int TEXT_LINE_HEIGHT = 12;
+    private static final int CREATE_FORM_HEIGHT = 60;
+    private static final int CREATE_FORM_BOTTOM_GAP = 12;
 
     private static final int BACKGROUND_COLOR = 0xC0101010;
     private static final int PANEL_COLOR = 0x80202020;
@@ -253,9 +255,9 @@ public final class TeamManagementScreen
                 button -> sendRefresh()
             )
                 .bounds(
-                    layout.teamListX(),
-                    layout.refreshButtonY(),
-                    layout.teamListWidth(),
+                    layout.footerX(),
+                    layout.footerY(),
+                    layout.refreshButtonWidth(),
                     BUTTON_HEIGHT
                 )
                 .build()
@@ -653,13 +655,6 @@ public final class TeamManagementScreen
             MUTED_TEXT_COLOR
         );
 
-        graphics.outline(
-            layout.teamListX(),
-            layout.teamListY(),
-            layout.teamListWidth(),
-            layout.teamListHeight(),
-            0x60606060
-        );
         drawTeamRowStateOverlays(graphics);
         drawScrollbar(
             graphics,
@@ -917,9 +912,9 @@ public final class TeamManagementScreen
         graphics.textWithWordWrap(
             this.font,
             message,
-            layout.left(),
-            layout.messageY(),
-            layout.width(),
+            layout.statusMessageX(),
+            layout.statusMessageY(),
+            layout.statusMessageWidth(),
             errorMessage ? ERROR_TEXT_COLOR : SUCCESS_TEXT_COLOR
         );
     }
@@ -1112,7 +1107,10 @@ public final class TeamManagementScreen
     }
 
     private int visibleTeamRows(ScreenLayout layout) {
-        return Math.max(1, layout.teamListHeight() / TEAM_ROW_STRIDE);
+        return Math.max(
+            1,
+            (layout.teamListHeight() - BUTTON_HEIGHT) / TEAM_ROW_STRIDE + 1
+        );
     }
 
     private int visibleMemberRows(ScreenLayout layout) {
@@ -1280,19 +1278,18 @@ public final class TeamManagementScreen
         }
 
         int teamListY() {
-            return top + 56;
+            return top + 60;
         }
 
         int teamListWidth() {
             return contentWidth();
         }
 
-        int refreshButtonY() {
-            return bottom() - 28;
-        }
-
         int teamListHeight() {
-            return Math.max(BUTTON_HEIGHT, refreshButtonY() - teamListY() - 6);
+            return Math.max(
+                BUTTON_HEIGHT,
+                columnTop() + columnHeight() - COLUMN_PADDING - teamListY()
+            );
         }
 
         int detailsCurrentTeamY() {
@@ -1368,7 +1365,10 @@ public final class TeamManagementScreen
         int createSectionY() {
             return Math.max(
                 emptyTeamExplanationY() + 42,
-                actionViewportY() + actionViewportHeight() - 60
+                actionViewportY() +
+                    actionViewportHeight() -
+                    CREATE_FORM_HEIGHT -
+                    CREATE_FORM_BOTTOM_GAP
             );
         }
 
@@ -1385,13 +1385,33 @@ public final class TeamManagementScreen
                 actionViewportHeight(),
                 createButtonY() +
                     BUTTON_HEIGHT +
-                    COLUMN_PADDING -
+                    CREATE_FORM_BOTTOM_GAP -
                     actionViewportY()
             );
         }
 
-        int messageY() {
+        int footerX() {
+            return left + SCREEN_MARGIN;
+        }
+
+        int footerY() {
             return bottom() + 5;
+        }
+
+        int refreshButtonWidth() {
+            return 82;
+        }
+
+        int statusMessageX() {
+            return footerX() + refreshButtonWidth() + 8;
+        }
+
+        int statusMessageY() {
+            return footerY() + 5;
+        }
+
+        int statusMessageWidth() {
+            return Math.max(1, right() - statusMessageX());
         }
     }
 }

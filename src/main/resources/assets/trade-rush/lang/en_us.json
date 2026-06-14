@@ -39,6 +39,6 @@
   "message.trade-rush.team.error.not_found": "Team does not exist.",
   "message.trade-rush.team.error.player_already_in_team": "You are already in a team.",
   "message.trade-rush.team.error.player_not_in_team": "You are not in a team.",
-  "message.trade-rush.team.error.team_not_empty": "Team must be empty for this operation.",
+  "message.trade-rush.team.error.team_not_empty": "Team still has members.",
   "message.trade-rush.team.error.runtime_not_ready": "Trade Rush runtime is not ready."
 }

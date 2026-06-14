@@ -45,6 +45,18 @@ Removes the executing player from their current team.
 - Must be run by a player.
 
 
+### `/traderush team rename <currentName> <newName>`
+
+Renames an existing empty team.
+
+- Also available through the short alias: `/tr team rename <currentName> <newName>`.
+- The current team must exist and must be empty.
+- `currentName` supports tab completion and quoted names. Use quotes when the current name contains spaces, for example: `/traderush team rename "Red Team" Blue Team`.
+- `newName` is parsed as the rest of the command, so it may contain spaces without quotes.
+- The new name is trimmed, must be between 3 and 64 characters, and must be unique.
+- Can be run by any command source.
+
+
 ### `/traderush team delete <name>`
 
 Deletes a team.
@@ -76,7 +88,7 @@ Lists all teams, sorted by score (highest first), then by name.
 | Unknown team | Team does not exist. |
 | Already in team | You are already in a team. |
 | Not in a team | You are not in a team. |
-| Team not empty | Team cannot be deleted while it has members. |
+| Team not empty | Team still has members. |
 
 ## License
 

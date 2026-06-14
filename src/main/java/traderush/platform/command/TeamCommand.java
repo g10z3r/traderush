@@ -85,6 +85,32 @@ public final class TeamCommand {
                     )
                 )
                 .then(
+                    Commands.literal("rename").then(
+                        currentTeamNameArgument(
+                            "currentName",
+                            teamServiceSupplier
+                        ).then(
+                            Commands.argument(
+                                "newName",
+                                StringArgumentType.greedyString()
+                            ).executes(context ->
+                                renameTeam(
+                                    context.getSource(),
+                                    teamServiceSupplier.get(),
+                                    StringArgumentType.getString(
+                                        context,
+                                        "currentName"
+                                    ),
+                                    StringArgumentType.getString(
+                                        context,
+                                        "newName"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+                .then(
                     Commands.literal("delete")
                         .then(
                             Commands.literal("force").then(
@@ -142,26 +168,59 @@ public final class TeamCommand {
         ).suggests(teamNameSuggestions(teamServiceSupplier));
     }
 
+    private static RequiredArgumentBuilder<
+        CommandSourceStack,
+        String
+    > currentTeamNameArgument(
+        String name,
+        Supplier<TeamService> teamServiceSupplier
+    ) {
+        return Commands.argument(name, StringArgumentType.string()).suggests(
+            quotedTeamNameSuggestions(teamServiceSupplier)
+        );
+    }
+
     private static SuggestionProvider<CommandSourceStack> teamNameSuggestions(
         Supplier<TeamService> teamServiceSupplier
     ) {
         return (context, builder) ->
-            suggestTeamNames(teamServiceSupplier, builder);
+            suggestTeamNames(teamServiceSupplier, builder, false);
+    }
+
+    private static SuggestionProvider<
+        CommandSourceStack
+    > quotedTeamNameSuggestions(Supplier<TeamService> teamServiceSupplier) {
+        return (context, builder) ->
+            suggestTeamNames(teamServiceSupplier, builder, true);
     }
 
     private static CompletableFuture<Suggestions> suggestTeamNames(
         Supplier<TeamService> teamServiceSupplier,
-        SuggestionsBuilder builder
+        SuggestionsBuilder builder,
+        boolean quoteWhenNeeded
     ) {
         try {
             TeamService teamService = teamServiceSupplier.get();
-            String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+            String remaining = builder.getRemaining();
+            String normalizedRemaining = normalizeSuggestionPrefix(
+                remaining
+            ).toLowerCase(Locale.ROOT);
 
             for (Team team : teamService.listTeams()) {
                 String teamName = team.getName();
 
-                if (teamName.toLowerCase(Locale.ROOT).startsWith(remaining)) {
-                    builder.suggest(teamName);
+                if (
+                    teamName
+                        .toLowerCase(Locale.ROOT)
+                        .startsWith(normalizedRemaining)
+                ) {
+                    builder.suggest(
+                        formatTeamNameSuggestion(
+                            teamName,
+                            quoteWhenNeeded &&
+                                shouldQuoteSuggestion(remaining, teamName)
+                        )
+                    );
                 }
             }
         } catch (IllegalStateException ignored) {
@@ -169,6 +228,39 @@ public final class TeamCommand {
         }
 
         return builder.buildFuture();
+    }
+
+    private static String normalizeSuggestionPrefix(String remaining) {
+        String prefix = remaining.startsWith("\"")
+            ? remaining.substring(1)
+            : remaining;
+
+        return prefix.replace("\\\"", "\"").replace("\\\\", "\\");
+    }
+
+    private static boolean shouldQuoteSuggestion(
+        String remaining,
+        String teamName
+    ) {
+        return (
+            remaining.startsWith("\"") ||
+            teamName.chars().anyMatch(Character::isWhitespace) ||
+            teamName.contains("\"") ||
+            teamName.contains("\\")
+        );
+    }
+
+    private static String formatTeamNameSuggestion(
+        String teamName,
+        boolean quote
+    ) {
+        if (!quote) {
+            return teamName;
+        }
+
+        return (
+            "\"" + teamName.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+        );
     }
 
     private static int createTeam(
@@ -205,6 +297,21 @@ public final class TeamCommand {
 
         TeamOperationResult<Team> result = teamService.leaveTeam(playerId);
         sendTeamResult(source, result, TeamMessages::left);
+
+        return result.isSuccess() ? Command.SINGLE_SUCCESS : 0;
+    }
+
+    private static int renameTeam(
+        CommandSourceStack source,
+        TeamService teamService,
+        String currentName,
+        String newName
+    ) {
+        TeamOperationResult<Team> result = teamService.renameTeam(
+            currentName,
+            newName
+        );
+        sendTeamResult(source, result, TeamMessages::renamed);
 
         return result.isSuccess() ? Command.SINGLE_SUCCESS : 0;
     }
