@@ -1,7 +1,7 @@
 package traderush.game.shop;
 
-import java.util.LinkedHashSet;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public final class ContractShop extends Shop {
@@ -14,7 +14,6 @@ public final class ContractShop extends Shop {
             ShopLocation location,
             ShopOwner owner,
             Set<ShopTag> tags
-
     ) {
         super(id, name, location);
 

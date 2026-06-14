@@ -2,10 +2,11 @@ package traderush.game.shop;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.List;
+
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public final class ShopStateMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShopStateMapper.class);
@@ -39,8 +40,6 @@ public final class ShopStateMapper {
                     .map(ShopTag::getSerializedName)
                     .toList();
 
-            String owner = shop.getOwner().toString();
-
             contractShops.add(
                     new ShopStateSnapshot.ContractShopSnapshot(
                             shop.getId().toString(),
@@ -49,7 +48,7 @@ public final class ShopStateMapper {
                             location.x(),
                             location.y(),
                             location.z(),
-                            owner,
+                            shop.getOwner().toString(),
                             tags
                     )
             );
@@ -103,13 +102,7 @@ public final class ShopStateMapper {
         }
 
         try {
-            OfferShop shop = new OfferShop(
-                    shopId,
-                    shopSnapshot.name(),
-                    location
-            );
-
-            repository.put(shop);
+            repository.put(new OfferShop(shopId, shopSnapshot.name(), location));
         } catch (IllegalArgumentException exception) {
             LOGGER.warn(
                     "Skipping invalid offer shop snapshot. Shop id: {}",
@@ -169,15 +162,7 @@ public final class ShopStateMapper {
         }
 
         try {
-            ContractShop shop = new ContractShop(
-                    shopId,
-                    shopSnapshot.name(),
-                    location,
-                    owner,
-                    tags
-            );
-
-            repository.put(shop);
+            repository.put(new ContractShop(shopId, shopSnapshot.name(), location, owner, tags));
         } catch (IllegalArgumentException exception) {
             LOGGER.warn(
                     "Skipping invalid contract shop snapshot. Shop id: {}",

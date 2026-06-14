@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import traderush.platform.command.ShopCommand;
 import traderush.platform.command.StatusCommand;
 import traderush.platform.command.TeamCommand;
+import traderush.platform.protection.MinecraftShopBlockProtection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class TradeRush implements ModInitializer {
 
 		TeamCommand.register(() -> runtime().teamService());
 		ShopCommand.register(() -> runtime().shopService());
+		MinecraftShopBlockProtection.register(() -> runtime().shopService());
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			StatusCommand.register(dispatcher);

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
-// TODO: Phase 2
 public enum ShopTag {
     MILITARY("military"),
     FARMING("farming"),
