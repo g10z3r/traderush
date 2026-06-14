@@ -3,6 +3,7 @@ package traderush;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import traderush.platform.command.ShopCommand;
 import traderush.platform.command.StatusCommand;
 import traderush.platform.command.TeamCommand;
 
@@ -27,6 +28,7 @@ public class TradeRush implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STOPPING.register(this::stopRuntime);
 
 		TeamCommand.register(() -> runtime().teamService());
+		ShopCommand.register(() -> runtime().shopService());
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			StatusCommand.register(dispatcher);

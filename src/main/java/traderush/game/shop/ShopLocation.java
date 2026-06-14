@@ -7,20 +7,8 @@ public record ShopLocation(
         int z
 ) {
     public ShopLocation {
-        if (dimensionId == null || dimensionId.isEmpty()) {
+        if (dimensionId == null || dimensionId.isBlank()) {
             throw new IllegalArgumentException("Dimension ID cannot be null or empty");
-        }
-
-        if (x < 0) {
-            throw new IllegalArgumentException("X cannot be negative");
-        }
-
-        if (y < 0) {
-            throw new IllegalArgumentException("Y cannot be negative");
-        }
-
-        if (z < 0) {
-            throw new IllegalArgumentException("Z cannot be negative");
         }
 
         dimensionId = dimensionId.trim();
