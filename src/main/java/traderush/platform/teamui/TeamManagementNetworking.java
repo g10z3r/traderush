@@ -60,6 +60,10 @@ public final class TeamManagementNetworking {
         TeamManagementActionPayload payload,
         ServerPlayer player
     ) {
+        if (!hasValidTeamManagementMenu(player)) {
+            return;
+        }
+
         TeamService teamService;
 
         try {
@@ -94,6 +98,13 @@ public final class TeamManagementNetworking {
                 false
             );
         }
+    }
+
+    private static boolean hasValidTeamManagementMenu(ServerPlayer player) {
+        return (
+            player.containerMenu instanceof TeamManagementMenu menu &&
+            menu.stillValid(player)
+        );
     }
 
     private static void handleCreate(
