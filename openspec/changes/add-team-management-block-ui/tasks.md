@@ -74,6 +74,7 @@
 - [x] 8.5 Добавить чат-команду `/traderush team rename <currentName> <newName>` и alias `/tr team rename <currentName> <newName>`, вызывающие `TeamService.renameTeam`
 - [x] 8.6 Реализовать однозначный parsing для rename: `currentName` с support quoted names и suggestions существующих команд, `newName` как greedy string
 - [x] 8.7 Обновить README/документацию команд: описать `rename`, ограничение на пустые команды и quoted syntax для текущих имён с пробелами
-- [ ] 8.8 Проверить `/traderush team rename` и `/tr team rename` для успешного rename empty team, отсутствующей команды, непустой команды, duplicate/invalid нового имени и имён с пробелами
-- [ ] 8.9 Проверить layout в обычном оконном режиме, default GUI scale и меньшем GUI scale: `Refresh`/status не уменьшают список команд, а третья колонка не скроллится без реального переполнения
+- [x] 8.8 Проверить `/traderush team rename` и `/tr team rename` для успешного rename empty team, отсутствующей команды, непустой команды, duplicate/invalid нового имени и имён с пробелами
+- [x] 8.9 Проверить layout в обычном оконном режиме, default GUI scale и меньшем GUI scale: `Refresh`/status не уменьшают список команд, а третья колонка не скроллится без реального переполнения
 - [x] 8.10 Запустить `./gradlew build`
+- [x] 8.11 Исправить review bug: после успешного создания команды очищать поле имени новой команды, после успешного переименования очищать поле rename

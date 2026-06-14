@@ -65,6 +65,8 @@ public final class TeamManagementScreen
     private int actionScrollOffset;
     private EditBox createNameInput;
     private EditBox renameNameInput;
+    private Action pendingTextInputClearAction;
+    private String pendingTextInputClearValue = "";
     private Button createButton;
     private Button joinButton;
     private Button leaveButton;
@@ -403,12 +405,45 @@ public final class TeamManagementScreen
         message = payload.message();
         errorMessage = payload.error();
 
+        clearSubmittedTextInputAfterSuccess(payload);
+
         if (!selectedTeamId.equals(previousSelectedTeamId)) {
             memberScrollOffset = 0;
         }
 
         scrollSelectedTeamIntoView(layout());
         updateWidgetsFromSnapshot();
+    }
+
+    private void clearSubmittedTextInputAfterSuccess(
+        TeamManagementStatePayload payload
+    ) {
+        Action actionToClear = pendingTextInputClearAction;
+        String submittedValue = pendingTextInputClearValue;
+        pendingTextInputClearAction = null;
+        pendingTextInputClearValue = "";
+
+        if (
+            actionToClear == null ||
+            payload.error() ||
+            payload.message().getString().isBlank()
+        ) {
+            return;
+        }
+
+        if (
+            actionToClear == Action.CREATE &&
+            createNameInput != null &&
+            createNameInput.getValue().equals(submittedValue)
+        ) {
+            createNameInput.setValue("");
+        } else if (
+            actionToClear == Action.RENAME_EMPTY &&
+            renameNameInput != null &&
+            renameNameInput.getValue().equals(submittedValue)
+        ) {
+            renameNameInput.setValue("");
+        }
     }
 
     private void updateWidgetsFromSnapshot() {
@@ -560,9 +595,18 @@ public final class TeamManagementScreen
             return;
         }
 
+        trackTextInputClearOnSuccess(action, value);
+
         ClientPlayNetworking.send(
             new TeamManagementActionPayload(action, teamId, value)
         );
+    }
+
+    private void trackTextInputClearOnSuccess(Action action, String value) {
+        if (action == Action.CREATE || action == Action.RENAME_EMPTY) {
+            pendingTextInputClearAction = action;
+            pendingTextInputClearValue = value == null ? "" : value;
+        }
     }
 
     private void drawPanels(
