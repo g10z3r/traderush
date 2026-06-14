@@ -1,5 +1,9 @@
 package traderush.client.teamui;
 
+import static traderush.client.teamui.TeamManagementScreenLayout.BUTTON_HEIGHT;
+import static traderush.client.teamui.TeamManagementScreenLayout.TEAM_ROW_STRIDE;
+import static traderush.client.teamui.TeamManagementScreenLayout.TEXT_LINE_HEIGHT;
+
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -24,20 +28,6 @@ public final class TeamManagementScreen
     extends Screen
     implements MenuAccess<TeamManagementMenu>
 {
-
-    private static final int MAX_PANEL_WIDTH = 760;
-    private static final int MAX_PANEL_HEIGHT = 320;
-    private static final int MIN_PANEL_WIDTH = 300;
-    private static final int MIN_PANEL_HEIGHT = 200;
-    private static final int SCREEN_MARGIN = 10;
-    private static final int PANEL_VERTICAL_MARGIN = 72;
-    private static final int COLUMN_GAP = 8;
-    private static final int COLUMN_PADDING = 6;
-    private static final int BUTTON_HEIGHT = 20;
-    private static final int TEAM_ROW_STRIDE = 22;
-    private static final int TEXT_LINE_HEIGHT = 12;
-    private static final int CREATE_FORM_HEIGHT = 60;
-    private static final int CREATE_FORM_BOTTOM_GAP = 12;
 
     private static final int BACKGROUND_COLOR = 0xC0101010;
     private static final int PANEL_COLOR = 0x80202020;
@@ -65,8 +55,7 @@ public final class TeamManagementScreen
     private int actionScrollOffset;
     private EditBox createNameInput;
     private EditBox renameNameInput;
-    private Action pendingTextInputClearAction;
-    private String pendingTextInputClearValue = "";
+    private PendingTextInputClear pendingTextInputClear;
     private Button createButton;
     private Button joinButton;
     private Button leaveButton;
@@ -125,7 +114,7 @@ public final class TeamManagementScreen
         int mouseY,
         float partialTick
     ) {
-        ScreenLayout layout = layout();
+        TeamManagementScreenLayout layout = layout();
         drawPanels(graphics, layout);
 
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
@@ -144,7 +133,7 @@ public final class TeamManagementScreen
             return false;
         }
 
-        ScreenLayout layout = layout();
+        TeamManagementScreenLayout layout = layout();
         int direction = verticalAmount > 0.0D ? -1 : 1;
 
         if (
@@ -222,7 +211,7 @@ public final class TeamManagementScreen
             createNameInput == null ? "" : createNameInput.getValue();
         String renameValue =
             renameNameInput == null ? "" : renameNameInput.getValue();
-        ScreenLayout layout = layout();
+        TeamManagementScreenLayout layout = layout();
 
         clearWidgets();
         teamButtons.clear();
@@ -418,13 +407,11 @@ public final class TeamManagementScreen
     private void clearSubmittedTextInputAfterSuccess(
         TeamManagementStatePayload payload
     ) {
-        Action actionToClear = pendingTextInputClearAction;
-        String submittedValue = pendingTextInputClearValue;
-        pendingTextInputClearAction = null;
-        pendingTextInputClearValue = "";
+        PendingTextInputClear pendingClear = pendingTextInputClear;
+        pendingTextInputClear = null;
 
         if (
-            actionToClear == null ||
+            pendingClear == null ||
             payload.error() ||
             payload.message().getString().isBlank()
         ) {
@@ -432,15 +419,15 @@ public final class TeamManagementScreen
         }
 
         if (
-            actionToClear == Action.CREATE &&
+            pendingClear.action() == Action.CREATE &&
             createNameInput != null &&
-            createNameInput.getValue().equals(submittedValue)
+            createNameInput.getValue().equals(pendingClear.value())
         ) {
             createNameInput.setValue("");
         } else if (
-            actionToClear == Action.RENAME_EMPTY &&
+            pendingClear.action() == Action.RENAME_EMPTY &&
             renameNameInput != null &&
-            renameNameInput.getValue().equals(submittedValue)
+            renameNameInput.getValue().equals(pendingClear.value())
         ) {
             renameNameInput.setValue("");
         }
@@ -451,7 +438,7 @@ public final class TeamManagementScreen
             selectedTeamId = resolvedSelectedTeamId();
         }
 
-        ScreenLayout layout = layout();
+        TeamManagementScreenLayout layout = layout();
         teamScrollOffset = clamp(
             teamScrollOffset,
             0,
@@ -476,7 +463,15 @@ public final class TeamManagementScreen
             TeamRow team = snapshot.teams().get(teamIndex);
             button.visible = true;
             button.active = true;
-            button.setMessage(Component.literal(teamButtonLabel(team)));
+            button.setMessage(
+                Component.literal(
+                    TeamManagementScreenText.teamButtonLabel(
+                        team,
+                        selectedTeamId,
+                        snapshot.currentTeamId()
+                    )
+                )
+            );
         }
 
         updateActionButtons();
@@ -495,7 +490,7 @@ public final class TeamManagementScreen
             !renameNameInput.getValue().trim().isEmpty();
         boolean selectedIsCurrent =
             hasSelectedTeam && selected.id().equals(snapshot.currentTeamId());
-        ScreenLayout layout = layout();
+        TeamManagementScreenLayout layout = layout();
         boolean joinLeaveVisible = isActionWidgetInViewport(
             layout.joinLeaveButtonY() - actionScrollOffset,
             BUTTON_HEIGHT,
@@ -604,14 +599,16 @@ public final class TeamManagementScreen
 
     private void trackTextInputClearOnSuccess(Action action, String value) {
         if (action == Action.CREATE || action == Action.RENAME_EMPTY) {
-            pendingTextInputClearAction = action;
-            pendingTextInputClearValue = value == null ? "" : value;
+            pendingTextInputClear = new PendingTextInputClear(
+                action,
+                value == null ? "" : value
+            );
         }
     }
 
     private void drawPanels(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         graphics.fill(
             layout.left(),
@@ -664,7 +661,7 @@ public final class TeamManagementScreen
 
     private void drawLabelsAndLists(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         graphics.centeredText(
             this.font,
@@ -682,7 +679,7 @@ public final class TeamManagementScreen
 
     private void drawTeamsColumn(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         graphics.text(
             this.font,
@@ -714,7 +711,7 @@ public final class TeamManagementScreen
 
     private void drawDetailsColumn(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         TeamRow selected = selectedTeam();
 
@@ -727,7 +724,7 @@ public final class TeamManagementScreen
         );
         graphics.text(
             this.font,
-            currentTeamText(),
+            TeamManagementScreenText.currentTeamText(snapshot),
             layout.detailsContentX(),
             layout.detailsCurrentTeamY(),
             MUTED_TEXT_COLOR
@@ -749,21 +746,21 @@ public final class TeamManagementScreen
 
         graphics.text(
             this.font,
-            selectedTeamText(),
+            TeamManagementScreenText.selectedTeamText(selected),
             layout.detailsContentX(),
             layout.detailsSelectedTeamY(),
             TEXT_COLOR
         );
         graphics.text(
             this.font,
-            selectedScoreText(),
+            TeamManagementScreenText.selectedScoreText(selected),
             layout.detailsContentX(),
             layout.detailsScoreY(),
             MUTED_TEXT_COLOR
         );
         graphics.text(
             this.font,
-            selectedMembersHeader(),
+            TeamManagementScreenText.selectedMembersHeader(),
             layout.detailsContentX(),
             layout.membersHeaderY(),
             MUTED_TEXT_COLOR
@@ -773,8 +770,10 @@ public final class TeamManagementScreen
 
     private void drawActionsColumn(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
+        TeamRow selected = selectedTeam();
+
         graphics.text(
             this.font,
             Component.translatable("screen.trade-rush.team_management.actions"),
@@ -791,7 +790,7 @@ public final class TeamManagementScreen
         );
         graphics.textWithWordWrap(
             this.font,
-            selectedActionText(),
+            TeamManagementScreenText.selectedActionText(selected),
             layout.actionsContentX(),
             layout.actionSelectedTeamY() - actionScrollOffset,
             layout.actionsContentWidth(),
@@ -867,7 +866,7 @@ public final class TeamManagementScreen
 
     private void drawMembers(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         TeamRow selected = selectedTeam();
 
@@ -903,7 +902,7 @@ public final class TeamManagementScreen
             MemberEntry member = selected.members().get(index);
             graphics.text(
                 this.font,
-                "- " + memberLabel(member),
+                "- " + TeamManagementScreenText.memberLabel(member),
                 layout.membersX(),
                 layout.membersY() + (index - first) * TEXT_LINE_HEIGHT,
                 MUTED_TEXT_COLOR
@@ -925,7 +924,7 @@ public final class TeamManagementScreen
 
     private void drawEmptyTeamExplanation(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         TeamRow selected = selectedTeam();
 
@@ -947,7 +946,7 @@ public final class TeamManagementScreen
 
     private void drawMessage(
         GuiGraphicsExtractor graphics,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         if (message.getString().isBlank()) {
             return;
@@ -1008,7 +1007,7 @@ public final class TeamManagementScreen
             : snapshot.teams().getFirst().id();
     }
 
-    private void scrollSelectedTeamIntoView(ScreenLayout layout) {
+    private void scrollSelectedTeamIntoView(TeamManagementScreenLayout layout) {
         int selectedIndex = selectedTeamIndex();
 
         if (selectedIndex < 0) {
@@ -1065,107 +1064,22 @@ public final class TeamManagementScreen
             .orElse(null);
     }
 
-    private String teamButtonLabel(TeamRow team) {
-        String selectedMarker = team.id().equals(selectedTeamId) ? "▶ " : "  ";
-        String currentMarker = team.id().equals(snapshot.currentTeamId())
-            ? "★ "
-            : "";
-
-        return (
-            selectedMarker +
-            currentMarker +
-            team.name() +
-            " (" +
-            team.memberCount() +
-            ")"
-        );
-    }
-
-    private Component currentTeamText() {
-        if (snapshot.currentTeamName().isBlank()) {
-            return Component.translatable(
-                "screen.trade-rush.team_management.current_none"
-            );
-        }
-
-        return Component.translatable(
-            "screen.trade-rush.team_management.current_team",
-            snapshot.currentTeamName()
-        );
-    }
-
-    private Component selectedTeamText() {
-        TeamRow selected = selectedTeam();
-
-        if (selected == null) {
-            return Component.translatable(
-                "screen.trade-rush.team_management.selected_none"
-            );
-        }
-
-        return Component.translatable(
-            "screen.trade-rush.team_management.selected_team",
-            selected.name()
-        );
-    }
-
-    private Component selectedActionText() {
-        TeamRow selected = selectedTeam();
-
-        if (selected == null) {
-            return Component.translatable(
-                "screen.trade-rush.team_management.select_team_actions"
-            );
-        }
-
-        return Component.translatable(
-            "screen.trade-rush.team_management.selected_team",
-            selected.name()
-        );
-    }
-
-    private Component selectedScoreText() {
-        TeamRow selected = selectedTeam();
-
-        if (selected == null) {
-            return Component.literal("");
-        }
-
-        return Component.translatable(
-            "screen.trade-rush.team_management.score_members",
-            selected.score(),
-            selected.memberCount()
-        );
-    }
-
-    private Component selectedMembersHeader() {
-        return Component.translatable(
-            "screen.trade-rush.team_management.members"
-        );
-    }
-
-    private String memberLabel(MemberEntry member) {
-        return member.displayName().isBlank()
-            ? member.id()
-            : member.displayName();
-    }
-
-    private int visibleTeamRows(ScreenLayout layout) {
+    private int visibleTeamRows(TeamManagementScreenLayout layout) {
         return Math.max(
             1,
             (layout.teamListHeight() - BUTTON_HEIGHT) / TEAM_ROW_STRIDE + 1
         );
     }
 
-    private int visibleMemberRows(ScreenLayout layout) {
+    private int visibleMemberRows(TeamManagementScreenLayout layout) {
         return Math.max(1, layout.membersHeight() / TEXT_LINE_HEIGHT);
     }
 
-    private int maxTeamScrollOffset(ScreenLayout layout) {
+    private int maxTeamScrollOffset(TeamManagementScreenLayout layout) {
         return Math.max(0, snapshot.teams().size() - visibleTeamRows(layout));
     }
 
-    private int maxMemberScrollOffset(ScreenLayout layout) {
+    private int maxMemberScrollOffset(TeamManagementScreenLayout layout) {
         TeamRow selected = selectedTeam();
 
         if (selected == null) {
@@ -1178,7 +1092,7 @@ public final class TeamManagementScreen
         );
     }
 
-    private int maxActionScrollOffset(ScreenLayout layout) {
+    private int maxActionScrollOffset(TeamManagementScreenLayout layout) {
         return Math.max(
             0,
             layout.actionContentHeight() - layout.actionViewportHeight()
@@ -1188,7 +1102,7 @@ public final class TeamManagementScreen
     private boolean isActionWidgetInViewport(
         int widgetY,
         int widgetHeight,
-        ScreenLayout layout
+        TeamManagementScreenLayout layout
     ) {
         return (
             widgetY >= layout.actionViewportY() &&
@@ -1221,241 +1135,9 @@ public final class TeamManagementScreen
         return Math.min(value, max);
     }
 
-    private ScreenLayout layout() {
-        int availableWidth = Math.max(
-            MIN_PANEL_WIDTH,
-            this.width - SCREEN_MARGIN * 2
-        );
-        int panelWidth = Math.min(MAX_PANEL_WIDTH, availableWidth);
-        int availableHeight = Math.max(
-            MIN_PANEL_HEIGHT,
-            this.height - PANEL_VERTICAL_MARGIN
-        );
-        int panelHeight = Math.min(MAX_PANEL_HEIGHT, availableHeight);
-        int left = Math.max(SCREEN_MARGIN, (this.width - panelWidth) / 2);
-        int top = Math.max(24, (this.height - panelHeight) / 2 - 4);
-        int columnWidth = Math.max(
-            70,
-            (panelWidth - COLUMN_GAP * 2 - SCREEN_MARGIN * 2) / 3
-        );
-        int actionsWidth = Math.max(
-            70,
-            panelWidth - SCREEN_MARGIN * 2 - COLUMN_GAP * 2 - columnWidth * 2
-        );
-
-        return new ScreenLayout(
-            left,
-            top,
-            panelWidth,
-            panelHeight,
-            columnWidth,
-            actionsWidth
-        );
+    private TeamManagementScreenLayout layout() {
+        return TeamManagementScreenLayout.create(this.width, this.height);
     }
 
-    private record ScreenLayout(
-        int left,
-        int top,
-        int width,
-        int height,
-        int columnWidth,
-        int actionsWidth
-    ) {
-        int right() {
-            return left + width;
-        }
-
-        int bottom() {
-            return top + height;
-        }
-
-        int columnTop() {
-            return top + 22;
-        }
-
-        int columnHeight() {
-            return Math.max(1, height - 36);
-        }
-
-        int headingY() {
-            return top + 30;
-        }
-
-        int teamsX() {
-            return left + SCREEN_MARGIN;
-        }
-
-        int detailsX() {
-            return teamsX() + columnWidth + COLUMN_GAP;
-        }
-
-        int actionsX() {
-            return detailsX() + columnWidth + COLUMN_GAP;
-        }
-
-        int teamsContentX() {
-            return teamsX() + COLUMN_PADDING;
-        }
-
-        int detailsContentX() {
-            return detailsX() + COLUMN_PADDING;
-        }
-
-        int actionsContentX() {
-            return actionsX() + COLUMN_PADDING;
-        }
-
-        int contentWidth() {
-            return Math.max(1, columnWidth - COLUMN_PADDING * 2);
-        }
-
-        int actionsContentWidth() {
-            return Math.max(1, actionsWidth - COLUMN_PADDING * 2);
-        }
-
-        int teamLegendY() {
-            return top + 43;
-        }
-
-        int teamListX() {
-            return teamsContentX();
-        }
-
-        int teamListY() {
-            return top + 60;
-        }
-
-        int teamListWidth() {
-            return contentWidth();
-        }
-
-        int teamListHeight() {
-            return Math.max(
-                BUTTON_HEIGHT,
-                columnTop() + columnHeight() - COLUMN_PADDING - teamListY()
-            );
-        }
-
-        int detailsCurrentTeamY() {
-            return top + 44;
-        }
-
-        int detailsSelectedTeamY() {
-            return top + 62;
-        }
-
-        int detailsScoreY() {
-            return top + 76;
-        }
-
-        int membersHeaderY() {
-            return top + 94;
-        }
-
-        int membersX() {
-            return detailsContentX();
-        }
-
-        int membersY() {
-            return top + 108;
-        }
-
-        int membersWidth() {
-            return contentWidth();
-        }
-
-        int membersHeight() {
-            return Math.max(12, bottom() - 34 - membersY());
-        }
-
-        int actionViewportY() {
-            return headingY() + TEXT_LINE_HEIGHT + 4;
-        }
-
-        int actionViewportHeight() {
-            return Math.max(
-                BUTTON_HEIGHT,
-                columnTop() +
-                    columnHeight() -
-                    COLUMN_PADDING -
-                    actionViewportY()
-            );
-        }
-
-        int actionSelectedTeamY() {
-            return actionViewportY();
-        }
-
-        int joinLeaveButtonY() {
-            return actionSelectedTeamY() + 22;
-        }
-
-        int renameLabelY() {
-            return joinLeaveButtonY() + BUTTON_HEIGHT + 8;
-        }
-
-        int renameInputY() {
-            return renameLabelY() + TEXT_LINE_HEIGHT;
-        }
-
-        int renameButtonsY() {
-            return renameInputY() + BUTTON_HEIGHT + 4;
-        }
-
-        int emptyTeamExplanationY() {
-            return renameButtonsY() + BUTTON_HEIGHT + 8;
-        }
-
-        int createSectionY() {
-            return Math.max(
-                emptyTeamExplanationY() + 42,
-                actionViewportY() +
-                    actionViewportHeight() -
-                    CREATE_FORM_HEIGHT -
-                    CREATE_FORM_BOTTOM_GAP
-            );
-        }
-
-        int createInputY() {
-            return createSectionY() + 16;
-        }
-
-        int createButtonY() {
-            return createInputY() + BUTTON_HEIGHT + 4;
-        }
-
-        int actionContentHeight() {
-            return Math.max(
-                actionViewportHeight(),
-                createButtonY() +
-                    BUTTON_HEIGHT +
-                    CREATE_FORM_BOTTOM_GAP -
-                    actionViewportY()
-            );
-        }
-
-        int footerX() {
-            return left + SCREEN_MARGIN;
-        }
-
-        int footerY() {
-            return bottom() + 5;
-        }
-
-        int refreshButtonWidth() {
-            return 82;
-        }
-
-        int statusMessageX() {
-            return footerX() + refreshButtonWidth() + 8;
-        }
-
-        int statusMessageY() {
-            return footerY() + 5;
-        }
-
-        int statusMessageWidth() {
-            return Math.max(1, right() - statusMessageX());
-        }
-    }
+    private record PendingTextInputClear(Action action, String value) {}
 }
