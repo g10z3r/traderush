@@ -58,7 +58,7 @@ public final class TeamService {
         PlayerId playerId,
         TeamId teamId
     ) {
-        Optional<Team> targetTeam = getTeam(teamId);
+        Optional<Team> targetTeam = teamRepository.getById(teamId);
 
         if (targetTeam.isEmpty()) {
             return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
@@ -115,14 +115,6 @@ public final class TeamService {
             .toList();
     }
 
-    public Optional<Team> getTeam(TeamId teamId) {
-        if (teamId == null) {
-            return Optional.empty();
-        }
-
-        return teamRepository.getById(teamId);
-    }
-
     public Optional<Team> getTeamForPlayer(PlayerId playerId) {
         if (playerId == null) {
             return Optional.empty();
@@ -151,7 +143,7 @@ public final class TeamService {
     }
 
     public TeamOperationResult<Team> renameTeam(TeamId teamId, String newName) {
-        Optional<Team> team = getTeam(teamId);
+        Optional<Team> team = teamRepository.getById(teamId);
 
         if (team.isEmpty()) {
             return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
@@ -188,10 +180,6 @@ public final class TeamService {
         return TeamOperationResult.success(renamedTeam);
     }
 
-    public TeamOperationResult<Team> deleteTeam(String name) {
-        return deleteTeam(name, false);
-    }
-
     public TeamOperationResult<Team> deleteTeam(String name, boolean force) {
         String trimmedName = trimName(name);
 
@@ -208,12 +196,8 @@ public final class TeamService {
         return deleteTeam(team.get(), force);
     }
 
-    public TeamOperationResult<Team> deleteTeam(TeamId teamId) {
-        return deleteTeam(teamId, false);
-    }
-
     public TeamOperationResult<Team> deleteTeam(TeamId teamId, boolean force) {
-        Optional<Team> team = getTeam(teamId);
+        Optional<Team> team = teamRepository.getById(teamId);
 
         if (team.isEmpty()) {
             return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
