@@ -33,9 +33,4 @@ public final class ShopService {
     public List<Shop> listShops() {
         return shopRepository.getAll();
     }
-
-    public boolean isShopLocation(ShopLocation location) {
-        Objects.requireNonNull(location, "shop location cannot be null");
-        return shopRepository.getByLocation(location).isPresent();
-    }
 }

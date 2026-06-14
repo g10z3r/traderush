@@ -3,7 +3,7 @@
 	"package": "traderush.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
-		"ExampleMixin"
+		"LevelDestroyBlockMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

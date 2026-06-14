@@ -1,33 +1,25 @@
 package traderush.platform.protection;
 
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import traderush.game.shop.ShopLocation;
+import traderush.game.shop.ShopProtectionSpec;
 import traderush.game.shop.ShopService;
 
 import java.util.function.Supplier;
 
 public final class MinecraftShopBlockProtection {
+    private static Supplier<ShopService> shopServiceSupplier = null;
+
     private MinecraftShopBlockProtection() {}
 
-    public static void register(Supplier<ShopService> shopServiceSupplier) {
-        PlayerBlockBreakEvents.BEFORE.register(
-                (world, player, pos, state, blockEntity) -> !isProtectedShopBlock(
-                        world,
-                        pos,
-                        shopServiceSupplier
-                )
-        );
+    public static void register(Supplier<ShopService> supplier) {
+        shopServiceSupplier = supplier;
+        ShopBlockBreakProtection.register(MinecraftShopBlockProtection::isProtected);
     }
 
-    private static boolean isProtectedShopBlock(
-            Level world,
-            BlockPos pos,
-            Supplier<ShopService> shopServiceSupplier
-    ) {
-        if (!(world instanceof ServerLevel level)) {
+    public static boolean isProtected(ServerLevel level, BlockPos pos) {
+        if (shopServiceSupplier == null) {
             return false;
         }
 
@@ -38,6 +30,9 @@ public final class MinecraftShopBlockProtection {
                 pos.getZ()
         );
 
-        return shopServiceSupplier.get().isShopLocation(location);
+        return ShopProtectionSpec.containsAnyShop(
+                shopServiceSupplier.get().listShops(),
+                location
+        );
     }
 }

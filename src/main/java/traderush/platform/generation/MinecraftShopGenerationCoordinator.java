@@ -22,6 +22,7 @@ import traderush.game.shop.generation.ShopGenerationPlacement;
 import traderush.game.shop.generation.ShopGenerationPlan;
 import traderush.game.shop.generation.ShopGenerationPlanner;
 import traderush.game.shop.generation.ShopSpec;
+import traderush.platform.protection.ShopProtectionBypass;
 
 import java.util.List;
 import java.util.UUID;
@@ -104,6 +105,8 @@ public final class MinecraftShopGenerationCoordinator {
         }
 
         BlockPos pos = new BlockPos(location.x(), location.y(), location.z());
-        level.setBlock(pos, Blocks.GOLD_BLOCK.defaultBlockState(), 3);
+        ShopProtectionBypass.run(() ->
+                level.setBlock(pos, Blocks.GOLD_BLOCK.defaultBlockState(), 3)
+        );
     }
 }
