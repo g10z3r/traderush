@@ -24,7 +24,8 @@ public final class TeamService {
             return TeamOperationResult.error(TeamError.TEAM_INVALID_NAME);
         }
 
-        if (trimmedName.length() < MIN_TEAM_NAME_LENGTH || trimmedName.length() > MAX_TEAM_NAME_LENGTH) {
+        if (trimmedName.length() < MIN_TEAM_NAME_LENGTH
+                || trimmedName.length() > MAX_TEAM_NAME_LENGTH) {
             return TeamOperationResult.error(TeamError.TEAM_INVALID_NAME);
         }
 
@@ -100,10 +101,13 @@ public final class TeamService {
     }
 
     public List<Team> listTeams() {
-        return teamRepository.getAll().stream().sorted(
-                Comparator.comparingLong(Team::getScore)
-                        .reversed()
-                        .thenComparing(Team::getName, String.CASE_INSENSITIVE_ORDER))
+        return teamRepository.getAll()
+                .stream()
+                .sorted(
+                        Comparator.comparingLong(Team::getScore)
+                                .reversed()
+                                .thenComparing(Team::getName, String.CASE_INSENSITIVE_ORDER)
+                )
                 .toList();
     }
 
