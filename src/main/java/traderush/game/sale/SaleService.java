@@ -1,7 +1,7 @@
 package traderush.game.sale;
 
 import traderush.game.shop.ShopRepository;
-import traderush.game.team.TeamRepository;
+import traderush.game.team.TeamService;
 import traderush.game.offer.OfferRepository;
 import traderush.game.offer.ActiveOfferRepository;
 import traderush.game.shop.Shop;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public final class SaleService {
     private final ShopRepository shopRepository;
-    private final TeamRepository teamRepository;
+    private final TeamService teamService;
     private final OfferRepository offerRepository;
     private final ActiveOfferRepository activeOfferRepository;
     private final SaleCalculator saleCalculator;
@@ -27,7 +27,7 @@ public final class SaleService {
 
     public SaleService(
             ShopRepository shopRepository,
-            TeamRepository teamRepository,
+            TeamService teamService,
             OfferRepository offerRepository,
             ActiveOfferRepository activeOfferRepository,
             SaleCalculator saleCalculator,
@@ -35,8 +35,8 @@ public final class SaleService {
     ) {
         this.shopRepository = Objects
                 .requireNonNull(shopRepository, "shop repository cannot be null");
-        this.teamRepository = Objects
-                .requireNonNull(teamRepository, "team repository cannot be null");
+        this.teamService = Objects
+                .requireNonNull(teamService, "team service cannot be null");
         this.offerRepository = Objects.requireNonNull(
                 offerRepository,
                 "offer repository cannot be null"
@@ -83,7 +83,7 @@ public final class SaleService {
             List<SaleItemStack> items,
             long currentTick
     ) {
-        Team team = teamRepository.getByPlayerId(playerId).orElse(null);
+        Team team = teamService.getTeamForPlayer(playerId).orElse(null);
         if (team == null) {
             return SaleOperationResult.failure(SaleError.PLAYER_NOT_IN_TEAM);
         }
@@ -121,8 +121,7 @@ public final class SaleService {
             activeOfferRepository.put(activeOffer);
         }
 
-        team.addPoints(preview.totalPoints());
-        teamRepository.put(team);
+        teamService.awardPoints(team.getId(), preview.totalPoints());
 
         SaleTransaction transaction = new SaleTransaction(
                 SaleId.fromUuid(UUID.randomUUID()),

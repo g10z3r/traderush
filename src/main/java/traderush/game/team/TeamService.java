@@ -103,6 +103,21 @@ public final class TeamService {
         return TeamOperationResult.success(team);
     }
 
+    public TeamOperationResult<Team> awardPoints(TeamId teamId, long points) {
+        Optional<Team> team = teamRepository.getById(teamId);
+
+        if (team.isEmpty()) {
+            return TeamOperationResult.error(TeamError.TEAM_NOT_FOUND);
+        }
+
+        Team toAward = team.get();
+        toAward.addPoints(points);
+        teamRepository.put(toAward);
+        onStateChanged.run();
+
+        return TeamOperationResult.success(toAward);
+    }
+
     public List<Team> listTeams() {
         return teamRepository
             .getAll()
