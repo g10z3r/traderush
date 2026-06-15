@@ -4,4 +4,5 @@ pre-push:
 
 pre-commit:
   jobs:
-    - run: ./gradlew spotlessCheck
+    - run: ./gradlew spotlessApply
+      stage_fixed: true
