@@ -1,0 +1,7 @@
+pre-push:
+  jobs:
+    - run: mise run check
+
+pre-commit:
+  jobs:
+    - run: ./gradlew spotlessCheck

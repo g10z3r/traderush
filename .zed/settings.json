@@ -1,0 +1,27 @@
+{
+  "languages": {
+    "Java": {
+      "formatter": "language_server",
+      "format_on_save": "on",
+    },
+  },
+  "lsp": {
+    "jdtls": {
+      "initialization_options": {
+        "settings": {
+          "java": {
+            "format": {
+              "enabled": true,
+              "settings": {
+                "url": ".vscode/java-formatter.xml",
+              },
+            },
+            "saveActions": {
+              "organizeImports": false,
+            },
+          },
+        },
+      },
+    },
+  },
+}

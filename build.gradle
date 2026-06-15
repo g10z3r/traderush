@@ -1,4 +1,5 @@
 plugins {
+    id("com.diffplug.spotless") version "${spotless_version}"
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
@@ -44,6 +45,34 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand "version": version
 	}
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+
+        importOrder()
+        removeUnusedImports()
+        eclipse().configFile('.vscode/java-formatter.xml')
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    json {
+        target("**/*.json")
+        targetExclude("build/**", ".gradle/**", "run/**", ".vscode/**", ".zed/**")
+
+        gson().indentWithSpaces(2)
+    }
+
+    format("xml") {
+        target("**/*.xml")
+        targetExclude("build/**", ".gradle/**", "run/**")
+
+        eclipseWtp("xml")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
