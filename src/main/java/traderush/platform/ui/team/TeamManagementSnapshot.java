@@ -1,4 +1,4 @@
-package traderush.platform.teamui;
+package traderush.platform.ui.team;
 
 import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;

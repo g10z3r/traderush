@@ -13,8 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import traderush.platform.teamui.TeamManagementMenu;
-import traderush.platform.teamui.TeamManagementNetworking;
+import traderush.platform.ui.team.TeamManagementMenu;
+import traderush.platform.ui.team.TeamManagementNetworking;
 
 public final class TeamManagementBlock extends Block {
 

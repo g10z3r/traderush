@@ -11,7 +11,7 @@ import traderush.platform.command.StatusCommand;
 import traderush.platform.command.TeamCommand;
 import traderush.platform.registry.TradeRushBlocks;
 import traderush.platform.registry.TradeRushMenus;
-import traderush.platform.teamui.TeamManagementNetworking;
+import traderush.platform.ui.team.TeamManagementNetworking;
 import traderush.runtime.TradeRushRuntime;
 
 public class TradeRush implements ModInitializer {

@@ -1,4 +1,4 @@
-package traderush.platform.teamui;
+package traderush.platform.ui.team;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -12,7 +12,7 @@ import traderush.game.team.TeamId;
 import traderush.game.team.TeamOperationResult;
 import traderush.game.team.TeamService;
 import traderush.platform.TeamMessages;
-import traderush.platform.teamui.TeamManagementActionPayload.Action;
+import traderush.platform.ui.team.TeamManagementActionPayload.Action;
 
 public final class TeamManagementNetworking {
 

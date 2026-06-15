@@ -1,9 +1,9 @@
-package traderush.client.teamui;
+package traderush.client.ui.team;
 
 import net.minecraft.network.chat.Component;
-import traderush.platform.teamui.TeamManagementSnapshot;
-import traderush.platform.teamui.TeamManagementSnapshot.MemberEntry;
-import traderush.platform.teamui.TeamManagementSnapshot.TeamRow;
+import traderush.platform.ui.team.TeamManagementSnapshot;
+import traderush.platform.ui.team.TeamManagementSnapshot.MemberEntry;
+import traderush.platform.ui.team.TeamManagementSnapshot.TeamRow;
 
 final class TeamManagementScreenText {
 

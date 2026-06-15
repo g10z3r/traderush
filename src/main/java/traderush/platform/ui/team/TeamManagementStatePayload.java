@@ -1,4 +1,4 @@
-package traderush.platform.teamui;
+package traderush.platform.ui.team;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;

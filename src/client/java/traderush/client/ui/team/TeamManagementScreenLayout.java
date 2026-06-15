@@ -1,4 +1,4 @@
-package traderush.client.teamui;
+package traderush.client.ui.team;
 
 record TeamManagementScreenLayout(
     int left,
@@ -23,7 +23,10 @@ record TeamManagementScreenLayout(
     private static final int CREATE_FORM_HEIGHT = 60;
     private static final int CREATE_FORM_BOTTOM_GAP = 12;
 
-    static TeamManagementScreenLayout create(int screenWidth, int screenHeight) {
+    static TeamManagementScreenLayout create(
+        int screenWidth,
+        int screenHeight
+    ) {
         int availableWidth = Math.max(
             MIN_PANEL_WIDTH,
             screenWidth - SCREEN_MARGIN * 2

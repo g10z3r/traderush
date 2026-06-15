@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import traderush.TradeRush;
-import traderush.platform.teamui.TeamManagementMenu;
+import traderush.platform.ui.team.TeamManagementMenu;
 
 public final class TradeRushMenus {
     public static final ExtendedMenuType<

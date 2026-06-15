@@ -1,4 +1,4 @@
-package traderush.platform.teamui;
+package traderush.platform.ui.team;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;

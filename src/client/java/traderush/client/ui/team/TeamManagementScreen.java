@@ -1,8 +1,8 @@
-package traderush.client.teamui;
+package traderush.client.ui.team;
 
-import static traderush.client.teamui.TeamManagementScreenLayout.BUTTON_HEIGHT;
-import static traderush.client.teamui.TeamManagementScreenLayout.TEAM_ROW_STRIDE;
-import static traderush.client.teamui.TeamManagementScreenLayout.TEXT_LINE_HEIGHT;
+import static traderush.client.ui.team.TeamManagementScreenLayout.BUTTON_HEIGHT;
+import static traderush.client.ui.team.TeamManagementScreenLayout.TEAM_ROW_STRIDE;
+import static traderush.client.ui.team.TeamManagementScreenLayout.TEXT_LINE_HEIGHT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +16,13 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import traderush.game.team.TeamService;
-import traderush.platform.teamui.TeamManagementActionPayload;
-import traderush.platform.teamui.TeamManagementActionPayload.Action;
-import traderush.platform.teamui.TeamManagementMenu;
-import traderush.platform.teamui.TeamManagementSnapshot;
-import traderush.platform.teamui.TeamManagementSnapshot.MemberEntry;
-import traderush.platform.teamui.TeamManagementSnapshot.TeamRow;
-import traderush.platform.teamui.TeamManagementStatePayload;
+import traderush.platform.ui.team.TeamManagementActionPayload;
+import traderush.platform.ui.team.TeamManagementActionPayload.Action;
+import traderush.platform.ui.team.TeamManagementMenu;
+import traderush.platform.ui.team.TeamManagementSnapshot;
+import traderush.platform.ui.team.TeamManagementSnapshot.MemberEntry;
+import traderush.platform.ui.team.TeamManagementSnapshot.TeamRow;
+import traderush.platform.ui.team.TeamManagementStatePayload;
 
 public final class TeamManagementScreen
     extends Screen

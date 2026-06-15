@@ -1,4 +1,4 @@
-package traderush.platform.teamui;
+package traderush.platform.ui.team;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,8 +6,8 @@ import net.minecraft.server.level.ServerPlayer;
 import traderush.game.player.PlayerId;
 import traderush.game.team.Team;
 import traderush.game.team.TeamService;
-import traderush.platform.teamui.TeamManagementSnapshot.MemberEntry;
-import traderush.platform.teamui.TeamManagementSnapshot.TeamRow;
+import traderush.platform.ui.team.TeamManagementSnapshot.MemberEntry;
+import traderush.platform.ui.team.TeamManagementSnapshot.TeamRow;
 
 public final class TeamManagementSnapshots {
 
