@@ -4,5 +4,5 @@ pre-push:
 
 pre-commit:
   jobs:
-    - run: ./gradlew spotlessApply
+    - run: mise run fmt
       stage_fixed: true
