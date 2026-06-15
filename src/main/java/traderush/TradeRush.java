@@ -7,8 +7,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import traderush.platform.command.ShopCommand;
 import traderush.platform.command.StatusCommand;
 import traderush.platform.command.TeamCommand;
+import traderush.platform.protection.MinecraftShopBlockProtection;
 import traderush.platform.registry.TradeRushBlocks;
 import traderush.platform.registry.TradeRushMenus;
 import traderush.platform.ui.team.TeamManagementNetworking;
@@ -35,6 +37,8 @@ public class TradeRush implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(this::stopRuntime);
 
         TeamCommand.register(() -> runtime().teamService());
+        ShopCommand.register(() -> runtime().shopService());
+        MinecraftShopBlockProtection.register(() -> runtime().shopService());
 
         CommandRegistrationCallback.EVENT.register(
             (dispatcher, registryAccess, environment) -> {
