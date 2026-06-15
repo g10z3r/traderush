@@ -15,16 +15,12 @@ public final class TeamManagementClientNetworking {
         }
 
         ClientPlayNetworking.registerGlobalReceiver(
-            TeamManagementStatePayload.TYPE,
-            (payload, context) ->
-                context
-                    .client()
-                    .execute(() ->
-                        TeamManagementScreen.receiveState(
-                            context.client(),
-                            payload
+                TeamManagementStatePayload.TYPE,
+                (payload, context) -> context.client()
+                        .execute(
+                                () -> TeamManagementScreen
+                                        .receiveState(context.client(), payload)
                         )
-                    )
         );
         registered = true;
     }

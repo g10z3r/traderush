@@ -1,0 +1,8 @@
+pre-push:
+  jobs:
+    - run: mise run check
+
+pre-commit:
+  jobs:
+    - run: mise run fmt
+      stage_fixed: true

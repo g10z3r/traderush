@@ -8,11 +8,15 @@ public record ShopSpawnArea(
 ) {
     public ShopSpawnArea {
         if (dimensionId == null || dimensionId.isBlank()) {
-            throw new IllegalArgumentException("shop spawn area dimension id cannot be blank");
+            throw new IllegalArgumentException(
+                    "shop spawn area dimension id cannot be blank"
+            );
         }
 
         if (minDistanceFromSpawn < 0) {
-            throw new IllegalArgumentException("minimum distance from spawn cannot be negative");
+            throw new IllegalArgumentException(
+                    "minimum distance from spawn cannot be negative"
+            );
         }
 
         if (maxDistanceFromSpawn < minDistanceFromSpawn) {
@@ -22,7 +26,9 @@ public record ShopSpawnArea(
         }
 
         if (maxPlacementAttempts <= 0) {
-            throw new IllegalArgumentException("maximum placement attempts must be positive");
+            throw new IllegalArgumentException(
+                    "maximum placement attempts must be positive"
+            );
         }
 
         dimensionId = dimensionId.trim();

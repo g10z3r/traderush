@@ -40,11 +40,10 @@ public class TradeRush implements ModInitializer {
         ShopCommand.register(() -> runtime().shopService());
         MinecraftShopBlockProtection.register(() -> runtime().shopService());
 
-        CommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess, environment) -> {
-                StatusCommand.register(dispatcher);
-            }
-        );
+        CommandRegistrationCallback.EVENT
+                .register((dispatcher, registryAccess, environment) -> {
+                    StatusCommand.register(dispatcher);
+                });
 
         LOGGER.info("Hello Fabric world!");
     }
@@ -70,7 +69,7 @@ public class TradeRush implements ModInitializer {
     public static TradeRushRuntime runtime() {
         if (runtime == null) {
             throw new IllegalStateException(
-                "TradeRush runtime is not initialized yet"
+                    "TradeRush runtime is not initialized yet"
             );
         }
 

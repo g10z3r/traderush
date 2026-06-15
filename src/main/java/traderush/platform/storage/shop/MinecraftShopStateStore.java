@@ -1,10 +1,9 @@
 package traderush.platform.storage.shop;
 
+import java.util.Optional;
 import net.minecraft.server.MinecraftServer;
 import traderush.game.shop.ShopStateSnapshot;
 import traderush.game.shop.ShopStateStore;
-
-import java.util.Optional;
 
 public final class MinecraftShopStateStore implements ShopStateStore {
     private final MinecraftServer server;

@@ -40,7 +40,7 @@ public final class Team {
         this.id = id;
         this.name = name.trim();
         this.players = new LinkedHashSet<>(
-            players == null ? Set.of() : players
+                players == null ? Set.of() : players
         );
         this.score = score;
     }

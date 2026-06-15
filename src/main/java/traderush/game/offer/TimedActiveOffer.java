@@ -22,7 +22,9 @@ public final class TimedActiveOffer extends ActiveOffer {
         super(id, shopId, offerId, rewardPerUnit, acceptedUnits);
 
         if (startsAtTick < 0) {
-            throw new IllegalArgumentException("timed active offer start tick cannot be negative");
+            throw new IllegalArgumentException(
+                    "timed active offer start tick cannot be negative"
+            );
         }
 
         if (endsAtTick <= startsAtTick) {

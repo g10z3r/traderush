@@ -23,7 +23,9 @@ public final class TimedOffer extends Offer {
         super(id, name, description, rewardRange, units, activationEvents);
 
         if (minAvailabilityDurationSeconds <= 0) {
-            throw new IllegalArgumentException("minimum availability duration must be positive");
+            throw new IllegalArgumentException(
+                    "minimum availability duration must be positive"
+            );
         }
 
         if (maxAvailabilityDurationSeconds < minAvailabilityDurationSeconds) {
@@ -33,7 +35,9 @@ public final class TimedOffer extends Offer {
         }
 
         if (completionThreshold <= 0) {
-            throw new IllegalArgumentException("timed offer completion threshold must be positive");
+            throw new IllegalArgumentException(
+                    "timed offer completion threshold must be positive"
+            );
         }
 
         this.minAvailabilityDurationSeconds = minAvailabilityDurationSeconds;

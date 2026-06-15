@@ -1,5 +1,6 @@
 package traderush.runtime;
 
+import java.util.Optional;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,9 @@ import traderush.platform.generation.MinecraftShopGenerationCoordinator;
 import traderush.platform.generation.MinecraftSpawnLocator;
 import traderush.platform.storage.TradeRushPersistence;
 
-import java.util.Optional;
-
 public final class TradeRushRuntime {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TradeRushRuntime.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(TradeRushRuntime.class);
 
     private final TradeRushPersistence persistence;
     private final TeamRepository teamRepository;
@@ -29,12 +29,18 @@ public final class TradeRushRuntime {
     private final ShopRepository shopRepository;
     private final ShopService shopService;
 
-    private TradeRushRuntime(MinecraftServer server, TradeRushPersistence persistence) {
+    private TradeRushRuntime(
+            MinecraftServer server,
+            TradeRushPersistence persistence
+    ) {
         this.persistence = persistence;
 
         this.teamRepository = new InMemoryTeamRepository();
         loadTeamsSafely();
-        this.teamService = new TeamService(teamRepository, this::saveTeamsSafely);
+        this.teamService = new TeamService(
+                teamRepository,
+                this::saveTeamsSafely
+        );
 
         this.shopRepository = new InMemoryShopRepository();
         boolean shopStateFound = loadShopsSafely();
@@ -49,11 +55,17 @@ public final class TradeRushRuntime {
             }
         }
 
-        this.shopService = new ShopService(shopRepository, this::saveShopsSafely);
+        this.shopService = new ShopService(
+                shopRepository,
+                this::saveShopsSafely
+        );
     }
 
     public static TradeRushRuntime create(MinecraftServer server) {
-        return new TradeRushRuntime(server, TradeRushPersistence.create(server));
+        return new TradeRushRuntime(
+                server,
+                TradeRushPersistence.create(server)
+        );
     }
 
     public TeamService teamService() {
@@ -71,7 +83,8 @@ public final class TradeRushRuntime {
 
     private void loadTeamsSafely() {
         try {
-            Optional<TeamStateSnapshot> snapshot = persistence.teamStateStore().load();
+            Optional<TeamStateSnapshot> snapshot = persistence.teamStateStore()
+                    .load();
 
             if (snapshot.isEmpty()) {
                 LOGGER.info("No existing TradeRush team state found.");
@@ -86,7 +99,8 @@ public final class TradeRushRuntime {
 
     private void saveTeamsSafely() {
         try {
-            TeamStateSnapshot snapshot = TeamStateMapper.toSnapshot(teamRepository);
+            TeamStateSnapshot snapshot = TeamStateMapper
+                    .toSnapshot(teamRepository);
             persistence.teamStateStore().save(snapshot);
         } catch (Exception exception) {
             LOGGER.error("Failed to save TradeRush team state.", exception);
@@ -94,11 +108,13 @@ public final class TradeRushRuntime {
     }
 
     /**
-     * @return true if saved shop state was found and restored; false if no state existed
+     * @return true if saved shop state was found and restored; false if no
+     *         state existed
      */
     private boolean loadShopsSafely() {
         try {
-            Optional<ShopStateSnapshot> snapshot = persistence.shopStateStore().load();
+            Optional<ShopStateSnapshot> snapshot = persistence.shopStateStore()
+                    .load();
 
             if (snapshot.isEmpty()) {
                 LOGGER.info("No existing TradeRush shop state found.");
@@ -115,7 +131,8 @@ public final class TradeRushRuntime {
 
     private void saveShopsSafely() {
         try {
-            ShopStateSnapshot snapshot = ShopStateMapper.toSnapshot(shopRepository);
+            ShopStateSnapshot snapshot = ShopStateMapper
+                    .toSnapshot(shopRepository);
             persistence.shopStateStore().save(snapshot);
         } catch (Exception exception) {
             LOGGER.error("Failed to save TradeRush shop state.", exception);
@@ -132,11 +149,14 @@ public final class TradeRushRuntime {
     }
 
     /**
-     * @return true if generation succeeded; false if it failed (state should not be saved)
+     * @return true if generation succeeded; false if it failed (state should
+     *         not be saved)
      */
-    private boolean runShopGenerationSafely(MinecraftServer server) {        try {
+    private boolean runShopGenerationSafely(MinecraftServer server) {
+        try {
             LOGGER.info("Running shop generation for new world...");
-            new MinecraftShopGenerationCoordinator(server).execute(shopRepository);
+            new MinecraftShopGenerationCoordinator(server)
+                    .execute(shopRepository);
             return true;
         } catch (ShopGenerationException exception) {
             LOGGER.error("Shop generation failed.", exception);

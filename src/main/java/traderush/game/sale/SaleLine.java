@@ -1,11 +1,10 @@
 package traderush.game.sale;
 
+import java.util.List;
+import java.util.Objects;
 import traderush.game.offer.ActiveOfferId;
 import traderush.game.offer.ItemRequirement;
 import traderush.game.offer.OfferId;
-
-import java.util.List;
-import java.util.Objects;
 
 public record SaleLine(
         ActiveOfferId activeOfferId,
@@ -19,15 +18,21 @@ public record SaleLine(
         Objects.requireNonNull(offerId, "offer id cannot be null");
 
         if (units <= 0) {
-            throw new IllegalArgumentException("sale line units must be positive");
+            throw new IllegalArgumentException(
+                    "sale line units must be positive"
+            );
         }
 
         if (points <= 0) {
-            throw new IllegalArgumentException("sale line points must be positive");
+            throw new IllegalArgumentException(
+                    "sale line points must be positive"
+            );
         }
 
         if (consumedItems == null || consumedItems.isEmpty()) {
-            throw new IllegalArgumentException("sale line must contain consumed items");
+            throw new IllegalArgumentException(
+                    "sale line must contain consumed items"
+            );
         }
 
         consumedItems = List.copyOf(consumedItems);

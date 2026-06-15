@@ -2,9 +2,7 @@ package traderush.game.offer;
 
 import java.util.List;
 
-public record OfferUnit(
-        List<ItemRequirement> requirements
-) {
+public record OfferUnit(List<ItemRequirement> requirements) {
     public OfferUnit {
         if (requirements == null || requirements.isEmpty()) {
             throw new IllegalArgumentException(

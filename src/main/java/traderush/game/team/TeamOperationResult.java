@@ -14,15 +14,15 @@ public final class TeamOperationResult<T> {
 
     public static <T> TeamOperationResult<T> success(T value) {
         return new TeamOperationResult<>(
-            Objects.requireNonNull(value, "success value cannot be null"),
-            null
+                Objects.requireNonNull(value, "success value cannot be null"),
+                null
         );
     }
 
     public static <T> TeamOperationResult<T> error(TeamError err) {
         return new TeamOperationResult<>(
-            null,
-            Objects.requireNonNull(err, "error cannot be null")
+                null,
+                Objects.requireNonNull(err, "error cannot be null")
         );
     }
 

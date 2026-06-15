@@ -1,11 +1,10 @@
 package traderush.game.sale;
 
+import java.util.List;
+import java.util.Objects;
 import traderush.game.player.PlayerId;
 import traderush.game.shop.ShopId;
 import traderush.game.team.TeamId;
-
-import java.util.List;
-import java.util.Objects;
 
 public record SaleTransaction(
         SaleId id,
@@ -22,13 +21,17 @@ public record SaleTransaction(
         Objects.requireNonNull(playerId, "player id cannot be null");
 
         if (lines == null || lines.isEmpty()) {
-            throw new IllegalArgumentException("sale transaction must contain at least one line");
+            throw new IllegalArgumentException(
+                    "sale transaction must contain at least one line"
+            );
         }
 
         lines = List.copyOf(lines);
 
         if (totalPoints <= 0) {
-            throw new IllegalArgumentException("sale transaction total points must be positive");
+            throw new IllegalArgumentException(
+                    "sale transaction total points must be positive"
+            );
         }
     }
 }

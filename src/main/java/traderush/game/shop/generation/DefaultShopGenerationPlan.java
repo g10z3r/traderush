@@ -6,11 +6,14 @@ import java.util.List;
  * Defines the shops that should be created when a new world is first started.
  * Applied once — if saved shop state already exists, generation is skipped.
  *
+ * <p>
  * Current plan: 1 offer shop within 100 blocks of spawn.
  *
+ * <p>
  * Future plan (when ready): - 1 to 4 offer shops, each with its own spawn area
  * rule - 2 to 6 contract shops, each with its own spawn area rule and tags
  *
+ * <p>
  * To add more shops: add extra OfferShopSpec / ContractShopSpec entries here.
  * Old worlds will NOT receive new shops — their saved state already exists.
  */

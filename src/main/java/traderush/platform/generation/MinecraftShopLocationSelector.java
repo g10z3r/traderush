@@ -1,5 +1,8 @@
 package traderush.platform.generation;
 
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -14,28 +17,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import traderush.game.shop.ShopLocation;
 import traderush.game.shop.generation.ShopLocationSelector;
-import traderush.game.shop.generation.ShopSpec;
 import traderush.game.shop.generation.ShopSpawnArea;
-
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.Set;
+import traderush.game.shop.generation.ShopSpec;
 
 /**
  * Finds a surface position within the spec's spawn area.
  *
+ * <p>
  * Tries {@code maxPlacementAttempts} evenly-spaced angles around the world
  * spawn at the midpoint distance, returning the first candidate not already
  * reserved by another shop.
  *
- * A candidate is accepted only when:
- * - The chunk is fully generated (force-loaded before height query)
- * - The surface height is above the sea level (no deep ravines or underwater)
- * - The surface block is solid and contains no fluid (water, lava, etc.)
+ * <p>
+ * A candidate is accepted only when: - The chunk is fully generated
+ * (force-loaded before height query) - The surface height is above the sea
+ * level (no deep ravines or underwater) - The surface block is solid and
+ * contains no fluid (water, lava, etc.)
  */
-public final class MinecraftShopLocationSelector implements ShopLocationSelector {
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(MinecraftShopLocationSelector.class);
+public final class MinecraftShopLocationSelector
+        implements ShopLocationSelector {
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MinecraftShopLocationSelector.class);
 
     private final MinecraftServer server;
 
@@ -52,12 +54,17 @@ public final class MinecraftShopLocationSelector implements ShopLocationSelector
         ServerLevel level = getLevel(area.dimensionId());
 
         if (level == null) {
-            LOGGER.warn("Dimension '{}' not found for shop '{}'.", area.dimensionId(), spec.generationKey());
+            LOGGER.warn(
+                    "Dimension '{}' not found for shop '{}'.",
+                    area.dimensionId(),
+                    spec.generationKey()
+            );
             return Optional.empty();
         }
 
         BlockPos spawn = level.getLevelData().getRespawnData().pos();
-        int midDistance = (area.minDistanceFromSpawn() + area.maxDistanceFromSpawn()) / 2;
+        int midDistance = (area.minDistanceFromSpawn()
+                + area.maxDistanceFromSpawn()) / 2;
         int attempts = area.maxPlacementAttempts();
 
         LOGGER.debug(
@@ -79,22 +86,34 @@ public final class MinecraftShopLocationSelector implements ShopLocationSelector
             if (y.isEmpty()) {
                 LOGGER.debug(
                         "  Attempt {}: ({}, ?, {}) rejected — no solid surface.",
-                        i + 1, x, z
+                        i + 1,
+                        x,
+                        z
                 );
                 continue;
             }
 
-            ShopLocation candidate = new ShopLocation(area.dimensionId(), x, y.getAsInt(), z);
+            ShopLocation candidate = new ShopLocation(
+                    area.dimensionId(),
+                    x,
+                    y.getAsInt(),
+                    z
+            );
 
             if (reservedLocations.contains(candidate)) {
                 LOGGER.debug(
                         "  Attempt {}: {} rejected — location already reserved.",
-                        i + 1, candidate.toBlockPosString()
+                        i + 1,
+                        candidate.toBlockPosString()
                 );
                 continue;
             }
 
-            LOGGER.debug("  Attempt {}: {} accepted.", i + 1, candidate.toBlockPosString());
+            LOGGER.debug(
+                    "  Attempt {}: {} accepted.",
+                    i + 1,
+                    candidate.toBlockPosString()
+            );
             return Optional.of(candidate);
         }
 
@@ -103,13 +122,14 @@ public final class MinecraftShopLocationSelector implements ShopLocationSelector
 
     /**
      * Force-loads the chunk, then returns the Y of the first solid, non-fluid
-     * surface block at (x, z) that is at or above sea level.
-     * Returns empty if the surface is liquid, underground, or not yet generated.
+     * surface block at (x, z) that is at or above sea level. Returns empty if
+     * the surface is liquid, underground, or not yet generated.
      */
     private OptionalInt findSolidSurfaceY(ServerLevel level, int x, int z) {
         level.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, true);
 
-        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        int y = level
+                .getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
 
         if (y <= level.getMinY() + 1) {
             return OptionalInt.empty();

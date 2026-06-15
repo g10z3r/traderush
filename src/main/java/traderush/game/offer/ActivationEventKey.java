@@ -5,7 +5,9 @@ import java.util.Locale;
 public record ActivationEventKey(String value) {
     public ActivationEventKey {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("activation event key cannot be blank");
+            throw new IllegalArgumentException(
+                    "activation event key cannot be blank"
+            );
         }
 
         value = value.trim().toLowerCase(Locale.ROOT);

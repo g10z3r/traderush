@@ -13,15 +13,19 @@ public final class TeamManagementMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final BlockPos sourcePos;
 
-    public TeamManagementMenu(int containerId, Inventory inventory, BlockPos sourcePos) {
+    public TeamManagementMenu(
+            int containerId,
+            Inventory inventory,
+            BlockPos sourcePos
+    ) {
         this(containerId, inventory, ContainerLevelAccess.NULL, sourcePos);
     }
 
     public TeamManagementMenu(
-        int containerId,
-        Inventory inventory,
-        ContainerLevelAccess access,
-        BlockPos sourcePos
+            int containerId,
+            Inventory inventory,
+            ContainerLevelAccess access,
+            BlockPos sourcePos
     ) {
         super(TradeRushMenus.TEAM_MANAGEMENT, containerId);
         this.access = access == null ? ContainerLevelAccess.NULL : access;
@@ -43,6 +47,10 @@ public final class TeamManagementMenu extends AbstractContainerMenu {
             return true;
         }
 
-        return stillValid(access, player, TradeRushBlocks.TEAM_MANAGEMENT_BLOCK);
+        return stillValid(
+                access,
+                player,
+                TradeRushBlocks.TEAM_MANAGEMENT_BLOCK
+        );
     }
 }

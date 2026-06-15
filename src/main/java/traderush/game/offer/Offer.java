@@ -21,11 +21,19 @@ public abstract class Offer {
     ) {
         this.id = Objects.requireNonNull(id, "offer id cannot be null");
         this.name = Objects.requireNonNull(name, "offer name cannot be null");
-        this.description = Objects.requireNonNull(description, "offer description cannot be null");
-        this.rewardRange = Objects.requireNonNull(rewardRange, "reward range cannot be null");
-        this.units = Objects.requireNonNull(List.copyOf(units), "units cannot be null");
+        this.description = Objects.requireNonNull(
+                description,
+                "offer description cannot be null"
+        );
+        this.rewardRange = Objects
+                .requireNonNull(rewardRange, "reward range cannot be null");
+        this.units = Objects
+                .requireNonNull(List.copyOf(units), "units cannot be null");
         this.activationEvents = Objects
-                .requireNonNull(List.copyOf(activationEvents), "activation events cannot be null");
+                .requireNonNull(
+                        List.copyOf(activationEvents),
+                        "activation events cannot be null"
+                );
     }
 
     public OfferId getId() {

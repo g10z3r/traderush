@@ -14,67 +14,63 @@ public final class TeamManagementSnapshots {
     private TeamManagementSnapshots() {}
 
     public static TeamManagementSnapshot create(
-        TeamService teamService,
-        ServerPlayer viewer,
-        String requestedSelectedTeamId
+            TeamService teamService,
+            ServerPlayer viewer,
+            String requestedSelectedTeamId
     ) {
         PlayerId viewerId = PlayerId.fromUuid(viewer.getUUID());
         Optional<Team> currentTeam = teamService.getTeamForPlayer(viewerId);
-        List<TeamRow> rows = teamService
-            .listTeams()
-            .stream()
-            .map(team -> toTeamRow(viewer, team))
-            .toList();
+        List<TeamRow> rows = teamService.listTeams()
+                .stream()
+                .map(team -> toTeamRow(viewer, team))
+                .toList();
 
-        String currentTeamId = currentTeam
-            .map(team -> team.getId().toString())
-            .orElse("");
+        String currentTeamId = currentTeam.map(team -> team.getId().toString())
+                .orElse("");
         String currentTeamName = currentTeam.map(Team::getName).orElse("");
         String selectedTeamId = selectTeamId(
-            rows,
-            requestedSelectedTeamId,
-            currentTeamId
+                rows,
+                requestedSelectedTeamId,
+                currentTeamId
         );
 
         return new TeamManagementSnapshot(
-            rows,
-            selectedTeamId,
-            currentTeamId,
-            currentTeamName
+                rows,
+                selectedTeamId,
+                currentTeamId,
+                currentTeamName
         );
     }
 
     private static TeamRow toTeamRow(ServerPlayer viewer, Team team) {
-        List<MemberEntry> members = team
-            .getPlayers()
-            .stream()
-            .map(playerId ->
-                new MemberEntry(
-                    playerId.toString(),
-                    resolvePlayerName(viewer, playerId)
+        List<MemberEntry> members = team.getPlayers()
+                .stream()
+                .map(
+                        playerId -> new MemberEntry(
+                                playerId.toString(),
+                                resolvePlayerName(viewer, playerId)
+                        )
                 )
-            )
-            .toList();
+                .toList();
 
         return new TeamRow(
-            team.getId().toString(),
-            team.getName(),
-            team.getScore(),
-            team.getPlayers().size(),
-            members
+                team.getId().toString(),
+                team.getName(),
+                team.getScore(),
+                team.getPlayers().size(),
+                members
         );
     }
 
     private static String resolvePlayerName(
-        ServerPlayer viewer,
-        PlayerId playerId
+            ServerPlayer viewer,
+            PlayerId playerId
     ) {
         if (viewer.level().getServer() != null) {
-            ServerPlayer onlinePlayer = viewer
-                .level()
-                .getServer()
-                .getPlayerList()
-                .getPlayer(playerId.value());
+            ServerPlayer onlinePlayer = viewer.level()
+                    .getServer()
+                    .getPlayerList()
+                    .getPlayer(playerId.value());
 
             if (onlinePlayer != null) {
                 return onlinePlayer.getGameProfile().name();
@@ -85,9 +81,9 @@ public final class TeamManagementSnapshots {
     }
 
     private static String selectTeamId(
-        List<TeamRow> rows,
-        String requestedSelectedTeamId,
-        String currentTeamId
+            List<TeamRow> rows,
+            String requestedSelectedTeamId,
+            String currentTeamId
     ) {
         if (containsTeam(rows, requestedSelectedTeamId)) {
             return requestedSelectedTeamId;

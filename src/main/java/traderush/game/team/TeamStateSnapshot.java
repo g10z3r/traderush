@@ -13,7 +13,12 @@ public record TeamStateSnapshot(int version, List<TeamSnapshot> teams) {
         return new TeamStateSnapshot(CURRENT_VERSION, List.of());
     }
 
-    public record TeamSnapshot(String id, String name, long score, List<String> members) {
+    public record TeamSnapshot(
+            String id,
+            String name,
+            long score,
+            List<String> members
+    ) {
         public TeamSnapshot {
             members = members == null ? List.of() : List.copyOf(members);
         }

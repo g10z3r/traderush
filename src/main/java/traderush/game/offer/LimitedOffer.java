@@ -17,7 +17,9 @@ public final class LimitedOffer extends Offer {
         super(id, name, description, rewardRange, units, activationEvents);
 
         if (maxAcceptedUnits <= 0) {
-            throw new IllegalArgumentException("limited offer max accepted units must be positive");
+            throw new IllegalArgumentException(
+                    "limited offer max accepted units must be positive"
+            );
         }
 
         this.maxAcceptedUnits = maxAcceptedUnits;

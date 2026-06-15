@@ -1,14 +1,11 @@
 package traderush.game.shop;
 
-public record ShopLocation(
-        String dimensionId,
-        int x,
-        int y,
-        int z
-) {
+public record ShopLocation(String dimensionId, int x, int y, int z) {
     public ShopLocation {
         if (dimensionId == null || dimensionId.isBlank()) {
-            throw new IllegalArgumentException("Dimension ID cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "Dimension ID cannot be null or empty"
+            );
         }
 
         dimensionId = dimensionId.trim();

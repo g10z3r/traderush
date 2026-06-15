@@ -22,9 +22,8 @@ public final class InMemoryTeamRepository implements TeamRepository {
         teamsById.put(id, team);
         teamsByName.entrySet().removeIf(entry -> entry.getValue().equals(id));
         teamsByName.put(nameKey, id);
-        teamsByPlayerId
-            .entrySet()
-            .removeIf(entry -> entry.getValue().equals(id));
+        teamsByPlayerId.entrySet()
+                .removeIf(entry -> entry.getValue().equals(id));
 
         for (PlayerId playerId : team.getPlayers()) {
             teamsByPlayerId.put(playerId, id);
@@ -44,16 +43,14 @@ public final class InMemoryTeamRepository implements TeamRepository {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(teamsByName.get(normalizeName(name))).map(
-            teamsById::get
-        );
+        return Optional.ofNullable(teamsByName.get(normalizeName(name)))
+                .map(teamsById::get);
     }
 
     @Override
     public Optional<Team> getByPlayerId(PlayerId playerId) {
-        return Optional.ofNullable(teamsByPlayerId.get(playerId)).map(
-            teamsById::get
-        );
+        return Optional.ofNullable(teamsByPlayerId.get(playerId))
+                .map(teamsById::get);
     }
 
     @Override
@@ -77,9 +74,8 @@ public final class InMemoryTeamRepository implements TeamRepository {
         }
 
         teamsByName.remove(normalizeName(team.getName()));
-        teamsByPlayerId
-            .entrySet()
-            .removeIf(entry -> entry.getValue().equals(id));
+        teamsByPlayerId.entrySet()
+                .removeIf(entry -> entry.getValue().equals(id));
     }
 
     private static String normalizeName(String name) {

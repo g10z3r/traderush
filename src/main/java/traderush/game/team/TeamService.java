@@ -55,8 +55,8 @@ public final class TeamService {
     }
 
     public TeamOperationResult<Team> joinTeam(
-        PlayerId playerId,
-        TeamId teamId
+            PlayerId playerId,
+            TeamId teamId
     ) {
         Optional<Team> targetTeam = teamRepository.getById(teamId);
 
@@ -67,9 +67,8 @@ public final class TeamService {
         Team team = targetTeam.get();
         Optional<Team> currentTeam = getTeamForPlayer(playerId);
 
-        if (
-            currentTeam.isPresent() && currentTeam.get().getId().equals(teamId)
-        ) {
+        if (currentTeam.isPresent()
+                && currentTeam.get().getId().equals(teamId)) {
             return TeamOperationResult.error(TeamError.PLAYER_ALREADY_IN_TEAM);
         }
 
@@ -119,15 +118,17 @@ public final class TeamService {
     }
 
     public List<Team> listTeams() {
-        return teamRepository
-            .getAll()
-            .stream()
-            .sorted(
-                Comparator.comparingLong(Team::getScore)
-                    .reversed()
-                    .thenComparing(Team::getName, String.CASE_INSENSITIVE_ORDER)
-            )
-            .toList();
+        return teamRepository.getAll()
+                .stream()
+                .sorted(
+                        Comparator.comparingLong(Team::getScore)
+                                .reversed()
+                                .thenComparing(
+                                        Team::getName,
+                                        String.CASE_INSENSITIVE_ORDER
+                                )
+                )
+                .toList();
     }
 
     public Optional<Team> getTeamForPlayer(PlayerId playerId) {
@@ -139,8 +140,8 @@ public final class TeamService {
     }
 
     public TeamOperationResult<Team> renameTeam(
-        String currentName,
-        String newName
+            String currentName,
+            String newName
     ) {
         String trimmedCurrentName = trimName(currentName);
 
@@ -233,10 +234,8 @@ public final class TeamService {
             return Optional.of(TeamError.TEAM_INVALID_NAME);
         }
 
-        if (
-            trimmedName.length() < MIN_TEAM_NAME_LENGTH ||
-            trimmedName.length() > MAX_TEAM_NAME_LENGTH
-        ) {
+        if (trimmedName.length() < MIN_TEAM_NAME_LENGTH
+                || trimmedName.length() > MAX_TEAM_NAME_LENGTH) {
             return Optional.of(TeamError.TEAM_INVALID_NAME);
         }
 
@@ -248,9 +247,8 @@ public final class TeamService {
     }
 
     private static boolean sameName(String left, String right) {
-        return left
-            .trim()
-            .toLowerCase(Locale.ROOT)
-            .equals(right.trim().toLowerCase(Locale.ROOT));
+        return left.trim()
+                .toLowerCase(Locale.ROOT)
+                .equals(right.trim().toLowerCase(Locale.ROOT));
     }
 }

@@ -35,7 +35,9 @@ public final class ShopOperationResult<T> {
 
     public T value() {
         if (isFailure()) {
-            throw new IllegalStateException("Cannot get value from failed shop operation.");
+            throw new IllegalStateException(
+                    "Cannot get value from failed shop operation."
+            );
         }
 
         return value;
@@ -43,7 +45,9 @@ public final class ShopOperationResult<T> {
 
     public ShopError error() {
         if (isSuccess()) {
-            throw new IllegalStateException("Cannot get error from successful shop operation.");
+            throw new IllegalStateException(
+                    "Cannot get error from successful shop operation."
+            );
         }
 
         return error;

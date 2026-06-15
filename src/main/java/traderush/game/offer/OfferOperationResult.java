@@ -35,7 +35,9 @@ public final class OfferOperationResult<T> {
 
     public T value() {
         if (isFailure()) {
-            throw new IllegalStateException("Cannot get value from failed offer operation.");
+            throw new IllegalStateException(
+                    "Cannot get value from failed offer operation."
+            );
         }
 
         return value;
@@ -43,7 +45,9 @@ public final class OfferOperationResult<T> {
 
     public OfferError error() {
         if (isSuccess()) {
-            throw new IllegalStateException("Cannot get error from successful offer operation.");
+            throw new IllegalStateException(
+                    "Cannot get error from successful offer operation."
+            );
         }
 
         return error;

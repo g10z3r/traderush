@@ -11,8 +11,8 @@ public class TradeRushClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         MenuScreens.register(
-            TradeRushMenus.TEAM_MANAGEMENT,
-            TeamManagementScreen::new
+                TradeRushMenus.TEAM_MANAGEMENT,
+                TeamManagementScreen::new
         );
         TeamManagementClientNetworking.register();
     }
