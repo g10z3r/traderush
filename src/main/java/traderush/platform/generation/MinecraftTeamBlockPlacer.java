@@ -1,10 +1,9 @@
 package traderush.platform.generation;
 
+import java.util.OptionalInt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
-import net.minecraft.world.level.levelgen.Heightmap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import traderush.game.world.ManagementBlockLocation;
@@ -33,10 +32,25 @@ public final class MinecraftTeamBlockPlacer {
         int x = spawn.getX();
         int z = spawn.getZ() + DISTANCE_FROM_SPAWN;
 
-        overworld.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, true);
+        OptionalInt groundY = SurfaceUtils.findGroundY(overworld, x, z);
 
-        int y = overworld
-                .getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        if (groundY.isEmpty()) {
+            LOGGER.warn(
+                    "Could not find valid ground surface at ({}, ?, {}); "
+                            + "falling back to raw heightmap.",
+                    x,
+                    z
+            );
+        }
+
+        int y = groundY.isPresent()
+                ? groundY.getAsInt()
+                : overworld.getHeight(
+                        net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                        x,
+                        z
+                );
+
         BlockPos pos = new BlockPos(x, y, z);
 
         ShopProtectionBypass.run(

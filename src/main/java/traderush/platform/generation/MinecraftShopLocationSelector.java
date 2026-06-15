@@ -10,9 +10,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
-import net.minecraft.world.level.levelgen.Heightmap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import traderush.game.shop.ShopLocation;
@@ -120,32 +117,8 @@ public final class MinecraftShopLocationSelector
         return Optional.empty();
     }
 
-    /**
-     * Force-loads the chunk, then returns the Y of the first solid, non-fluid
-     * surface block at (x, z) that is at or above sea level. Returns empty if
-     * the surface is liquid, underground, or not yet generated.
-     */
     private OptionalInt findSolidSurfaceY(ServerLevel level, int x, int z) {
-        level.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, true);
-
-        int y = level
-                .getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-
-        if (y <= level.getMinY() + 1) {
-            return OptionalInt.empty();
-        }
-
-        if (y <= level.getSeaLevel()) {
-            return OptionalInt.empty();
-        }
-
-        BlockState surface = level.getBlockState(new BlockPos(x, y - 1, z));
-
-        if (!surface.getFluidState().isEmpty()) {
-            return OptionalInt.empty();
-        }
-
-        return OptionalInt.of(y);
+        return SurfaceUtils.findGroundY(level, x, z);
     }
 
     private ServerLevel getLevel(String dimensionId) {
