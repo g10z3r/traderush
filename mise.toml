@@ -5,6 +5,15 @@ lefthook = "2"
 
 [tasks]
 prepare = "lefthook install"
-client = "./gradlew runClient"
-check = "./gradlew check"
-fmt = "./gradlew spotlessApply"
+
+[tasks.client]
+run = "./gradlew runClient"
+run_windows = "gradlew.bat runClient"
+
+[tasks.check]
+run = "./gradlew check"
+run_windows = "gradlew.bat check"
+
+[tasks.fmt]
+run = "./gradlew spotlessApply"
+run_windows = "gradlew.bat spotlessApply"
