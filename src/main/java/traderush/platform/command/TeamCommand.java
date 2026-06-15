@@ -31,195 +31,226 @@ public final class TeamCommand {
     private TeamCommand() {}
 
     public static void register(Supplier<TeamService> teamServiceSupplier) {
-        CommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess, environment) -> {
-                dispatcher.register(
-                    root(TradeRush.COMMAND_ROOT, teamServiceSupplier)
-                );
-                dispatcher.register(root("tr", teamServiceSupplier));
-            }
-        );
+        CommandRegistrationCallback.EVENT
+                .register((dispatcher, registryAccess, environment) -> {
+                    dispatcher.register(
+                            root(TradeRush.COMMAND_ROOT, teamServiceSupplier)
+                    );
+                    dispatcher.register(root("tr", teamServiceSupplier));
+                });
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> root(
-        String literal,
-        Supplier<TeamService> teamServiceSupplier
+            String literal,
+            Supplier<TeamService> teamServiceSupplier
     ) {
-        return Commands.literal(literal).then(
-            Commands.literal("team")
+        return Commands.literal(literal)
                 .then(
-                    Commands.literal("create").then(
-                        Commands.argument(
-                            "name",
-                            StringArgumentType.greedyString()
-                        ).executes(context ->
-                            createTeam(
-                                context.getSource(),
-                                teamServiceSupplier.get(),
-                                StringArgumentType.getString(context, "name")
-                            )
-                        )
-                    )
-                )
-                .then(
-                    Commands.literal("join").then(
-                        teamNameArgument("name", teamServiceSupplier).executes(
-                            context ->
-                                joinTeam(
-                                    context.getSource(),
-                                    teamServiceSupplier.get(),
-                                    StringArgumentType.getString(
-                                        context,
-                                        "name"
-                                    )
+                        Commands.literal("team")
+                                .then(
+                                        Commands.literal("create")
+                                                .then(
+                                                        Commands.argument(
+                                                                "name",
+                                                                StringArgumentType
+                                                                        .greedyString()
+                                                        )
+                                                                .executes(
+                                                                        context -> createTeam(
+                                                                                context.getSource(),
+                                                                                teamServiceSupplier
+                                                                                        .get(),
+                                                                                StringArgumentType
+                                                                                        .getString(
+                                                                                                context,
+                                                                                                "name"
+                                                                                        )
+                                                                        )
+                                                                )
+                                                )
                                 )
-                        )
-                    )
-                )
-                .then(
-                    Commands.literal("leave").executes(context ->
-                        leaveTeam(
-                            context.getSource(),
-                            teamServiceSupplier.get()
-                        )
-                    )
-                )
-                .then(
-                    Commands.literal("rename").then(
-                        currentTeamNameArgument(
-                            "currentName",
-                            teamServiceSupplier
-                        ).then(
-                            Commands.argument(
-                                "newName",
-                                StringArgumentType.greedyString()
-                            ).executes(context ->
-                                renameTeam(
-                                    context.getSource(),
-                                    teamServiceSupplier.get(),
-                                    StringArgumentType.getString(
-                                        context,
-                                        "currentName"
-                                    ),
-                                    StringArgumentType.getString(
-                                        context,
-                                        "newName"
-                                    )
+                                .then(
+                                        Commands.literal("join")
+                                                .then(
+                                                        teamNameArgument(
+                                                                "name",
+                                                                teamServiceSupplier
+                                                        )
+                                                                .executes(
+                                                                        context -> joinTeam(
+                                                                                context.getSource(),
+                                                                                teamServiceSupplier
+                                                                                        .get(),
+                                                                                StringArgumentType
+                                                                                        .getString(
+                                                                                                context,
+                                                                                                "name"
+                                                                                        )
+                                                                        )
+                                                                )
+                                                )
                                 )
-                            )
-                        )
-                    )
-                )
-                .then(
-                    Commands.literal("delete")
-                        .then(
-                            Commands.literal("force").then(
-                                teamNameArgument(
-                                    "name",
-                                    teamServiceSupplier
-                                ).executes(context ->
-                                    deleteTeam(
-                                        context.getSource(),
-                                        teamServiceSupplier.get(),
-                                        StringArgumentType.getString(
-                                            context,
-                                            "name"
-                                        ),
-                                        true
-                                    )
+                                .then(
+                                        Commands.literal("leave")
+                                                .executes(
+                                                        context -> leaveTeam(
+                                                                context.getSource(),
+                                                                teamServiceSupplier
+                                                                        .get()
+                                                        )
+                                                )
                                 )
-                            )
-                        )
-                        .then(
-                            teamNameArgument(
-                                "name",
-                                teamServiceSupplier
-                            ).executes(context ->
-                                deleteTeam(
-                                    context.getSource(),
-                                    teamServiceSupplier.get(),
-                                    StringArgumentType.getString(
-                                        context,
-                                        "name"
-                                    ),
-                                    false
+                                .then(
+                                        Commands.literal("rename")
+                                                .then(
+                                                        currentTeamNameArgument(
+                                                                "currentName",
+                                                                teamServiceSupplier
+                                                        ).then(
+                                                                Commands
+                                                                        .argument(
+                                                                                "newName",
+                                                                                StringArgumentType
+                                                                                        .greedyString()
+                                                                        )
+                                                                        .executes(
+                                                                                context -> renameTeam(
+                                                                                        context.getSource(),
+                                                                                        teamServiceSupplier
+                                                                                                .get(),
+                                                                                        StringArgumentType
+                                                                                                .getString(
+                                                                                                        context,
+                                                                                                        "currentName"
+                                                                                                ),
+                                                                                        StringArgumentType
+                                                                                                .getString(
+                                                                                                        context,
+                                                                                                        "newName"
+                                                                                                )
+                                                                                )
+                                                                        )
+                                                        )
+                                                )
                                 )
-                            )
-                        )
-                )
-                .then(
-                    Commands.literal("list").executes(context ->
-                        listTeams(
-                            context.getSource(),
-                            teamServiceSupplier.get()
-                        )
-                    )
-                )
-        );
+                                .then(
+                                        Commands.literal("delete")
+                                                .then(
+                                                        Commands.literal(
+                                                                "force"
+                                                        )
+                                                                .then(
+                                                                        teamNameArgument(
+                                                                                "name",
+                                                                                teamServiceSupplier
+                                                                        ).executes(
+                                                                                context -> deleteTeam(
+                                                                                        context.getSource(),
+                                                                                        teamServiceSupplier
+                                                                                                .get(),
+                                                                                        StringArgumentType
+                                                                                                .getString(
+                                                                                                        context,
+                                                                                                        "name"
+                                                                                                ),
+                                                                                        true
+                                                                                )
+                                                                        )
+                                                                )
+                                                )
+                                                .then(
+                                                        teamNameArgument(
+                                                                "name",
+                                                                teamServiceSupplier
+                                                        )
+                                                                .executes(
+                                                                        context -> deleteTeam(
+                                                                                context.getSource(),
+                                                                                teamServiceSupplier
+                                                                                        .get(),
+                                                                                StringArgumentType
+                                                                                        .getString(
+                                                                                                context,
+                                                                                                "name"
+                                                                                        ),
+                                                                                false
+                                                                        )
+                                                                )
+                                                )
+                                )
+                                .then(
+                                        Commands.literal("list")
+                                                .executes(
+                                                        context -> listTeams(
+                                                                context.getSource(),
+                                                                teamServiceSupplier
+                                                                        .get()
+                                                        )
+                                                )
+                                )
+                );
     }
 
-    private static RequiredArgumentBuilder<
-        CommandSourceStack,
-        String
-    > teamNameArgument(String name, Supplier<TeamService> teamServiceSupplier) {
-        return Commands.argument(
-            name,
-            StringArgumentType.greedyString()
-        ).suggests(teamNameSuggestions(teamServiceSupplier));
+    private static RequiredArgumentBuilder<CommandSourceStack, String> teamNameArgument(
+            String name,
+            Supplier<TeamService> teamServiceSupplier
+    ) {
+        return Commands.argument(name, StringArgumentType.greedyString())
+                .suggests(teamNameSuggestions(teamServiceSupplier));
     }
 
-    private static RequiredArgumentBuilder<
-        CommandSourceStack,
-        String
-    > currentTeamNameArgument(
-        String name,
-        Supplier<TeamService> teamServiceSupplier
+    private static RequiredArgumentBuilder<CommandSourceStack, String> currentTeamNameArgument(
+            String name,
+            Supplier<TeamService> teamServiceSupplier
     ) {
-        return Commands.argument(name, StringArgumentType.string()).suggests(
-            quotedTeamNameSuggestions(teamServiceSupplier)
-        );
+        return Commands.argument(name, StringArgumentType.string())
+                .suggests(quotedTeamNameSuggestions(teamServiceSupplier));
     }
 
     private static SuggestionProvider<CommandSourceStack> teamNameSuggestions(
-        Supplier<TeamService> teamServiceSupplier
+            Supplier<TeamService> teamServiceSupplier
     ) {
-        return (context, builder) ->
-            suggestTeamNames(teamServiceSupplier, builder, false);
+        return (context, builder) -> suggestTeamNames(
+                teamServiceSupplier,
+                builder,
+                false
+        );
     }
 
-    private static SuggestionProvider<
-        CommandSourceStack
-    > quotedTeamNameSuggestions(Supplier<TeamService> teamServiceSupplier) {
-        return (context, builder) ->
-            suggestTeamNames(teamServiceSupplier, builder, true);
+    private static SuggestionProvider<CommandSourceStack> quotedTeamNameSuggestions(
+            Supplier<TeamService> teamServiceSupplier
+    ) {
+        return (context, builder) -> suggestTeamNames(
+                teamServiceSupplier,
+                builder,
+                true
+        );
     }
 
     private static CompletableFuture<Suggestions> suggestTeamNames(
-        Supplier<TeamService> teamServiceSupplier,
-        SuggestionsBuilder builder,
-        boolean quoteWhenNeeded
+            Supplier<TeamService> teamServiceSupplier,
+            SuggestionsBuilder builder,
+            boolean quoteWhenNeeded
     ) {
         try {
             TeamService teamService = teamServiceSupplier.get();
             String remaining = builder.getRemaining();
-            String normalizedRemaining = normalizeSuggestionPrefix(
-                remaining
-            ).toLowerCase(Locale.ROOT);
+            String normalizedRemaining = normalizeSuggestionPrefix(remaining)
+                    .toLowerCase(Locale.ROOT);
 
             for (Team team : teamService.listTeams()) {
                 String teamName = team.getName();
 
-                if (
-                    teamName
-                        .toLowerCase(Locale.ROOT)
-                        .startsWith(normalizedRemaining)
-                ) {
+                if (teamName.toLowerCase(Locale.ROOT)
+                        .startsWith(normalizedRemaining)) {
                     builder.suggest(
-                        formatTeamNameSuggestion(
-                            teamName,
-                            quoteWhenNeeded &&
-                                shouldQuoteSuggestion(remaining, teamName)
-                        )
+                            formatTeamNameSuggestion(
+                                    teamName,
+                                    quoteWhenNeeded && shouldQuoteSuggestion(
+                                            remaining,
+                                            teamName
+                                    )
+                            )
                     );
                 }
             }
@@ -231,42 +262,37 @@ public final class TeamCommand {
     }
 
     private static String normalizeSuggestionPrefix(String remaining) {
-        String prefix = remaining.startsWith("\"")
-            ? remaining.substring(1)
-            : remaining;
+        String prefix = remaining.startsWith("\"") ? remaining.substring(1)
+                : remaining;
 
         return prefix.replace("\\\"", "\"").replace("\\\\", "\\");
     }
 
     private static boolean shouldQuoteSuggestion(
-        String remaining,
-        String teamName
+            String remaining,
+            String teamName
     ) {
-        return (
-            remaining.startsWith("\"") ||
-            teamName.chars().anyMatch(Character::isWhitespace) ||
-            teamName.contains("\"") ||
-            teamName.contains("\\")
-        );
+        return (remaining.startsWith("\"")
+                || teamName.chars().anyMatch(Character::isWhitespace)
+                || teamName.contains("\"") || teamName.contains("\\"));
     }
 
     private static String formatTeamNameSuggestion(
-        String teamName,
-        boolean quote
+            String teamName,
+            boolean quote
     ) {
         if (!quote) {
             return teamName;
         }
 
-        return (
-            "\"" + teamName.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
-        );
+        return ("\"" + teamName.replace("\\", "\\\\").replace("\"", "\\\"")
+                + "\"");
     }
 
     private static int createTeam(
-        CommandSourceStack source,
-        TeamService teamService,
-        String name
+            CommandSourceStack source,
+            TeamService teamService,
+            String name
     ) {
         TeamOperationResult<Team> result = teamService.createTeam(name);
         sendTeamResult(source, result, TeamMessages::created);
@@ -275,10 +301,11 @@ public final class TeamCommand {
     }
 
     private static int joinTeam(
-        CommandSourceStack source,
-        TeamService teamService,
-        String name
-    ) throws CommandSyntaxException {
+            CommandSourceStack source,
+            TeamService teamService,
+            String name
+    )
+            throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         PlayerId playerId = PlayerId.fromUuid(player.getUUID());
 
@@ -289,9 +316,10 @@ public final class TeamCommand {
     }
 
     private static int leaveTeam(
-        CommandSourceStack source,
-        TeamService teamService
-    ) throws CommandSyntaxException {
+            CommandSourceStack source,
+            TeamService teamService
+    )
+            throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         PlayerId playerId = PlayerId.fromUuid(player.getUUID());
 
@@ -302,45 +330,43 @@ public final class TeamCommand {
     }
 
     private static int renameTeam(
-        CommandSourceStack source,
-        TeamService teamService,
-        String currentName,
-        String newName
+            CommandSourceStack source,
+            TeamService teamService,
+            String currentName,
+            String newName
     ) {
-        TeamOperationResult<Team> result = teamService.renameTeam(
-            currentName,
-            newName
-        );
+        TeamOperationResult<Team> result = teamService
+                .renameTeam(currentName, newName);
         sendTeamResult(source, result, TeamMessages::renamed);
 
         return result.isSuccess() ? Command.SINGLE_SUCCESS : 0;
     }
 
     private static int deleteTeam(
-        CommandSourceStack source,
-        TeamService teamService,
-        String name,
-        boolean force
+            CommandSourceStack source,
+            TeamService teamService,
+            String name,
+            boolean force
     ) {
         TeamOperationResult<Team> result = teamService.deleteTeam(name, force);
         Function<Team, Component> successMessage = force
-            ? TeamMessages::forceDeleted
-            : TeamMessages::deleted;
+                ? TeamMessages::forceDeleted
+                : TeamMessages::deleted;
         sendTeamResult(source, result, successMessage);
 
         return result.isSuccess() ? Command.SINGLE_SUCCESS : 0;
     }
 
     private static int listTeams(
-        CommandSourceStack source,
-        TeamService teamService
+            CommandSourceStack source,
+            TeamService teamService
     ) {
         List<Team> teams = teamService.listTeams();
 
         if (teams.isEmpty()) {
             source.sendSuccess(
-                () -> Component.literal("No teams created yet."),
-                false
+                    () -> Component.literal("No teams created yet."),
+                    false
             );
             return Command.SINGLE_SUCCESS;
         }
@@ -356,41 +382,29 @@ public final class TeamCommand {
     }
 
     private static String formatTeamSummary(
-        CommandSourceStack source,
-        Team team
+            CommandSourceStack source,
+            Team team
     ) {
         var players = team.getPlayers();
-        String members = players.isEmpty()
-            ? "none"
-            : players
-                  .stream()
-                  .map(playerId -> resolvePlayerName(source, playerId))
-                  .collect(Collectors.joining(", "));
+        String members = players.isEmpty() ? "none"
+                : players.stream()
+                        .map(playerId -> resolvePlayerName(source, playerId))
+                        .collect(Collectors.joining(", "));
 
-        return (
-            "- " +
-            team.getName() +
-            " | id: " +
-            team.getId() +
-            " | members: " +
-            players.size() +
-            " | score: " +
-            team.getScore() +
-            System.lineSeparator() +
-            "  " +
-            members
-        );
+        return ("- " + team.getName() + " | id: " + team.getId()
+                + " | members: " + players.size()
+                + " | score: " + team.getScore() + System.lineSeparator() + "  "
+                + members);
     }
 
     private static String resolvePlayerName(
-        CommandSourceStack source,
-        PlayerId playerId
+            CommandSourceStack source,
+            PlayerId playerId
     ) {
         if (source.getServer() != null) {
-            ServerPlayer onlinePlayer = source
-                .getServer()
-                .getPlayerList()
-                .getPlayer(playerId.value());
+            ServerPlayer onlinePlayer = source.getServer()
+                    .getPlayerList()
+                    .getPlayer(playerId.value());
 
             if (onlinePlayer != null) {
                 return onlinePlayer.getGameProfile().name();
@@ -401,9 +415,9 @@ public final class TeamCommand {
     }
 
     private static void sendTeamResult(
-        CommandSourceStack source,
-        TeamOperationResult<Team> result,
-        Function<Team, Component> successMessage
+            CommandSourceStack source,
+            TeamOperationResult<Team> result,
+            Function<Team, Component> successMessage
     ) {
         if (result.isSuccess()) {
             Team team = result.value();

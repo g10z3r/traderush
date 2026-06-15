@@ -25,9 +25,8 @@ import traderush.platform.ui.team.TeamManagementSnapshot.TeamRow;
 import traderush.platform.ui.team.TeamManagementStatePayload;
 
 public final class TeamManagementScreen
-    extends Screen
-    implements MenuAccess<TeamManagementMenu>
-{
+        extends Screen
+        implements MenuAccess<TeamManagementMenu> {
 
     private static final int BACKGROUND_COLOR = 0xC0101010;
     private static final int PANEL_COLOR = 0x80202020;
@@ -63,17 +62,17 @@ public final class TeamManagementScreen
     private Button renameButton;
 
     public TeamManagementScreen(
-        TeamManagementMenu menu,
-        Inventory inventory,
-        Component title
+            TeamManagementMenu menu,
+            Inventory inventory,
+            Component title
     ) {
         super(title);
         this.menu = menu;
     }
 
     public static void receiveState(
-        Minecraft client,
-        TeamManagementStatePayload payload
+            Minecraft client,
+            TeamManagementStatePayload payload
     ) {
         if (client.screen instanceof TeamManagementScreen screen) {
             screen.applyState(payload);
@@ -109,10 +108,10 @@ public final class TeamManagementScreen
 
     @Override
     public void extractRenderState(
-        GuiGraphicsExtractor graphics,
-        int mouseX,
-        int mouseY,
-        float partialTick
+            GuiGraphicsExtractor graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
     ) {
         TeamManagementScreenLayout layout = layout();
         drawPanels(graphics, layout);
@@ -124,10 +123,10 @@ public final class TeamManagementScreen
 
     @Override
     public boolean mouseScrolled(
-        double mouseX,
-        double mouseY,
-        double horizontalAmount,
-        double verticalAmount
+            double mouseX,
+            double mouseY,
+            double horizontalAmount,
+            double verticalAmount
     ) {
         if (verticalAmount == 0.0D) {
             return false;
@@ -136,21 +135,19 @@ public final class TeamManagementScreen
         TeamManagementScreenLayout layout = layout();
         int direction = verticalAmount > 0.0D ? -1 : 1;
 
-        if (
-            contains(
+        if (contains(
                 layout.teamListX(),
                 layout.teamListY(),
                 layout.teamListWidth(),
                 layout.teamListHeight(),
                 mouseX,
                 mouseY
-            )
-        ) {
+        )) {
             int previousOffset = teamScrollOffset;
             teamScrollOffset = clamp(
-                teamScrollOffset + direction,
-                0,
-                maxTeamScrollOffset(layout)
+                    teamScrollOffset + direction,
+                    0,
+                    maxTeamScrollOffset(layout)
             );
 
             if (teamScrollOffset != previousOffset) {
@@ -160,39 +157,35 @@ public final class TeamManagementScreen
             return true;
         }
 
-        if (
-            contains(
+        if (contains(
                 layout.membersX(),
                 layout.membersY(),
                 layout.membersWidth(),
                 layout.membersHeight(),
                 mouseX,
                 mouseY
-            )
-        ) {
+        )) {
             memberScrollOffset = clamp(
-                memberScrollOffset + direction,
-                0,
-                maxMemberScrollOffset(layout)
+                    memberScrollOffset + direction,
+                    0,
+                    maxMemberScrollOffset(layout)
             );
             return true;
         }
 
-        if (
-            contains(
+        if (contains(
                 layout.actionsContentX(),
                 layout.actionViewportY(),
                 layout.actionsContentWidth(),
                 layout.actionViewportHeight(),
                 mouseX,
                 mouseY
-            )
-        ) {
+        )) {
             int previousOffset = actionScrollOffset;
             actionScrollOffset = clamp(
-                actionScrollOffset + direction * TEXT_LINE_HEIGHT,
-                0,
-                maxActionScrollOffset(layout)
+                    actionScrollOffset + direction * TEXT_LINE_HEIGHT,
+                    0,
+                    maxActionScrollOffset(layout)
             );
 
             if (actionScrollOffset != previousOffset) {
@@ -207,10 +200,10 @@ public final class TeamManagementScreen
 
     @Override
     protected void rebuildWidgets() {
-        String createValue =
-            createNameInput == null ? "" : createNameInput.getValue();
-        String renameValue =
-            renameNameInput == null ? "" : renameNameInput.getValue();
+        String createValue = createNameInput == null ? ""
+                : createNameInput.getValue();
+        String renameValue = renameNameInput == null ? ""
+                : renameNameInput.getValue();
         TeamManagementScreenLayout layout = layout();
 
         clearWidgets();
@@ -218,170 +211,179 @@ public final class TeamManagementScreen
 
         int visibleTeamRows = visibleTeamRows(layout);
         actionScrollOffset = clamp(
-            actionScrollOffset,
-            0,
-            maxActionScrollOffset(layout)
+                actionScrollOffset,
+                0,
+                maxActionScrollOffset(layout)
         );
 
         for (int index = 0; index < visibleTeamRows; index++) {
             int visibleIndex = index;
-            Button button = Button.builder(Component.literal("-"), clicked ->
-                selectVisibleRow(visibleIndex)
-            )
-                .bounds(
-                    layout.teamListX(),
-                    layout.teamListY() + index * TEAM_ROW_STRIDE,
-                    layout.teamListWidth(),
-                    BUTTON_HEIGHT
-                )
-                .build();
+            Button button = Button
+                    .builder(
+                            Component.literal("-"),
+                            clicked -> selectVisibleRow(visibleIndex)
+                    )
+                    .bounds(
+                            layout.teamListX(),
+                            layout.teamListY() + index * TEAM_ROW_STRIDE,
+                            layout.teamListWidth(),
+                            BUTTON_HEIGHT
+                    )
+                    .build();
             teamButtons.add(addRenderableWidget(button));
         }
 
         addRenderableWidget(
-            Button.builder(
-                Component.translatable(
-                    "screen.trade-rush.team_management.refresh"
-                ),
-                button -> sendRefresh()
-            )
-                .bounds(
-                    layout.footerX(),
-                    layout.footerY(),
-                    layout.refreshButtonWidth(),
-                    BUTTON_HEIGHT
+                Button.builder(
+                        Component.translatable(
+                                "screen.trade-rush.team_management.refresh"
+                        ),
+                        button -> sendRefresh()
                 )
-                .build()
+                        .bounds(
+                                layout.footerX(),
+                                layout.footerY(),
+                                layout.refreshButtonWidth(),
+                                BUTTON_HEIGHT
+                        )
+                        .build()
         );
 
         joinButton = addRenderableWidget(
-            Button.builder(
-                Component.translatable(
-                    "screen.trade-rush.team_management.join"
-                ),
-                button -> sendAction(Action.JOIN, selectedTeamId, "")
-            )
-                .bounds(
-                    layout.actionsContentX(),
-                    layout.joinLeaveButtonY() - actionScrollOffset,
-                    layout.actionsContentWidth(),
-                    BUTTON_HEIGHT
+                Button.builder(
+                        Component.translatable(
+                                "screen.trade-rush.team_management.join"
+                        ),
+                        button -> sendAction(Action.JOIN, selectedTeamId, "")
                 )
-                .build()
+                        .bounds(
+                                layout.actionsContentX(),
+                                layout.joinLeaveButtonY() - actionScrollOffset,
+                                layout.actionsContentWidth(),
+                                BUTTON_HEIGHT
+                        )
+                        .build()
         );
 
         leaveButton = addRenderableWidget(
-            Button.builder(
-                Component.translatable(
-                    "screen.trade-rush.team_management.leave"
-                ),
-                button -> sendAction(Action.LEAVE, selectedTeamId, "")
-            )
-                .bounds(
-                    layout.actionsContentX(),
-                    layout.joinLeaveButtonY() - actionScrollOffset,
-                    layout.actionsContentWidth(),
-                    BUTTON_HEIGHT
+                Button.builder(
+                        Component.translatable(
+                                "screen.trade-rush.team_management.leave"
+                        ),
+                        button -> sendAction(Action.LEAVE, selectedTeamId, "")
                 )
-                .build()
+                        .bounds(
+                                layout.actionsContentX(),
+                                layout.joinLeaveButtonY() - actionScrollOffset,
+                                layout.actionsContentWidth(),
+                                BUTTON_HEIGHT
+                        )
+                        .build()
         );
 
         renameNameInput = new EditBox(
-            this.font,
-            layout.actionsContentX(),
-            layout.renameInputY() - actionScrollOffset,
-            layout.actionsContentWidth(),
-            BUTTON_HEIGHT,
-            Component.translatable(
-                "screen.trade-rush.team_management.rename_input"
-            )
+                this.font,
+                layout.actionsContentX(),
+                layout.renameInputY() - actionScrollOffset,
+                layout.actionsContentWidth(),
+                BUTTON_HEIGHT,
+                Component.translatable(
+                        "screen.trade-rush.team_management.rename_input"
+                )
         );
         renameNameInput.setMaxLength(TeamService.MAX_TEAM_NAME_LENGTH);
         renameNameInput.setHint(
-            Component.translatable(
-                "screen.trade-rush.team_management.rename_hint"
-            )
+                Component.translatable(
+                        "screen.trade-rush.team_management.rename_hint"
+                )
         );
         renameNameInput.setValue(renameValue);
         renameNameInput.setResponder(value -> updateActionButtons());
         addRenderableWidget(renameNameInput);
 
         int editButtonWidth = Math.max(
-            30,
-            (layout.actionsContentWidth() - 4) / 2
+                30,
+                (layout.actionsContentWidth() - 4) / 2
         );
         renameButton = addRenderableWidget(
-            Button.builder(
-                Component.translatable(
-                    "screen.trade-rush.team_management.rename"
-                ),
-                button ->
-                    sendAction(
-                        Action.RENAME,
-                        selectedTeamId,
-                        renameNameInput.getValue()
-                    )
-            )
-                .bounds(
-                    layout.actionsContentX(),
-                    layout.renameButtonsY() - actionScrollOffset,
-                    editButtonWidth,
-                    BUTTON_HEIGHT
+                Button.builder(
+                        Component.translatable(
+                                "screen.trade-rush.team_management.rename"
+                        ),
+                        button -> sendAction(
+                                Action.RENAME,
+                                selectedTeamId,
+                                renameNameInput.getValue()
+                        )
                 )
-                .build()
+                        .bounds(
+                                layout.actionsContentX(),
+                                layout.renameButtonsY() - actionScrollOffset,
+                                editButtonWidth,
+                                BUTTON_HEIGHT
+                        )
+                        .build()
         );
 
         deleteButton = addRenderableWidget(
-            Button.builder(
-                Component.translatable(
-                    "screen.trade-rush.team_management.delete"
-                ),
-                button -> sendAction(Action.DELETE_EMPTY, selectedTeamId, "")
-            )
-                .bounds(
-                    layout.actionsContentX() + editButtonWidth + 4,
-                    layout.renameButtonsY() - actionScrollOffset,
-                    layout.actionsContentWidth() - editButtonWidth - 4,
-                    BUTTON_HEIGHT
+                Button.builder(
+                        Component.translatable(
+                                "screen.trade-rush.team_management.delete"
+                        ),
+                        button -> sendAction(
+                                Action.DELETE_EMPTY,
+                                selectedTeamId,
+                                ""
+                        )
                 )
-                .build()
+                        .bounds(
+                                layout.actionsContentX() + editButtonWidth + 4,
+                                layout.renameButtonsY() - actionScrollOffset,
+                                layout.actionsContentWidth() - editButtonWidth
+                                        - 4,
+                                BUTTON_HEIGHT
+                        )
+                        .build()
         );
 
         createNameInput = new EditBox(
-            this.font,
-            layout.actionsContentX(),
-            layout.createInputY() - actionScrollOffset,
-            layout.actionsContentWidth(),
-            BUTTON_HEIGHT,
-            Component.translatable(
-                "screen.trade-rush.team_management.name_input"
-            )
+                this.font,
+                layout.actionsContentX(),
+                layout.createInputY() - actionScrollOffset,
+                layout.actionsContentWidth(),
+                BUTTON_HEIGHT,
+                Component.translatable(
+                        "screen.trade-rush.team_management.name_input"
+                )
         );
         createNameInput.setMaxLength(TeamService.MAX_TEAM_NAME_LENGTH);
         createNameInput.setHint(
-            Component.translatable(
-                "screen.trade-rush.team_management.name_hint"
-            )
+                Component.translatable(
+                        "screen.trade-rush.team_management.name_hint"
+                )
         );
         createNameInput.setValue(createValue);
         createNameInput.setResponder(value -> updateActionButtons());
         addRenderableWidget(createNameInput);
 
         createButton = addRenderableWidget(
-            Button.builder(
-                Component.translatable(
-                    "screen.trade-rush.team_management.create"
-                ),
-                button ->
-                    sendAction(Action.CREATE, "", createNameInput.getValue())
-            )
-                .bounds(
-                    layout.actionsContentX(),
-                    layout.createButtonY() - actionScrollOffset,
-                    layout.actionsContentWidth(),
-                    BUTTON_HEIGHT
+                Button.builder(
+                        Component.translatable(
+                                "screen.trade-rush.team_management.create"
+                        ),
+                        button -> sendAction(
+                                Action.CREATE,
+                                "",
+                                createNameInput.getValue()
+                        )
                 )
-                .build()
+                        .bounds(
+                                layout.actionsContentX(),
+                                layout.createButtonY() - actionScrollOffset,
+                                layout.actionsContentWidth(),
+                                BUTTON_HEIGHT
+                        )
+                        .build()
         );
 
         updateWidgetsFromSnapshot();
@@ -405,30 +407,24 @@ public final class TeamManagementScreen
     }
 
     private void clearSubmittedTextInputAfterSuccess(
-        TeamManagementStatePayload payload
+            TeamManagementStatePayload payload
     ) {
         PendingTextInputClear pendingClear = pendingTextInputClear;
         pendingTextInputClear = null;
 
-        if (
-            pendingClear == null ||
-            payload.error() ||
-            payload.message().getString().isBlank()
-        ) {
+        if (pendingClear == null ||
+                payload.error() ||
+                payload.message().getString().isBlank()) {
             return;
         }
 
-        if (
-            pendingClear.action() == Action.CREATE &&
-            createNameInput != null &&
-            createNameInput.getValue().equals(pendingClear.value())
-        ) {
+        if (pendingClear.action() == Action.CREATE &&
+                createNameInput != null &&
+                createNameInput.getValue().equals(pendingClear.value())) {
             createNameInput.setValue("");
-        } else if (
-            pendingClear.action() == Action.RENAME &&
-            renameNameInput != null &&
-            renameNameInput.getValue().equals(pendingClear.value())
-        ) {
+        } else if (pendingClear.action() == Action.RENAME &&
+                renameNameInput != null &&
+                renameNameInput.getValue().equals(pendingClear.value())) {
             renameNameInput.setValue("");
         }
     }
@@ -440,14 +436,14 @@ public final class TeamManagementScreen
 
         TeamManagementScreenLayout layout = layout();
         teamScrollOffset = clamp(
-            teamScrollOffset,
-            0,
-            maxTeamScrollOffset(layout)
+                teamScrollOffset,
+                0,
+                maxTeamScrollOffset(layout)
         );
         memberScrollOffset = clamp(
-            memberScrollOffset,
-            0,
-            maxMemberScrollOffset(layout)
+                memberScrollOffset,
+                0,
+                maxMemberScrollOffset(layout)
         );
 
         for (int index = 0; index < teamButtons.size(); index++) {
@@ -464,13 +460,13 @@ public final class TeamManagementScreen
             button.visible = true;
             button.active = true;
             button.setMessage(
-                Component.literal(
-                    TeamManagementScreenText.teamButtonLabel(
-                        team,
-                        selectedTeamId,
-                        snapshot.currentTeamId()
+                    Component.literal(
+                            TeamManagementScreenText.teamButtonLabel(
+                                    team,
+                                    selectedTeamId,
+                                    snapshot.currentTeamId()
+                            )
                     )
-                )
             );
         }
 
@@ -480,41 +476,39 @@ public final class TeamManagementScreen
     private void updateActionButtons() {
         TeamRow selected = selectedTeam();
         boolean hasSelectedTeam = selected != null;
-        boolean selectedTeamIsEmpty =
-            hasSelectedTeam && selected.memberCount() == 0;
-        boolean hasCreateName =
-            createNameInput != null &&
-            !createNameInput.getValue().trim().isEmpty();
-        boolean hasRenameName =
-            renameNameInput != null &&
-            !renameNameInput.getValue().trim().isEmpty();
-        boolean selectedIsCurrent =
-            hasSelectedTeam && selected.id().equals(snapshot.currentTeamId());
+        boolean selectedTeamIsEmpty = hasSelectedTeam
+                && selected.memberCount() == 0;
+        boolean hasCreateName = createNameInput != null &&
+                !createNameInput.getValue().trim().isEmpty();
+        boolean hasRenameName = renameNameInput != null &&
+                !renameNameInput.getValue().trim().isEmpty();
+        boolean selectedIsCurrent = hasSelectedTeam
+                && selected.id().equals(snapshot.currentTeamId());
         TeamManagementScreenLayout layout = layout();
         boolean joinLeaveVisible = isActionWidgetInViewport(
-            layout.joinLeaveButtonY() - actionScrollOffset,
-            BUTTON_HEIGHT,
-            layout
+                layout.joinLeaveButtonY() - actionScrollOffset,
+                BUTTON_HEIGHT,
+                layout
         );
         boolean renameInputVisible = isActionWidgetInViewport(
-            layout.renameInputY() - actionScrollOffset,
-            BUTTON_HEIGHT,
-            layout
+                layout.renameInputY() - actionScrollOffset,
+                BUTTON_HEIGHT,
+                layout
         );
         boolean renameButtonsVisible = isActionWidgetInViewport(
-            layout.renameButtonsY() - actionScrollOffset,
-            BUTTON_HEIGHT,
-            layout
+                layout.renameButtonsY() - actionScrollOffset,
+                BUTTON_HEIGHT,
+                layout
         );
         boolean createInputVisible = isActionWidgetInViewport(
-            layout.createInputY() - actionScrollOffset,
-            BUTTON_HEIGHT,
-            layout
+                layout.createInputY() - actionScrollOffset,
+                BUTTON_HEIGHT,
+                layout
         );
         boolean createButtonVisible = isActionWidgetInViewport(
-            layout.createButtonY() - actionScrollOffset,
-            BUTTON_HEIGHT,
-            layout
+                layout.createButtonY() - actionScrollOffset,
+                BUTTON_HEIGHT,
+                layout
         );
 
         if (createNameInput != null) {
@@ -536,8 +530,8 @@ public final class TeamManagementScreen
 
         if (renameButton != null) {
             renameButton.visible = renameButtonsVisible;
-            renameButton.active =
-                renameButtonsVisible && hasSelectedTeam && hasRenameName;
+            renameButton.active = renameButtonsVisible && hasSelectedTeam
+                    && hasRenameName;
         }
 
         if (deleteButton != null) {
@@ -546,14 +540,14 @@ public final class TeamManagementScreen
         }
 
         if (joinButton != null) {
-            joinButton.visible =
-                joinLeaveVisible && hasSelectedTeam && !selectedIsCurrent;
+            joinButton.visible = joinLeaveVisible && hasSelectedTeam
+                    && !selectedIsCurrent;
             joinButton.active = joinButton.visible;
         }
 
         if (leaveButton != null) {
-            leaveButton.visible =
-                joinLeaveVisible && hasSelectedTeam && selectedIsCurrent;
+            leaveButton.visible = joinLeaveVisible && hasSelectedTeam
+                    && selectedIsCurrent;
             leaveButton.active = leaveButton.visible;
         }
     }
@@ -582,7 +576,7 @@ public final class TeamManagementScreen
     private void sendAction(Action action, String teamId, String value) {
         if (!ClientPlayNetworking.canSend(TeamManagementActionPayload.TYPE)) {
             message = Component.translatable(
-                "screen.trade-rush.team_management.network_unavailable"
+                    "screen.trade-rush.team_management.network_unavailable"
             );
             errorMessage = true;
             return;
@@ -591,82 +585,82 @@ public final class TeamManagementScreen
         trackTextInputClearOnSuccess(action, value);
 
         ClientPlayNetworking.send(
-            new TeamManagementActionPayload(action, teamId, value)
+                new TeamManagementActionPayload(action, teamId, value)
         );
     }
 
     private void trackTextInputClearOnSuccess(Action action, String value) {
         if (action == Action.CREATE || action == Action.RENAME) {
             pendingTextInputClear = new PendingTextInputClear(
-                action,
-                value == null ? "" : value
+                    action,
+                    value == null ? "" : value
             );
         }
     }
 
     private void drawPanels(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         graphics.fill(
-            layout.left(),
-            layout.top(),
-            layout.right(),
-            layout.bottom(),
-            BACKGROUND_COLOR
+                layout.left(),
+                layout.top(),
+                layout.right(),
+                layout.bottom(),
+                BACKGROUND_COLOR
         );
         graphics.outline(
-            layout.left(),
-            layout.top(),
-            layout.width(),
-            layout.height(),
-            PANEL_BORDER_COLOR
+                layout.left(),
+                layout.top(),
+                layout.width(),
+                layout.height(),
+                PANEL_BORDER_COLOR
         );
 
         drawColumnPanel(
-            graphics,
-            layout.teamsX(),
-            layout.columnTop(),
-            layout.columnWidth(),
-            layout.columnHeight()
+                graphics,
+                layout.teamsX(),
+                layout.columnTop(),
+                layout.columnWidth(),
+                layout.columnHeight()
         );
         drawColumnPanel(
-            graphics,
-            layout.detailsX(),
-            layout.columnTop(),
-            layout.columnWidth(),
-            layout.columnHeight()
+                graphics,
+                layout.detailsX(),
+                layout.columnTop(),
+                layout.columnWidth(),
+                layout.columnHeight()
         );
         drawColumnPanel(
-            graphics,
-            layout.actionsX(),
-            layout.columnTop(),
-            layout.actionsWidth(),
-            layout.columnHeight()
+                graphics,
+                layout.actionsX(),
+                layout.columnTop(),
+                layout.actionsWidth(),
+                layout.columnHeight()
         );
     }
 
     private void drawColumnPanel(
-        GuiGraphicsExtractor graphics,
-        int x,
-        int y,
-        int width,
-        int height
+            GuiGraphicsExtractor graphics,
+            int x,
+            int y,
+            int width,
+            int height
     ) {
         graphics.fill(x, y, x + width, y + height, PANEL_COLOR);
         graphics.outline(x, y, width, height, 0x80707070);
     }
 
     private void drawLabelsAndLists(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         graphics.centeredText(
-            this.font,
-            this.title,
-            this.width / 2,
-            layout.top() - 14,
-            TEXT_COLOR
+                this.font,
+                this.title,
+                this.width / 2,
+                layout.top() - 14,
+                TEXT_COLOR
         );
 
         drawTeamsColumn(graphics, layout);
@@ -676,154 +670,162 @@ public final class TeamManagementScreen
     }
 
     private void drawTeamsColumn(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         graphics.text(
-            this.font,
-            Component.translatable("screen.trade-rush.team_management.teams"),
-            layout.teamsContentX(),
-            layout.headingY(),
-            TEXT_COLOR
+                this.font,
+                Component.translatable(
+                        "screen.trade-rush.team_management.teams"
+                ),
+                layout.teamsContentX(),
+                layout.headingY(),
+                TEXT_COLOR
         );
         graphics.text(
-            this.font,
-            Component.translatable("screen.trade-rush.team_management.legend"),
-            layout.teamsContentX(),
-            layout.teamLegendY(),
-            MUTED_TEXT_COLOR
+                this.font,
+                Component.translatable(
+                        "screen.trade-rush.team_management.legend"
+                ),
+                layout.teamsContentX(),
+                layout.teamLegendY(),
+                MUTED_TEXT_COLOR
         );
 
         drawTeamRowStateOverlays(graphics);
         drawScrollbar(
-            graphics,
-            layout.teamListX(),
-            layout.teamListY(),
-            layout.teamListWidth(),
-            layout.teamListHeight(),
-            teamScrollOffset,
-            snapshot.teams().size(),
-            visibleTeamRows(layout)
+                graphics,
+                layout.teamListX(),
+                layout.teamListY(),
+                layout.teamListWidth(),
+                layout.teamListHeight(),
+                teamScrollOffset,
+                snapshot.teams().size(),
+                visibleTeamRows(layout)
         );
     }
 
     private void drawDetailsColumn(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         TeamRow selected = selectedTeam();
 
         graphics.text(
-            this.font,
-            Component.translatable("screen.trade-rush.team_management.details"),
-            layout.detailsContentX(),
-            layout.headingY(),
-            TEXT_COLOR
+                this.font,
+                Component.translatable(
+                        "screen.trade-rush.team_management.details"
+                ),
+                layout.detailsContentX(),
+                layout.headingY(),
+                TEXT_COLOR
         );
         graphics.text(
-            this.font,
-            TeamManagementScreenText.currentTeamText(snapshot),
-            layout.detailsContentX(),
-            layout.detailsCurrentTeamY(),
-            MUTED_TEXT_COLOR
+                this.font,
+                TeamManagementScreenText.currentTeamText(snapshot),
+                layout.detailsContentX(),
+                layout.detailsCurrentTeamY(),
+                MUTED_TEXT_COLOR
         );
 
         if (selected == null) {
             graphics.textWithWordWrap(
-                this.font,
-                Component.translatable(
-                    "screen.trade-rush.team_management.no_team_selected"
-                ),
-                layout.detailsContentX(),
-                layout.detailsSelectedTeamY(),
-                layout.contentWidth(),
-                MUTED_TEXT_COLOR
+                    this.font,
+                    Component.translatable(
+                            "screen.trade-rush.team_management.no_team_selected"
+                    ),
+                    layout.detailsContentX(),
+                    layout.detailsSelectedTeamY(),
+                    layout.contentWidth(),
+                    MUTED_TEXT_COLOR
             );
             return;
         }
 
         graphics.text(
-            this.font,
-            TeamManagementScreenText.selectedTeamText(selected),
-            layout.detailsContentX(),
-            layout.detailsSelectedTeamY(),
-            TEXT_COLOR
+                this.font,
+                TeamManagementScreenText.selectedTeamText(selected),
+                layout.detailsContentX(),
+                layout.detailsSelectedTeamY(),
+                TEXT_COLOR
         );
         graphics.text(
-            this.font,
-            TeamManagementScreenText.selectedScoreText(selected),
-            layout.detailsContentX(),
-            layout.detailsScoreY(),
-            MUTED_TEXT_COLOR
+                this.font,
+                TeamManagementScreenText.selectedScoreText(selected),
+                layout.detailsContentX(),
+                layout.detailsScoreY(),
+                MUTED_TEXT_COLOR
         );
         graphics.text(
-            this.font,
-            TeamManagementScreenText.selectedMembersHeader(),
-            layout.detailsContentX(),
-            layout.membersHeaderY(),
-            MUTED_TEXT_COLOR
+                this.font,
+                TeamManagementScreenText.selectedMembersHeader(),
+                layout.detailsContentX(),
+                layout.membersHeaderY(),
+                MUTED_TEXT_COLOR
         );
         drawMembers(graphics, layout);
     }
 
     private void drawActionsColumn(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         TeamRow selected = selectedTeam();
 
         graphics.text(
-            this.font,
-            Component.translatable("screen.trade-rush.team_management.actions"),
-            layout.actionsContentX(),
-            layout.headingY(),
-            TEXT_COLOR
+                this.font,
+                Component.translatable(
+                        "screen.trade-rush.team_management.actions"
+                ),
+                layout.actionsContentX(),
+                layout.headingY(),
+                TEXT_COLOR
         );
 
         graphics.enableScissor(
-            layout.actionsContentX(),
-            layout.actionViewportY(),
-            layout.actionsContentX() + layout.actionsContentWidth(),
-            layout.actionViewportY() + layout.actionViewportHeight()
+                layout.actionsContentX(),
+                layout.actionViewportY(),
+                layout.actionsContentX() + layout.actionsContentWidth(),
+                layout.actionViewportY() + layout.actionViewportHeight()
         );
         graphics.textWithWordWrap(
-            this.font,
-            TeamManagementScreenText.selectedActionText(selected),
-            layout.actionsContentX(),
-            layout.actionSelectedTeamY() - actionScrollOffset,
-            layout.actionsContentWidth(),
-            MUTED_TEXT_COLOR
+                this.font,
+                TeamManagementScreenText.selectedActionText(selected),
+                layout.actionsContentX(),
+                layout.actionSelectedTeamY() - actionScrollOffset,
+                layout.actionsContentWidth(),
+                MUTED_TEXT_COLOR
         );
         graphics.text(
-            this.font,
-            Component.translatable(
-                "screen.trade-rush.team_management.rename_input"
-            ),
-            layout.actionsContentX(),
-            layout.renameLabelY() - actionScrollOffset,
-            TEXT_COLOR
+                this.font,
+                Component.translatable(
+                        "screen.trade-rush.team_management.rename_input"
+                ),
+                layout.actionsContentX(),
+                layout.renameLabelY() - actionScrollOffset,
+                TEXT_COLOR
         );
         drawDeleteTeamExplanation(graphics, layout);
         graphics.text(
-            this.font,
-            Component.translatable(
-                "screen.trade-rush.team_management.create_section"
-            ),
-            layout.actionsContentX(),
-            layout.createSectionY() - actionScrollOffset,
-            TEXT_COLOR
+                this.font,
+                Component.translatable(
+                        "screen.trade-rush.team_management.create_section"
+                ),
+                layout.actionsContentX(),
+                layout.createSectionY() - actionScrollOffset,
+                TEXT_COLOR
         );
         graphics.disableScissor();
 
         drawScrollbar(
-            graphics,
-            layout.actionsContentX(),
-            layout.actionViewportY(),
-            layout.actionsContentWidth(),
-            layout.actionViewportHeight(),
-            actionScrollOffset,
-            layout.actionContentHeight(),
-            layout.actionViewportHeight()
+                graphics,
+                layout.actionsContentX(),
+                layout.actionViewportY(),
+                layout.actionsContentWidth(),
+                layout.actionViewportHeight(),
+                actionScrollOffset,
+                layout.actionContentHeight(),
+                layout.actionViewportHeight()
         );
     }
 
@@ -842,29 +844,29 @@ public final class TeamManagementScreen
 
             if (selected) {
                 graphics.outline(
-                    button.getX() - 1,
-                    button.getY() - 1,
-                    button.getWidth() + 2,
-                    button.getHeight() + 2,
-                    SELECTED_COLOR
+                        button.getX() - 1,
+                        button.getY() - 1,
+                        button.getWidth() + 2,
+                        button.getHeight() + 2,
+                        SELECTED_COLOR
                 );
             }
 
             if (current) {
                 graphics.fill(
-                    button.getX() + 2,
-                    button.getY() + 2,
-                    button.getX() + 5,
-                    button.getY() + button.getHeight() - 2,
-                    CURRENT_TEAM_COLOR
+                        button.getX() + 2,
+                        button.getY() + 2,
+                        button.getX() + 5,
+                        button.getY() + button.getHeight() - 2,
+                        CURRENT_TEAM_COLOR
                 );
             }
         }
     }
 
     private void drawMembers(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         TeamRow selected = selectedTeam();
 
@@ -874,13 +876,13 @@ public final class TeamManagementScreen
 
         if (selected.members().isEmpty()) {
             graphics.text(
-                this.font,
-                Component.translatable(
-                    "screen.trade-rush.team_management.members_empty"
-                ),
-                layout.membersX(),
-                layout.membersY(),
-                MUTED_TEXT_COLOR
+                    this.font,
+                    Component.translatable(
+                            "screen.trade-rush.team_management.members_empty"
+                    ),
+                    layout.membersX(),
+                    layout.membersY(),
+                    MUTED_TEXT_COLOR
             );
             return;
         }
@@ -890,39 +892,39 @@ public final class TeamManagementScreen
         int last = Math.min(selected.members().size(), first + visibleRows);
 
         graphics.enableScissor(
-            layout.membersX(),
-            layout.membersY(),
-            layout.membersX() + layout.membersWidth(),
-            layout.membersY() + layout.membersHeight()
+                layout.membersX(),
+                layout.membersY(),
+                layout.membersX() + layout.membersWidth(),
+                layout.membersY() + layout.membersHeight()
         );
 
         for (int index = first; index < last; index++) {
             MemberEntry member = selected.members().get(index);
             graphics.text(
-                this.font,
-                "- " + TeamManagementScreenText.memberLabel(member),
-                layout.membersX(),
-                layout.membersY() + (index - first) * TEXT_LINE_HEIGHT,
-                MUTED_TEXT_COLOR
+                    this.font,
+                    "- " + TeamManagementScreenText.memberLabel(member),
+                    layout.membersX(),
+                    layout.membersY() + (index - first) * TEXT_LINE_HEIGHT,
+                    MUTED_TEXT_COLOR
             );
         }
 
         graphics.disableScissor();
         drawScrollbar(
-            graphics,
-            layout.membersX(),
-            layout.membersY(),
-            layout.membersWidth(),
-            layout.membersHeight(),
-            first,
-            selected.members().size(),
-            visibleRows
+                graphics,
+                layout.membersX(),
+                layout.membersY(),
+                layout.membersWidth(),
+                layout.membersHeight(),
+                first,
+                selected.members().size(),
+                visibleRows
         );
     }
 
     private void drawDeleteTeamExplanation(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         TeamRow selected = selectedTeam();
 
@@ -931,44 +933,44 @@ public final class TeamManagementScreen
         }
 
         graphics.textWithWordWrap(
-            this.font,
-            Component.translatable(
-                "screen.trade-rush.team_management.delete_empty_team_only"
-            ),
-            layout.actionsContentX(),
-            layout.emptyTeamExplanationY() - actionScrollOffset,
-            layout.actionsContentWidth(),
-            MUTED_TEXT_COLOR
+                this.font,
+                Component.translatable(
+                        "screen.trade-rush.team_management.delete_empty_team_only"
+                ),
+                layout.actionsContentX(),
+                layout.emptyTeamExplanationY() - actionScrollOffset,
+                layout.actionsContentWidth(),
+                MUTED_TEXT_COLOR
         );
     }
 
     private void drawMessage(
-        GuiGraphicsExtractor graphics,
-        TeamManagementScreenLayout layout
+            GuiGraphicsExtractor graphics,
+            TeamManagementScreenLayout layout
     ) {
         if (message.getString().isBlank()) {
             return;
         }
 
         graphics.textWithWordWrap(
-            this.font,
-            message,
-            layout.statusMessageX(),
-            layout.statusMessageY(),
-            layout.statusMessageWidth(),
-            errorMessage ? ERROR_TEXT_COLOR : SUCCESS_TEXT_COLOR
+                this.font,
+                message,
+                layout.statusMessageX(),
+                layout.statusMessageY(),
+                layout.statusMessageWidth(),
+                errorMessage ? ERROR_TEXT_COLOR : SUCCESS_TEXT_COLOR
         );
     }
 
     private void drawScrollbar(
-        GuiGraphicsExtractor graphics,
-        int x,
-        int y,
-        int width,
-        int height,
-        int offset,
-        int totalRows,
-        int visibleRows
+            GuiGraphicsExtractor graphics,
+            int x,
+            int y,
+            int width,
+            int height,
+            int offset,
+            int totalRows,
+            int visibleRows
     ) {
         int maxOffset = Math.max(0, totalRows - visibleRows);
 
@@ -983,11 +985,11 @@ public final class TeamManagementScreen
 
         graphics.fill(trackX, y, trackX + 2, y + height, SCROLL_TRACK_COLOR);
         graphics.fill(
-            trackX,
-            thumbY,
-            trackX + 2,
-            thumbY + thumbHeight,
-            SCROLL_THUMB_COLOR
+                trackX,
+                thumbY,
+                trackX + 2,
+                thumbY + thumbHeight,
+                SCROLL_THUMB_COLOR
         );
     }
 
@@ -1001,8 +1003,8 @@ public final class TeamManagementScreen
         }
 
         return snapshot.teams().isEmpty()
-            ? ""
-            : snapshot.teams().getFirst().id();
+                ? ""
+                : snapshot.teams().getFirst().id();
     }
 
     private void scrollSelectedTeamIntoView(TeamManagementScreenLayout layout) {
@@ -1010,9 +1012,9 @@ public final class TeamManagementScreen
 
         if (selectedIndex < 0) {
             teamScrollOffset = clamp(
-                teamScrollOffset,
-                0,
-                maxTeamScrollOffset(layout)
+                    teamScrollOffset,
+                    0,
+                    maxTeamScrollOffset(layout)
             );
             return;
         }
@@ -1026,9 +1028,9 @@ public final class TeamManagementScreen
         }
 
         teamScrollOffset = clamp(
-            teamScrollOffset,
-            0,
-            maxTeamScrollOffset(layout)
+                teamScrollOffset,
+                0,
+                maxTeamScrollOffset(layout)
         );
     }
 
@@ -1038,9 +1040,9 @@ public final class TeamManagementScreen
         }
 
         return snapshot
-            .teams()
-            .stream()
-            .anyMatch(team -> team.id().equals(teamId));
+                .teams()
+                .stream()
+                .anyMatch(team -> team.id().equals(teamId));
     }
 
     private int selectedTeamIndex() {
@@ -1055,17 +1057,17 @@ public final class TeamManagementScreen
 
     private TeamRow selectedTeam() {
         return snapshot
-            .teams()
-            .stream()
-            .filter(team -> team.id().equals(selectedTeamId))
-            .findFirst()
-            .orElse(null);
+                .teams()
+                .stream()
+                .filter(team -> team.id().equals(selectedTeamId))
+                .findFirst()
+                .orElse(null);
     }
 
     private int visibleTeamRows(TeamManagementScreenLayout layout) {
         return Math.max(
-            1,
-            (layout.teamListHeight() - BUTTON_HEIGHT) / TEAM_ROW_STRIDE + 1
+                1,
+                (layout.teamListHeight() - BUTTON_HEIGHT) / TEAM_ROW_STRIDE + 1
         );
     }
 
@@ -1085,44 +1087,40 @@ public final class TeamManagementScreen
         }
 
         return Math.max(
-            0,
-            selected.members().size() - visibleMemberRows(layout)
+                0,
+                selected.members().size() - visibleMemberRows(layout)
         );
     }
 
     private int maxActionScrollOffset(TeamManagementScreenLayout layout) {
         return Math.max(
-            0,
-            layout.actionContentHeight() - layout.actionViewportHeight()
+                0,
+                layout.actionContentHeight() - layout.actionViewportHeight()
         );
     }
 
     private boolean isActionWidgetInViewport(
-        int widgetY,
-        int widgetHeight,
-        TeamManagementScreenLayout layout
+            int widgetY,
+            int widgetHeight,
+            TeamManagementScreenLayout layout
     ) {
-        return (
-            widgetY >= layout.actionViewportY() &&
-            widgetY + widgetHeight <=
-                layout.actionViewportY() + layout.actionViewportHeight()
-        );
+        return (widgetY >= layout.actionViewportY() &&
+                widgetY + widgetHeight <= layout.actionViewportY()
+                        + layout.actionViewportHeight());
     }
 
     private boolean contains(
-        int x,
-        int y,
-        int width,
-        int height,
-        double mouseX,
-        double mouseY
+            int x,
+            int y,
+            int width,
+            int height,
+            double mouseX,
+            double mouseY
     ) {
-        return (
-            mouseX >= x &&
-            mouseX < x + width &&
-            mouseY >= y &&
-            mouseY < y + height
-        );
+        return (mouseX >= x &&
+                mouseX < x + width &&
+                mouseY >= y &&
+                mouseY < y + height);
     }
 
     private int clamp(int value, int min, int max) {
@@ -1137,5 +1135,6 @@ public final class TeamManagementScreen
         return TeamManagementScreenLayout.create(this.width, this.height);
     }
 
-    private record PendingTextInputClear(Action action, String value) {}
+    private record PendingTextInputClear(Action action, String value) {
+    }
 }

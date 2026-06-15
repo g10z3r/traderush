@@ -1,14 +1,14 @@
 package traderush.game.offer;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.List;
-import java.util.ArrayList;
-
 import traderush.game.shop.ShopId;
 
-public final class InMemoryActiveOfferRepository implements ActiveOfferRepository {
+public final class InMemoryActiveOfferRepository
+        implements ActiveOfferRepository {
     private final Map<ActiveOfferId, ActiveOffer> activeOffersById = new LinkedHashMap<>();
 
     @Override
@@ -32,7 +32,10 @@ public final class InMemoryActiveOfferRepository implements ActiveOfferRepositor
         return new ArrayList<>(
                 activeOffersById.values()
                         .stream()
-                        .filter(activeOffer -> activeOffer.getShopId().equals(shopId))
+                        .filter(
+                                activeOffer -> activeOffer.getShopId()
+                                        .equals(shopId)
+                        )
                         .toList()
         );
     }

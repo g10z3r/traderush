@@ -1,9 +1,8 @@
 package traderush.game.sale;
 
-import traderush.game.shop.ShopId;
-
 import java.util.List;
 import java.util.Objects;
+import traderush.game.shop.ShopId;
 
 public record SalePreview(
         ShopId shopId,
@@ -15,10 +14,13 @@ public record SalePreview(
         Objects.requireNonNull(shopId, "shop id cannot be null");
 
         lines = lines == null ? List.of() : List.copyOf(lines);
-        remainingItems = remainingItems == null ? List.of() : List.copyOf(remainingItems);
+        remainingItems = remainingItems == null ? List.of()
+                : List.copyOf(remainingItems);
 
         if (totalPoints < 0) {
-            throw new IllegalArgumentException("sale preview total points cannot be negative");
+            throw new IllegalArgumentException(
+                    "sale preview total points cannot be negative"
+            );
         }
     }
 

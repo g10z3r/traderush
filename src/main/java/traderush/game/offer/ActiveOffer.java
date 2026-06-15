@@ -1,8 +1,7 @@
 package traderush.game.offer;
 
-import traderush.game.shop.ShopId;
-
 import java.util.Objects;
+import traderush.game.shop.ShopId;
 
 public abstract class ActiveOffer {
     private final ActiveOfferId id;
@@ -24,11 +23,15 @@ public abstract class ActiveOffer {
                 .requireNonNull(offerId, "offer id cannot be null");
 
         if (rewardPerUnit <= 0) {
-            throw new IllegalArgumentException("active offer reward per unit must be positive");
+            throw new IllegalArgumentException(
+                    "active offer reward per unit must be positive"
+            );
         }
 
         if (acceptedUnits < 0) {
-            throw new IllegalArgumentException("active offer accepted units cannot be negative");
+            throw new IllegalArgumentException(
+                    "active offer accepted units cannot be negative"
+            );
         }
 
         this.rewardPerUnit = rewardPerUnit;
@@ -60,7 +63,8 @@ public abstract class ActiveOffer {
             return 0;
         }
 
-        int accepted = Math.min(requestedUnits, remainingUnitCapacity(currentTick));
+        int accepted = Math
+                .min(requestedUnits, remainingUnitCapacity(currentTick));
 
         if (accepted <= 0) {
             return 0;

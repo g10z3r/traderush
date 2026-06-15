@@ -4,17 +4,17 @@ import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public record TeamManagementSnapshot(
-    List<TeamRow> teams,
-    String selectedTeamId,
-    String currentTeamId,
-    String currentTeamName
+        List<TeamRow> teams,
+        String selectedTeamId,
+        String currentTeamId,
+        String currentTeamName
 ) {
     private static final int MAX_STRING_LENGTH = 256;
     public static final TeamManagementSnapshot EMPTY = new TeamManagementSnapshot(
-        List.of(),
-        "",
-        "",
-        ""
+            List.of(),
+            "",
+            "",
+            ""
     );
 
     public TeamManagementSnapshot {
@@ -26,9 +26,9 @@ public record TeamManagementSnapshot(
 
     public TeamRow selectedTeam() {
         return teams.stream()
-            .filter(team -> team.id().equals(selectedTeamId))
-            .findFirst()
-            .orElse(null);
+                .filter(team -> team.id().equals(selectedTeamId))
+                .findFirst()
+                .orElse(null);
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
@@ -45,17 +45,19 @@ public record TeamManagementSnapshot(
 
     public static TeamManagementSnapshot read(RegistryFriendlyByteBuf buf) {
         int teamCount = buf.readVarInt();
-        ImmutableListBuilder<TeamRow> teams = new ImmutableListBuilder<>(teamCount);
+        ImmutableListBuilder<TeamRow> teams = new ImmutableListBuilder<>(
+                teamCount
+        );
 
         for (int i = 0; i < teamCount; i++) {
             teams.add(TeamRow.read(buf));
         }
 
         return new TeamManagementSnapshot(
-            teams.build(),
-            readString(buf),
-            readString(buf),
-            readString(buf)
+                teams.build(),
+                readString(buf),
+                readString(buf),
+                readString(buf)
         );
     }
 
@@ -72,11 +74,11 @@ public record TeamManagementSnapshot(
     }
 
     public record TeamRow(
-        String id,
-        String name,
-        long score,
-        int memberCount,
-        List<MemberEntry> members
+            String id,
+            String name,
+            long score,
+            int memberCount,
+            List<MemberEntry> members
     ) {
         public TeamRow {
             id = normalize(id);
@@ -102,7 +104,9 @@ public record TeamManagementSnapshot(
             long score = buf.readLong();
             int memberCount = buf.readVarInt();
             int memberEntries = buf.readVarInt();
-            ImmutableListBuilder<MemberEntry> members = new ImmutableListBuilder<>(memberEntries);
+            ImmutableListBuilder<MemberEntry> members = new ImmutableListBuilder<>(
+                    memberEntries
+            );
 
             for (int i = 0; i < memberEntries; i++) {
                 members.add(MemberEntry.read(buf));

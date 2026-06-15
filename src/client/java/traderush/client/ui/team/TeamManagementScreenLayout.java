@@ -1,12 +1,12 @@
 package traderush.client.ui.team;
 
 record TeamManagementScreenLayout(
-    int left,
-    int top,
-    int width,
-    int height,
-    int columnWidth,
-    int actionsWidth
+        int left,
+        int top,
+        int width,
+        int height,
+        int columnWidth,
+        int actionsWidth
 ) {
     static final int BUTTON_HEIGHT = 20;
     static final int TEAM_ROW_STRIDE = 22;
@@ -24,37 +24,33 @@ record TeamManagementScreenLayout(
     private static final int CREATE_FORM_BOTTOM_GAP = 12;
 
     static TeamManagementScreenLayout create(
-        int screenWidth,
-        int screenHeight
+            int screenWidth,
+            int screenHeight
     ) {
-        int availableWidth = Math.max(
-            MIN_PANEL_WIDTH,
-            screenWidth - SCREEN_MARGIN * 2
-        );
+        int availableWidth = Math
+                .max(MIN_PANEL_WIDTH, screenWidth - SCREEN_MARGIN * 2);
         int panelWidth = Math.min(MAX_PANEL_WIDTH, availableWidth);
-        int availableHeight = Math.max(
-            MIN_PANEL_HEIGHT,
-            screenHeight - PANEL_VERTICAL_MARGIN
-        );
+        int availableHeight = Math
+                .max(MIN_PANEL_HEIGHT, screenHeight - PANEL_VERTICAL_MARGIN);
         int panelHeight = Math.min(MAX_PANEL_HEIGHT, availableHeight);
         int left = Math.max(SCREEN_MARGIN, (screenWidth - panelWidth) / 2);
         int top = Math.max(24, (screenHeight - panelHeight) / 2 - 4);
-        int columnWidth = Math.max(
-            70,
-            (panelWidth - COLUMN_GAP * 2 - SCREEN_MARGIN * 2) / 3
-        );
-        int actionsWidth = Math.max(
-            70,
-            panelWidth - SCREEN_MARGIN * 2 - COLUMN_GAP * 2 - columnWidth * 2
-        );
+        int columnWidth = Math
+                .max(70, (panelWidth - COLUMN_GAP * 2 - SCREEN_MARGIN * 2) / 3);
+        int actionsWidth = Math
+                .max(
+                        70,
+                        panelWidth - SCREEN_MARGIN * 2 - COLUMN_GAP * 2
+                                - columnWidth * 2
+                );
 
         return new TeamManagementScreenLayout(
-            left,
-            top,
-            panelWidth,
-            panelHeight,
-            columnWidth,
-            actionsWidth
+                left,
+                top,
+                panelWidth,
+                panelHeight,
+                columnWidth,
+                actionsWidth
         );
     }
 
@@ -128,8 +124,8 @@ record TeamManagementScreenLayout(
 
     int teamListHeight() {
         return Math.max(
-            BUTTON_HEIGHT,
-            columnTop() + columnHeight() - COLUMN_PADDING - teamListY()
+                BUTTON_HEIGHT,
+                columnTop() + columnHeight() - COLUMN_PADDING - teamListY()
         );
     }
 
@@ -171,8 +167,9 @@ record TeamManagementScreenLayout(
 
     int actionViewportHeight() {
         return Math.max(
-            BUTTON_HEIGHT,
-            columnTop() + columnHeight() - COLUMN_PADDING - actionViewportY()
+                BUTTON_HEIGHT,
+                columnTop() + columnHeight() - COLUMN_PADDING
+                        - actionViewportY()
         );
     }
 
@@ -202,11 +199,9 @@ record TeamManagementScreenLayout(
 
     int createSectionY() {
         return Math.max(
-            emptyTeamExplanationY() + 42,
-            actionViewportY() +
-                actionViewportHeight() -
-                CREATE_FORM_HEIGHT -
-                CREATE_FORM_BOTTOM_GAP
+                emptyTeamExplanationY() + 42,
+                actionViewportY() + actionViewportHeight() - CREATE_FORM_HEIGHT
+                        - CREATE_FORM_BOTTOM_GAP
         );
     }
 
@@ -220,11 +215,9 @@ record TeamManagementScreenLayout(
 
     int actionContentHeight() {
         return Math.max(
-            actionViewportHeight(),
-            createButtonY() +
-                BUTTON_HEIGHT +
-                CREATE_FORM_BOTTOM_GAP -
-                actionViewportY()
+                actionViewportHeight(),
+                createButtonY() + BUTTON_HEIGHT + CREATE_FORM_BOTTOM_GAP
+                        - actionViewportY()
         );
     }
 

@@ -1,18 +1,25 @@
 package traderush.platform.protection;
 
+import java.util.function.BiPredicate;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-
-import java.util.function.BiPredicate;
 
 final class ShopBlockBreakProtection {
     private ShopBlockBreakProtection() {}
 
     static void register(BiPredicate<ServerLevel, BlockPos> isProtected) {
         PlayerBlockBreakEvents.BEFORE.register(
-                (world, player, pos, state, blockEntity) -> !isProtectedBlock(world, pos, isProtected)
+                (world,
+                        player,
+                        pos,
+                        state,
+                        blockEntity) -> !isProtectedBlock(
+                                world,
+                                pos,
+                                isProtected
+                        )
         );
     }
 

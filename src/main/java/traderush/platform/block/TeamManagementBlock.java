@@ -24,11 +24,11 @@ public final class TeamManagementBlock extends Block {
 
     @Override
     protected InteractionResult useWithoutItem(
-        BlockState state,
-        Level level,
-        BlockPos pos,
-        Player player,
-        BlockHitResult hitResult
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            Player player,
+            BlockHitResult hitResult
     ) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
@@ -42,10 +42,9 @@ public final class TeamManagementBlock extends Block {
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    private record Provider(
-        Level level,
-        BlockPos pos
-    ) implements ExtendedMenuProvider<BlockPos> {
+    private record Provider(Level level, BlockPos pos)
+            implements ExtendedMenuProvider<BlockPos> {
+
         @Override
         public BlockPos getScreenOpeningData(ServerPlayer player) {
             return pos;
@@ -53,22 +52,21 @@ public final class TeamManagementBlock extends Block {
 
         @Override
         public Component getDisplayName() {
-            return Component.translatable(
-                "container.trade-rush.team_management"
-            );
+            return Component
+                    .translatable("container.trade-rush.team_management");
         }
 
         @Override
         public AbstractContainerMenu createMenu(
-            int containerId,
-            Inventory inventory,
-            Player player
+                int containerId,
+                Inventory inventory,
+                Player player
         ) {
             return new TeamManagementMenu(
-                containerId,
-                inventory,
-                ContainerLevelAccess.create(level, pos),
-                pos
+                    containerId,
+                    inventory,
+                    ContainerLevelAccess.create(level, pos),
+                    pos
             );
         }
     }

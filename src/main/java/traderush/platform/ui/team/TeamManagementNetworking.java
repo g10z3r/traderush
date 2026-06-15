@@ -26,14 +26,16 @@ public final class TeamManagementNetworking {
             return;
         }
 
-        PayloadTypeRegistry.serverboundPlay().register(
-            TeamManagementActionPayload.TYPE,
-            TeamManagementActionPayload.CODEC
-        );
-        PayloadTypeRegistry.clientboundPlay().register(
-            TeamManagementStatePayload.TYPE,
-            TeamManagementStatePayload.CODEC
-        );
+        PayloadTypeRegistry.serverboundPlay()
+                .register(
+                        TeamManagementActionPayload.TYPE,
+                        TeamManagementActionPayload.CODEC
+                );
+        PayloadTypeRegistry.clientboundPlay()
+                .register(
+                        TeamManagementStatePayload.TYPE,
+                        TeamManagementStatePayload.CODEC
+                );
         payloadTypesRegistered = true;
     }
 
@@ -43,11 +45,15 @@ public final class TeamManagementNetworking {
         }
 
         ServerPlayNetworking.registerGlobalReceiver(
-            TeamManagementActionPayload.TYPE,
-            (payload, context) ->
-                context
-                    .server()
-                    .execute(() -> handleAction(payload, context.player()))
+                TeamManagementActionPayload.TYPE,
+                (payload,
+                        context) -> context.server()
+                                .execute(
+                                        () -> handleAction(
+                                                payload,
+                                                context.player()
+                                        )
+                                )
         );
         serverHandlersRegistered = true;
     }
@@ -57,8 +63,8 @@ public final class TeamManagementNetworking {
     }
 
     private static void handleAction(
-        TeamManagementActionPayload payload,
-        ServerPlayer player
+            TeamManagementActionPayload payload,
+            ServerPlayer player
     ) {
         if (!hasValidTeamManagementMenu(player)) {
             return;
@@ -70,12 +76,12 @@ public final class TeamManagementNetworking {
             teamService = TradeRush.runtime().teamService();
         } catch (IllegalStateException exception) {
             sendRawState(
-                player,
-                TeamManagementSnapshot.EMPTY,
-                Component.translatable(
-                    "message.trade-rush.team.error.runtime_not_ready"
-                ),
-                true
+                    player,
+                    TeamManagementSnapshot.EMPTY,
+                    Component.translatable(
+                            "message.trade-rush.team.error.runtime_not_ready"
+                    ),
+                    true
             );
             return;
         }
@@ -86,49 +92,41 @@ public final class TeamManagementNetworking {
         }
 
         switch (payload.action()) {
-            case CREATE -> handleCreate(teamService, player, payload);
-            case JOIN -> handleJoin(teamService, player, payload);
-            case LEAVE -> handleLeave(teamService, player, payload);
-            case DELETE_EMPTY -> handleDelete(teamService, player, payload);
-            case RENAME -> handleRename(teamService, player, payload);
-            case REFRESH -> sendState(
-                player,
-                payload.teamId(),
-                Component.empty(),
-                false
-            );
+        case CREATE -> handleCreate(teamService, player, payload);
+        case JOIN -> handleJoin(teamService, player, payload);
+        case LEAVE -> handleLeave(teamService, player, payload);
+        case DELETE_EMPTY -> handleDelete(teamService, player, payload);
+        case RENAME -> handleRename(teamService, player, payload);
+        case REFRESH ->
+            sendState(player, payload.teamId(), Component.empty(), false);
         }
     }
 
     private static boolean hasValidTeamManagementMenu(ServerPlayer player) {
-        return (
-            player.containerMenu instanceof TeamManagementMenu menu &&
-            menu.stillValid(player)
-        );
+        return (player.containerMenu instanceof TeamManagementMenu menu
+                && menu.stillValid(player));
     }
 
     private static void handleCreate(
-        TeamService teamService,
-        ServerPlayer player,
-        TeamManagementActionPayload payload
+            TeamService teamService,
+            ServerPlayer player,
+            TeamManagementActionPayload payload
     ) {
-        TeamOperationResult<Team> result = teamService.createTeam(
-            payload.value()
-        );
+        TeamOperationResult<Team> result = teamService
+                .createTeam(payload.value());
         sendResult(
-            player,
-            result,
-            result.isSuccess()
-                ? result.value().getId().toString()
-                : payload.teamId(),
-            TeamMessages::created
+                player,
+                result,
+                result.isSuccess() ? result.value().getId().toString()
+                        : payload.teamId(),
+                TeamMessages::created
         );
     }
 
     private static void handleJoin(
-        TeamService teamService,
-        ServerPlayer player,
-        TeamManagementActionPayload payload
+            TeamService teamService,
+            ServerPlayer player,
+            TeamManagementActionPayload payload
     ) {
         TeamId teamId = parseTeamId(payload.teamId());
 
@@ -138,17 +136,15 @@ public final class TeamManagementNetworking {
         }
 
         PlayerId playerId = PlayerId.fromUuid(player.getUUID());
-        TeamOperationResult<Team> result = teamService.joinTeam(
-            playerId,
-            teamId
-        );
+        TeamOperationResult<Team> result = teamService
+                .joinTeam(playerId, teamId);
         sendResult(player, result, payload.teamId(), TeamMessages::joined);
     }
 
     private static void handleLeave(
-        TeamService teamService,
-        ServerPlayer player,
-        TeamManagementActionPayload payload
+            TeamService teamService,
+            ServerPlayer player,
+            TeamManagementActionPayload payload
     ) {
         PlayerId playerId = PlayerId.fromUuid(player.getUUID());
         TeamOperationResult<Team> result = teamService.leaveTeam(playerId);
@@ -156,9 +152,9 @@ public final class TeamManagementNetworking {
     }
 
     private static void handleDelete(
-        TeamService teamService,
-        ServerPlayer player,
-        TeamManagementActionPayload payload
+            TeamService teamService,
+            ServerPlayer player,
+            TeamManagementActionPayload payload
     ) {
         TeamId teamId = parseTeamId(payload.teamId());
 
@@ -172,9 +168,9 @@ public final class TeamManagementNetworking {
     }
 
     private static void handleRename(
-        TeamService teamService,
-        ServerPlayer player,
-        TeamManagementActionPayload payload
+            TeamService teamService,
+            ServerPlayer player,
+            TeamManagementActionPayload payload
     ) {
         TeamId teamId = parseTeamId(payload.teamId());
 
@@ -183,25 +179,23 @@ public final class TeamManagementNetworking {
             return;
         }
 
-        TeamOperationResult<Team> result = teamService.renameTeam(
-            teamId,
-            payload.value()
-        );
+        TeamOperationResult<Team> result = teamService
+                .renameTeam(teamId, payload.value());
         sendResult(player, result, payload.teamId(), TeamMessages::renamed);
     }
 
     private static void sendResult(
-        ServerPlayer player,
-        TeamOperationResult<Team> result,
-        String selectedTeamId,
-        java.util.function.Function<Team, Component> successMessage
+            ServerPlayer player,
+            TeamOperationResult<Team> result,
+            String selectedTeamId,
+            java.util.function.Function<Team, Component> successMessage
     ) {
         if (result.isSuccess()) {
             sendState(
-                player,
-                selectedTeamId,
-                successMessage.apply(result.value()),
-                false
+                    player,
+                    selectedTeamId,
+                    successMessage.apply(result.value()),
+                    false
             );
             return;
         }
@@ -210,62 +204,55 @@ public final class TeamManagementNetworking {
     }
 
     private static void sendTeamError(
-        ServerPlayer player,
-        String selectedTeamId,
-        TeamError error
+            ServerPlayer player,
+            String selectedTeamId,
+            TeamError error
     ) {
         sendError(player, selectedTeamId, TeamMessages.componentFor(error));
     }
 
     private static void sendError(
-        ServerPlayer player,
-        String selectedTeamId,
-        Component message
+            ServerPlayer player,
+            String selectedTeamId,
+            Component message
     ) {
         sendState(player, selectedTeamId, message, true);
     }
 
     private static void sendState(
-        ServerPlayer player,
-        String selectedTeamId,
-        Component message,
-        boolean error
+            ServerPlayer player,
+            String selectedTeamId,
+            Component message,
+            boolean error
     ) {
-        if (
-            !ServerPlayNetworking.canSend(
-                player,
-                TeamManagementStatePayload.TYPE
-            )
-        ) {
+        if (!ServerPlayNetworking
+                .canSend(player, TeamManagementStatePayload.TYPE)) {
             return;
         }
 
-        TeamManagementSnapshot snapshot = TeamManagementSnapshots.create(
-            TradeRush.runtime().teamService(),
-            player,
-            selectedTeamId
-        );
+        TeamManagementSnapshot snapshot = TeamManagementSnapshots
+                .create(
+                        TradeRush.runtime().teamService(),
+                        player,
+                        selectedTeamId
+                );
         sendRawState(player, snapshot, message, error);
     }
 
     private static void sendRawState(
-        ServerPlayer player,
-        TeamManagementSnapshot snapshot,
-        Component message,
-        boolean error
+            ServerPlayer player,
+            TeamManagementSnapshot snapshot,
+            Component message,
+            boolean error
     ) {
-        if (
-            !ServerPlayNetworking.canSend(
-                player,
-                TeamManagementStatePayload.TYPE
-            )
-        ) {
+        if (!ServerPlayNetworking
+                .canSend(player, TeamManagementStatePayload.TYPE)) {
             return;
         }
 
         ServerPlayNetworking.send(
-            player,
-            new TeamManagementStatePayload(snapshot, message, error)
+                player,
+                new TeamManagementStatePayload(snapshot, message, error)
         );
     }
 

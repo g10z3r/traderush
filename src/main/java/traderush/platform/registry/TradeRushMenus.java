@@ -8,14 +8,15 @@ import traderush.TradeRush;
 import traderush.platform.ui.team.TeamManagementMenu;
 
 public final class TradeRushMenus {
-    public static final ExtendedMenuType<
-        TeamManagementMenu,
-        BlockPos
-    > TEAM_MANAGEMENT = Registry.register(
-        BuiltInRegistries.MENU,
-        TradeRush.id("team_management"),
-        new ExtendedMenuType<>(TeamManagementMenu::new, BlockPos.STREAM_CODEC.cast())
-    );
+    public static final ExtendedMenuType<TeamManagementMenu, BlockPos> TEAM_MANAGEMENT = Registry
+            .register(
+                    BuiltInRegistries.MENU,
+                    TradeRush.id("team_management"),
+                    new ExtendedMenuType<>(
+                            TeamManagementMenu::new,
+                            BlockPos.STREAM_CODEC.cast()
+                    )
+            );
 
     private TradeRushMenus() {}
 

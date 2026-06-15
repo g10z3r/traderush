@@ -3,6 +3,7 @@ package traderush.game.sale;
 import java.util.Objects;
 
 public final class SaleOperationResult<T> {
+
     private final T value;
     private final SaleError error;
 
@@ -35,7 +36,9 @@ public final class SaleOperationResult<T> {
 
     public T value() {
         if (isFailure()) {
-            throw new IllegalStateException("Cannot get value from failed sale operation.");
+            throw new IllegalStateException(
+                    "Cannot get value from failed sale operation."
+            );
         }
 
         return value;
@@ -43,7 +46,9 @@ public final class SaleOperationResult<T> {
 
     public SaleError error() {
         if (isSuccess()) {
-            throw new IllegalStateException("Cannot get error from successful sale operation.");
+            throw new IllegalStateException(
+                    "Cannot get error from successful sale operation."
+            );
         }
 
         return error;

@@ -6,22 +6,21 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import traderush.TradeRush;
 
 public record TeamManagementActionPayload(
-    Action action,
-    String teamId,
-    String value
-) implements CustomPacketPayload {
+        Action action,
+        String teamId,
+        String value
+)
+        implements CustomPacketPayload {
     private static final int MAX_VALUE_LENGTH = 256;
 
     public static final Type<TeamManagementActionPayload> TYPE = new Type<>(
-        TradeRush.id("team_management_action")
+            TradeRush.id("team_management_action")
     );
-    public static final StreamCodec<
-        RegistryFriendlyByteBuf,
-        TeamManagementActionPayload
-    > CODEC = StreamCodec.ofMember(
-        TeamManagementActionPayload::write,
-        TeamManagementActionPayload::read
-    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, TeamManagementActionPayload> CODEC = StreamCodec
+            .ofMember(
+                    TeamManagementActionPayload::write,
+                    TeamManagementActionPayload::read
+            );
 
     public TeamManagementActionPayload {
         action = action == null ? Action.REFRESH : action;
@@ -31,9 +30,9 @@ public record TeamManagementActionPayload(
 
     public static TeamManagementActionPayload refresh(String selectedTeamId) {
         return new TeamManagementActionPayload(
-            Action.REFRESH,
-            selectedTeamId,
-            ""
+                Action.REFRESH,
+                selectedTeamId,
+                ""
         );
     }
 
@@ -44,12 +43,12 @@ public record TeamManagementActionPayload(
     }
 
     private static TeamManagementActionPayload read(
-        RegistryFriendlyByteBuf buf
+            RegistryFriendlyByteBuf buf
     ) {
         return new TeamManagementActionPayload(
-            buf.readEnum(Action.class),
-            buf.readUtf(MAX_VALUE_LENGTH),
-            buf.readUtf(MAX_VALUE_LENGTH)
+                buf.readEnum(Action.class),
+                buf.readUtf(MAX_VALUE_LENGTH),
+                buf.readUtf(MAX_VALUE_LENGTH)
         );
     }
 

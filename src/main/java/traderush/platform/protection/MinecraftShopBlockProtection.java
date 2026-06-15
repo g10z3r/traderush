@@ -1,12 +1,11 @@
 package traderush.platform.protection;
 
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import traderush.game.shop.ShopLocation;
 import traderush.game.shop.ShopProtectionSpec;
 import traderush.game.shop.ShopService;
-
-import java.util.function.Supplier;
 
 public final class MinecraftShopBlockProtection {
     private static Supplier<ShopService> shopServiceSupplier = null;
@@ -15,7 +14,8 @@ public final class MinecraftShopBlockProtection {
 
     public static void register(Supplier<ShopService> supplier) {
         shopServiceSupplier = supplier;
-        ShopBlockBreakProtection.register(MinecraftShopBlockProtection::isProtected);
+        ShopBlockBreakProtection
+                .register(MinecraftShopBlockProtection::isProtected);
     }
 
     public static boolean isProtected(ServerLevel level, BlockPos pos) {

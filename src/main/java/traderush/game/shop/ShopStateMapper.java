@@ -1,15 +1,15 @@
 package traderush.game.shop;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ShopStateMapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShopStateMapper.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ShopStateMapper.class);
 
     private ShopStateMapper() {}
 
@@ -61,16 +61,21 @@ public final class ShopStateMapper {
         );
     }
 
-    public static void restoreInto(ShopRepository repository, ShopStateSnapshot snapshot) {
+    public static void restoreInto(
+            ShopRepository repository,
+            ShopStateSnapshot snapshot
+    ) {
         if (snapshot == null) {
             return;
         }
 
-        for (ShopStateSnapshot.OfferShopSnapshot shopSnapshot : snapshot.offerShops()) {
+        for (ShopStateSnapshot.OfferShopSnapshot shopSnapshot : snapshot
+                .offerShops()) {
             restoreOfferShop(repository, shopSnapshot);
         }
 
-        for (ShopStateSnapshot.ContractShopSnapshot shopSnapshot : snapshot.contractShops()) {
+        for (ShopStateSnapshot.ContractShopSnapshot shopSnapshot : snapshot
+                .contractShops()) {
             restoreContractShop(repository, shopSnapshot);
         }
     }
@@ -102,7 +107,8 @@ public final class ShopStateMapper {
         }
 
         try {
-            repository.put(new OfferShop(shopId, shopSnapshot.name(), location));
+            repository
+                    .put(new OfferShop(shopId, shopSnapshot.name(), location));
         } catch (IllegalArgumentException exception) {
             LOGGER.warn(
                     "Skipping invalid offer shop snapshot. Shop id: {}",
@@ -162,7 +168,15 @@ public final class ShopStateMapper {
         }
 
         try {
-            repository.put(new ContractShop(shopId, shopSnapshot.name(), location, owner, tags));
+            repository.put(
+                    new ContractShop(
+                            shopId,
+                            shopSnapshot.name(),
+                            location,
+                            owner,
+                            tags
+                    )
+            );
         } catch (IllegalArgumentException exception) {
             LOGGER.warn(
                     "Skipping invalid contract shop snapshot. Shop id: {}",
@@ -181,7 +195,10 @@ public final class ShopStateMapper {
         try {
             return ShopId.fromString(rawShopId);
         } catch (IllegalArgumentException exception) {
-            LOGGER.warn("Skipping shop snapshot with invalid id: {}", rawShopId);
+            LOGGER.warn(
+                    "Skipping shop snapshot with invalid id: {}",
+                    rawShopId
+            );
             return null;
         }
     }
@@ -196,7 +213,10 @@ public final class ShopStateMapper {
         try {
             return new ShopLocation(dimensionId, x, y, z);
         } catch (IllegalArgumentException exception) {
-            LOGGER.warn("Skipping shop snapshot with invalid location. Shop id: {}", shopIdForLog);
+            LOGGER.warn(
+                    "Skipping shop snapshot with invalid location. Shop id: {}",
+                    shopIdForLog
+            );
             return null;
         }
     }

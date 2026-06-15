@@ -11,7 +11,8 @@ public record ShopStateSnapshot(
 
     public ShopStateSnapshot {
         offerShops = offerShops == null ? List.of() : List.copyOf(offerShops);
-        contractShops = contractShops == null ? List.of() : List.copyOf(contractShops);
+        contractShops = contractShops == null ? List.of()
+                : List.copyOf(contractShops);
     }
 
     public static ShopStateSnapshot empty() {
@@ -25,7 +26,8 @@ public record ShopStateSnapshot(
             int x,
             int y,
             int z
-    ) {}
+    ) {
+    }
 
     public record ContractShopSnapshot(
             String id,

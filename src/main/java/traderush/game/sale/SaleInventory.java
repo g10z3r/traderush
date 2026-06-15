@@ -1,13 +1,12 @@
 package traderush.game.sale;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-
 import traderush.game.item.ItemId;
-import traderush.game.offer.OfferUnit;
 import traderush.game.offer.ItemRequirement;
+import traderush.game.offer.OfferUnit;
 
 final class SaleInventory {
     private final Map<ItemId, Integer> quantitiesByItemId = new LinkedHashMap<>();
@@ -26,11 +25,8 @@ final class SaleInventory {
                 continue;
             }
 
-            inventory.quantitiesByItemId.merge(
-                    item.itemId(),
-                    item.quantity(),
-                    Integer::sum
-            );
+            inventory.quantitiesByItemId
+                    .merge(item.itemId(), item.quantity(), Integer::sum);
         }
 
         return inventory;
@@ -40,7 +36,8 @@ final class SaleInventory {
         int maxUnits = Integer.MAX_VALUE;
 
         for (ItemRequirement requirement : unit.requirements()) {
-            int available = quantitiesByItemId.getOrDefault(requirement.itemId(), 0);
+            int available = quantitiesByItemId
+                    .getOrDefault(requirement.itemId(), 0);
             maxUnits = Math.min(maxUnits, available / requirement.quantity());
         }
 
@@ -76,7 +73,8 @@ final class SaleInventory {
 
     private boolean canConsume(List<ItemRequirement> requirements) {
         for (ItemRequirement requirement : requirements) {
-            int available = quantitiesByItemId.getOrDefault(requirement.itemId(), 0);
+            int available = quantitiesByItemId
+                    .getOrDefault(requirement.itemId(), 0);
 
             if (available < requirement.quantity()) {
                 return false;

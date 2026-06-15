@@ -1,14 +1,13 @@
 package traderush.game.sale;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import traderush.game.offer.ActiveOffer;
 import traderush.game.offer.Offer;
 import traderush.game.offer.OfferRepository;
 import traderush.game.offer.OfferUnit;
 import traderush.game.shop.ShopId;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public final class SaleCalculator {
     public SalePreview calculate(
@@ -19,13 +18,21 @@ public final class SaleCalculator {
             long currentTick
     ) {
         Objects.requireNonNull(shopId, "shop id cannot be null");
-        Objects.requireNonNull(offerRepository, "offer repository cannot be null");
+        Objects.requireNonNull(
+                offerRepository,
+                "offer repository cannot be null"
+        );
 
         SaleInventory inventory = SaleInventory.fromItems(items);
         List<SaleLine> lines = new ArrayList<>();
 
         if (activeOffers == null || activeOffers.isEmpty()) {
-            return new SalePreview(shopId, List.of(), inventory.remainingItems(), 0);
+            return new SalePreview(
+                    shopId,
+                    List.of(),
+                    inventory.remainingItems(),
+                    0
+            );
         }
 
         for (ActiveOffer activeOffer : activeOffers) {
@@ -40,7 +47,8 @@ public final class SaleCalculator {
                 continue;
             }
 
-            int remainingCapacity = activeOffer.remainingUnitCapacity(currentTick);
+            int remainingCapacity = activeOffer
+                    .remainingUnitCapacity(currentTick);
 
             if (remainingCapacity <= 0) {
                 continue;
@@ -81,9 +89,7 @@ public final class SaleCalculator {
             }
         }
 
-        long totalPoints = lines.stream()
-                .mapToLong(SaleLine::points)
-                .sum();
+        long totalPoints = lines.stream().mapToLong(SaleLine::points).sum();
 
         return new SalePreview(
                 shopId,

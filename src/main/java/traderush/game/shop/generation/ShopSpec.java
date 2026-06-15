@@ -13,16 +13,21 @@ public abstract class ShopSpec {
             ShopSpawnArea spawnArea
     ) {
         if (generationKey == null || generationKey.isBlank()) {
-            throw new IllegalArgumentException("shop generation key cannot be blank");
+            throw new IllegalArgumentException(
+                    "shop generation key cannot be blank"
+            );
         }
 
         if (displayName == null || displayName.isBlank()) {
-            throw new IllegalArgumentException("shop display name cannot be blank");
+            throw new IllegalArgumentException(
+                    "shop display name cannot be blank"
+            );
         }
 
         this.generationKey = generationKey.trim();
         this.displayName = displayName.trim();
-        this.spawnArea = Objects.requireNonNull(spawnArea, "shop spawn area cannot be null");
+        this.spawnArea = Objects
+                .requireNonNull(spawnArea, "shop spawn area cannot be null");
     }
 
     public String generationKey() {

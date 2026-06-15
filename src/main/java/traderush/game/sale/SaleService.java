@@ -1,21 +1,20 @@
 package traderush.game.sale;
 
-import traderush.game.shop.ShopRepository;
-import traderush.game.team.TeamService;
-import traderush.game.offer.OfferRepository;
-import traderush.game.offer.ActiveOfferRepository;
-import traderush.game.shop.Shop;
-import traderush.game.shop.ShopId;
-import traderush.game.offer.ActiveOffer;
-import traderush.game.player.PlayerId;
-import traderush.game.team.Team;
-import traderush.game.offer.ActiveOfferId;
-
-import java.util.Objects;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import traderush.game.offer.ActiveOffer;
+import traderush.game.offer.ActiveOfferId;
+import traderush.game.offer.ActiveOfferRepository;
+import traderush.game.offer.OfferRepository;
+import traderush.game.player.PlayerId;
+import traderush.game.shop.Shop;
+import traderush.game.shop.ShopId;
+import traderush.game.shop.ShopRepository;
+import traderush.game.team.Team;
+import traderush.game.team.TeamService;
 
 public final class SaleService {
     private final ShopRepository shopRepository;
@@ -34,19 +33,32 @@ public final class SaleService {
             Runnable onStateChanged
     ) {
         this.shopRepository = Objects
-                .requireNonNull(shopRepository, "shop repository cannot be null");
+                .requireNonNull(
+                        shopRepository,
+                        "shop repository cannot be null"
+                );
         this.teamService = Objects
                 .requireNonNull(teamService, "team service cannot be null");
-        this.offerRepository = Objects.requireNonNull(
-                offerRepository,
-                "offer repository cannot be null"
-        );
+        this.offerRepository = Objects
+                .requireNonNull(
+                        offerRepository,
+                        "offer repository cannot be null"
+                );
         this.activeOfferRepository = Objects
-                .requireNonNull(activeOfferRepository, "active offer repository cannot be null");
+                .requireNonNull(
+                        activeOfferRepository,
+                        "active offer repository cannot be null"
+                );
         this.saleCalculator = Objects
-                .requireNonNull(saleCalculator, "sale calculator cannot be null");
+                .requireNonNull(
+                        saleCalculator,
+                        "sale calculator cannot be null"
+                );
         this.onStateChanged = Objects
-                .requireNonNull(onStateChanged, "state change callback cannot be null");
+                .requireNonNull(
+                        onStateChanged,
+                        "state change callback cannot be null"
+                );
     }
 
     public SaleOperationResult<SalePreview> previewSale(
@@ -59,7 +71,8 @@ public final class SaleService {
             return SaleOperationResult.failure(SaleError.SHOP_NOT_FOUND);
         }
 
-        List<ActiveOffer> activeOffers = activeOfferRepository.getAllByShopId(shopId)
+        List<ActiveOffer> activeOffers = activeOfferRepository
+                .getAllByShopId(shopId)
                 .stream()
                 .filter(activeOffer -> activeOffer.isAccepting(currentTick))
                 .toList();
@@ -67,13 +80,14 @@ public final class SaleService {
             return SaleOperationResult.failure(SaleError.NO_ACTIVE_OFFERS);
         }
 
-        SalePreview preview = saleCalculator.calculate(
-                shopId,
-                items,
-                activeOffers,
-                offerRepository,
-                currentTick
-        );
+        SalePreview preview = saleCalculator
+                .calculate(
+                        shopId,
+                        items,
+                        activeOffers,
+                        offerRepository,
+                        currentTick
+                );
         return SaleOperationResult.success(preview);
     }
 
@@ -111,8 +125,11 @@ public final class SaleService {
                         )
                 );
 
-        for (Map.Entry<ActiveOfferId, Integer> entry : unitsToSellByOfferId.entrySet()) {
-            ActiveOffer activeOffer = activeOfferRepository.getById(entry.getKey()).orElse(null);
+        for (Map.Entry<ActiveOfferId, Integer> entry : unitsToSellByOfferId
+                .entrySet()) {
+            ActiveOffer activeOffer = activeOfferRepository
+                    .getById(entry.getKey())
+                    .orElse(null);
             if (activeOffer == null) {
                 continue;
             }
@@ -135,5 +152,4 @@ public final class SaleService {
         onStateChanged.run();
         return SaleOperationResult.success(transaction);
     }
-
 }

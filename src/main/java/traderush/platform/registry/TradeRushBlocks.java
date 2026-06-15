@@ -9,46 +9,44 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.Block;
 import traderush.TradeRush;
 import traderush.platform.block.TeamManagementBlock;
 
 public final class TradeRushBlocks {
     public static final String TEAM_MANAGEMENT_BLOCK_PATH = "team_management_block";
-    public static final Identifier TEAM_MANAGEMENT_BLOCK_ID = TradeRush.id(
-        TEAM_MANAGEMENT_BLOCK_PATH
-    );
+    public static final Identifier TEAM_MANAGEMENT_BLOCK_ID = TradeRush
+            .id(TEAM_MANAGEMENT_BLOCK_PATH);
     public static final TeamManagementBlock TEAM_MANAGEMENT_BLOCK = new TeamManagementBlock(
-        BlockBehaviour.Properties.of()
-            .setId(blockKey(TEAM_MANAGEMENT_BLOCK_ID))
-            .strength(3.0F, 6.0F)
-            .sound(SoundType.METAL)
+            BlockBehaviour.Properties.of()
+                    .setId(blockKey(TEAM_MANAGEMENT_BLOCK_ID))
+                    .strength(3.0F, 6.0F)
+                    .sound(SoundType.METAL)
     );
     public static final BlockItem TEAM_MANAGEMENT_BLOCK_ITEM = new BlockItem(
-        TEAM_MANAGEMENT_BLOCK,
-        new Item.Properties()
-            .setId(itemKey(TEAM_MANAGEMENT_BLOCK_ID))
-            .useBlockDescriptionPrefix()
+            TEAM_MANAGEMENT_BLOCK,
+            new Item.Properties().setId(itemKey(TEAM_MANAGEMENT_BLOCK_ID))
+                    .useBlockDescriptionPrefix()
     );
 
     private TradeRushBlocks() {}
 
     public static void register() {
         Registry.register(
-            BuiltInRegistries.BLOCK,
-            TEAM_MANAGEMENT_BLOCK_ID,
-            TEAM_MANAGEMENT_BLOCK
+                BuiltInRegistries.BLOCK,
+                TEAM_MANAGEMENT_BLOCK_ID,
+                TEAM_MANAGEMENT_BLOCK
         );
         Registry.register(
-            BuiltInRegistries.ITEM,
-            TEAM_MANAGEMENT_BLOCK_ID,
-            TEAM_MANAGEMENT_BLOCK_ITEM
+                BuiltInRegistries.ITEM,
+                TEAM_MANAGEMENT_BLOCK_ID,
+                TEAM_MANAGEMENT_BLOCK_ITEM
         );
-        CreativeModeTabEvents.modifyOutputEvent(
-            CreativeModeTabs.FUNCTIONAL_BLOCKS
-        ).register(output -> output.accept(TEAM_MANAGEMENT_BLOCK_ITEM));
+        CreativeModeTabEvents
+                .modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
+                .register(output -> output.accept(TEAM_MANAGEMENT_BLOCK_ITEM));
     }
 
     private static ResourceKey<Block> blockKey(Identifier id) {

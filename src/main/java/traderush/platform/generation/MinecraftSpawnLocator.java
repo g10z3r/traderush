@@ -1,5 +1,6 @@
 package traderush.platform.generation;
 
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -11,10 +12,9 @@ import net.minecraft.world.level.storage.LevelData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-
 public final class MinecraftSpawnLocator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MinecraftSpawnLocator.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MinecraftSpawnLocator.class);
 
     private static final int MAX_SCAN_RADIUS = 200;
     private static final int SCAN_STEP = 16;
@@ -31,7 +31,9 @@ public final class MinecraftSpawnLocator {
         if (flatSpawn.isPresent()) {
             BlockPos newSpawn = flatSpawn.get();
             ResourceKey<Level> dimension = overworld.dimension();
-            overworld.setRespawnData(LevelData.RespawnData.of(dimension, newSpawn, 0.0f, 0.0f));
+            overworld.setRespawnData(
+                    LevelData.RespawnData.of(dimension, newSpawn, 0.0f, 0.0f)
+            );
             LOGGER.info(
                     "Spawn set to flat area at {} (was {}).",
                     newSpawn,
@@ -46,7 +48,10 @@ public final class MinecraftSpawnLocator {
         }
     }
 
-    private Optional<BlockPos> findFlatSpawn(ServerLevel level, BlockPos origin) {
+    private Optional<BlockPos> findFlatSpawn(
+            ServerLevel level,
+            BlockPos origin
+    ) {
         int ox = origin.getX();
         int oz = origin.getZ();
 
@@ -97,7 +102,8 @@ public final class MinecraftSpawnLocator {
                     return false;
                 }
 
-                BlockState surface = level.getBlockState(new BlockPos(x, h - 1, z));
+                BlockState surface = level
+                        .getBlockState(new BlockPos(x, h - 1, z));
                 if (!surface.getFluidState().isEmpty()) {
                     return false;
                 }
@@ -116,7 +122,8 @@ public final class MinecraftSpawnLocator {
 
     private BlockPos getSurface(ServerLevel level, int x, int z) {
         level.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, true);
-        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        int y = level
+                .getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
         return new BlockPos(x, y, z);
     }
 }

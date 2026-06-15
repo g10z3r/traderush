@@ -1,5 +1,7 @@
 package traderush.platform.generation;
 
+import java.util.List;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -24,17 +26,14 @@ import traderush.game.shop.generation.ShopGenerationPlanner;
 import traderush.game.shop.generation.ShopSpec;
 import traderush.platform.protection.ShopProtectionBypass;
 
-import java.util.List;
-import java.util.UUID;
-
 /**
- * Orchestrates shop generation for a new world.
- * Writes shops into the repository and places gold-block markers in the world.
- * Does NOT trigger saves — the caller is responsible for persisting state.
+ * Orchestrates shop generation for a new world. Writes shops into the
+ * repository and places gold-block markers in the world. Does NOT trigger saves
+ * — the caller is responsible for persisting state.
  */
 public final class MinecraftShopGenerationCoordinator {
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(MinecraftShopGenerationCoordinator.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MinecraftShopGenerationCoordinator.class);
 
     private final MinecraftServer server;
 
@@ -45,7 +44,8 @@ public final class MinecraftShopGenerationCoordinator {
     /**
      * Plans and executes placements for the default shop generation plan.
      *
-     * @throws ShopGenerationException if a location cannot be resolved for any shop
+     * @throws ShopGenerationException if a location cannot be resolved for any
+     *                                 shop
      */
     public void execute(ShopRepository shopRepository) {
         ShopGenerationPlan plan = DefaultShopGenerationPlan.create();
@@ -59,10 +59,16 @@ public final class MinecraftShopGenerationCoordinator {
             executePlacement(placement, shopRepository);
         }
 
-        LOGGER.info("Shop generation complete. {} shop(s) placed.", placements.size());
+        LOGGER.info(
+                "Shop generation complete. {} shop(s) placed.",
+                placements.size()
+        );
     }
 
-    private void executePlacement(ShopGenerationPlacement placement, ShopRepository shopRepository) {
+    private void executePlacement(
+            ShopGenerationPlacement placement,
+            ShopRepository shopRepository
+    ) {
         ShopSpec spec = placement.spec();
         ShopLocation location = placement.location();
 
@@ -93,7 +99,8 @@ public final class MinecraftShopGenerationCoordinator {
 
     private void placeMarkerBlock(ShopLocation location) {
         Identifier dimId = Identifier.parse(location.dimensionId());
-        ResourceKey<Level> dimKey = ResourceKey.create(Registries.DIMENSION, dimId);
+        ResourceKey<Level> dimKey = ResourceKey
+                .create(Registries.DIMENSION, dimId);
         ServerLevel level = server.getLevel(dimKey);
 
         if (level == null) {
@@ -105,8 +112,13 @@ public final class MinecraftShopGenerationCoordinator {
         }
 
         BlockPos pos = new BlockPos(location.x(), location.y(), location.z());
-        ShopProtectionBypass.run(() ->
-                level.setBlock(pos, Blocks.GOLD_BLOCK.defaultBlockState(), 3)
-        );
+        ShopProtectionBypass
+                .run(
+                        () -> level.setBlock(
+                                pos,
+                                Blocks.GOLD_BLOCK.defaultBlockState(),
+                                3
+                        )
+                );
     }
 }

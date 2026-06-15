@@ -1,18 +1,16 @@
 package traderush.game.sale;
 
+import java.util.Objects;
 import traderush.game.item.ItemId;
 
-import java.util.Objects;
-
-public record SaleItemStack(
-        ItemId itemId,
-        int quantity
-) {
+public record SaleItemStack(ItemId itemId, int quantity) {
     public SaleItemStack {
         Objects.requireNonNull(itemId, "sale item id cannot be null");
 
         if (quantity <= 0) {
-            throw new IllegalArgumentException("sale item quantity must be positive");
+            throw new IllegalArgumentException(
+                    "sale item quantity must be positive"
+            );
         }
     }
 

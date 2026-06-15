@@ -1,22 +1,20 @@
 package traderush.platform.storage.team;
 
-import net.minecraft.world.level.saveddata.SavedData;
-import traderush.game.team.TeamStateSnapshot;
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.saveddata.SavedDataType;
 import java.util.Optional;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import traderush.TradeRush;
+import traderush.game.team.TeamStateSnapshot;
 
 public final class TeamSavedData extends SavedData {
     private static final String DATA_PATH = "team_state";
 
-    private static final Codec<TeamSavedData> CODEC = TeamStateSnapshotCodec.SNAPSHOT.xmap(
-            TeamSavedData::new,
-            TeamSavedData::snapshot
-    );
+    private static final Codec<TeamSavedData> CODEC = TeamStateSnapshotCodec.SNAPSHOT
+            .xmap(TeamSavedData::new, TeamSavedData::snapshot);
 
     private static final SavedDataType<TeamSavedData> TYPE = new SavedDataType<>(
             Identifier.fromNamespaceAndPath(TradeRush.MOD_ID, DATA_PATH),

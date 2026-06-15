@@ -1,10 +1,10 @@
 package traderush.platform.storage.team;
 
-import traderush.game.team.TeamStateStore;
 import java.io.IOException;
 import java.util.Optional;
 import net.minecraft.server.MinecraftServer;
 import traderush.game.team.TeamStateSnapshot;
+import traderush.game.team.TeamStateStore;
 
 public final class MinecraftTeamStateStore implements TeamStateStore {
     private final MinecraftServer server;
@@ -22,5 +22,4 @@ public final class MinecraftTeamStateStore implements TeamStateStore {
     public void save(TeamStateSnapshot snapshot) throws IOException {
         TeamSavedData.getOrCreate(server).setSnapshot(snapshot);
     }
-
 }
