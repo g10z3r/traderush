@@ -1,9 +1,8 @@
 package traderush.game.team;
 
-import traderush.game.player.PlayerId;
-
 import java.util.List;
 import java.util.Optional;
+import traderush.game.player.PlayerId;
 
 public interface TeamRepository {
     Team put(Team team);

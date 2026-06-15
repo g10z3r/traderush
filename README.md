@@ -6,6 +6,16 @@ A Fabric mod for Minecraft.
 
 For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
 
+## Blocks
+
+Trade Rush adds the following blocks:
+
+### Team Management Block
+
+- Block ID: `trade-rush:team_management_block`
+- Includes a matching block item.
+- Provides an in-game UI for the team-management features available through `/traderush team`.
+
 ## Commands
 
 Team commands are available under `/traderush` and the short alias `/tr`.
@@ -33,6 +43,18 @@ Adds the executing player to the named team.
 Removes the executing player from their current team.
 
 - Must be run by a player.
+
+
+### `/traderush team rename <currentName> <newName>`
+
+Renames an existing team.
+
+- Also available through the short alias: `/tr team rename <currentName> <newName>`.
+- The current team must exist; it may have members.
+- `currentName` supports tab completion and quoted names. Use quotes when the current name contains spaces, for example: `/traderush team rename "Red Team" Blue Team`.
+- `newName` is parsed as the rest of the command, so it may contain spaces without quotes.
+- The new name is trimmed, must be between 3 and 64 characters, and must be unique.
+- Can be run by any command source.
 
 
 ### `/traderush team delete <name>`
@@ -66,7 +88,7 @@ Lists all teams, sorted by score (highest first), then by name.
 | Unknown team | Team does not exist. |
 | Already in team | You are already in a team. |
 | Not in a team | You are not in a team. |
-| Team not empty | Team cannot be deleted while it has members. |
+| Team not empty | Team still has members. |
 
 ## License
 

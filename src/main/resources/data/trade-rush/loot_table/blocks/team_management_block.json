@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "trade-rush:team_management_block"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "trade-rush:blocks/team_management_block"
+}
