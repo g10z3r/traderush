@@ -11,6 +11,7 @@ import traderush.platform.command.ShopCommand;
 import traderush.platform.command.StatusCommand;
 import traderush.platform.command.TeamCommand;
 import traderush.platform.protection.MinecraftShopBlockProtection;
+import traderush.platform.protection.MinecraftTeamBlockProtection;
 import traderush.platform.registry.TradeRushBlocks;
 import traderush.platform.registry.TradeRushMenus;
 import traderush.platform.ui.team.TeamManagementNetworking;
@@ -39,6 +40,8 @@ public class TradeRush implements ModInitializer {
         TeamCommand.register(() -> runtime().teamService());
         ShopCommand.register(() -> runtime().shopService());
         MinecraftShopBlockProtection.register(() -> runtime().shopService());
+        MinecraftTeamBlockProtection
+                .register(() -> runtime().managementBlockLocation());
 
         CommandRegistrationCallback.EVENT
                 .register((dispatcher, registryAccess, environment) -> {

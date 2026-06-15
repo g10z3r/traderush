@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import traderush.platform.protection.MinecraftShopBlockProtection;
+import traderush.platform.protection.MinecraftTeamBlockProtection;
 import traderush.platform.protection.ShopProtectionBypass;
 
 @Mixin(Level.class)
@@ -29,7 +30,7 @@ public abstract class LevelDestroyBlockMixin {
     }
 
     @Inject(method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", at = @At("HEAD"), cancellable = true)
-    private void tradeRush$protectShopArea(
+    private void tradeRush$protectArea(
             BlockPos pos,
             BlockState state,
             int flags,
@@ -43,11 +44,10 @@ public abstract class LevelDestroyBlockMixin {
             return;
         }
 
-        if (!MinecraftShopBlockProtection.isProtected(level, pos)) {
-            return;
+        if (MinecraftShopBlockProtection.isProtected(level, pos)
+                || MinecraftTeamBlockProtection.isProtected(level, pos)) {
+            callback.setReturnValue(false);
         }
-
-        callback.setReturnValue(false);
     }
 
     private boolean isProtectedServer(BlockPos pos) {
@@ -55,6 +55,7 @@ public abstract class LevelDestroyBlockMixin {
             return false;
         }
 
-        return MinecraftShopBlockProtection.isProtected(level, pos);
+        return MinecraftShopBlockProtection.isProtected(level, pos)
+                || MinecraftTeamBlockProtection.isProtected(level, pos);
     }
 }

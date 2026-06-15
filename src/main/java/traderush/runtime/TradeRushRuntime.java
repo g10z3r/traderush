@@ -15,8 +15,12 @@ import traderush.game.team.TeamRepository;
 import traderush.game.team.TeamService;
 import traderush.game.team.TeamStateMapper;
 import traderush.game.team.TeamStateSnapshot;
+import traderush.game.world.ManagementBlockLocation;
+import traderush.game.world.WorldStateMapper;
+import traderush.game.world.WorldStateSnapshot;
 import traderush.platform.generation.MinecraftShopGenerationCoordinator;
 import traderush.platform.generation.MinecraftSpawnLocator;
+import traderush.platform.generation.MinecraftTeamBlockPlacer;
 import traderush.platform.storage.TradeRushPersistence;
 
 public final class TradeRushRuntime {
@@ -28,6 +32,7 @@ public final class TradeRushRuntime {
     private final TeamService teamService;
     private final ShopRepository shopRepository;
     private final ShopService shopService;
+    private Optional<ManagementBlockLocation> managementBlockLocation;
 
     private TradeRushRuntime(
             MinecraftServer server,
@@ -59,6 +64,16 @@ public final class TradeRushRuntime {
                 shopRepository,
                 this::saveShopsSafely
         );
+
+        managementBlockLocation = loadWorldStateSafely();
+
+        if (managementBlockLocation.isEmpty()) {
+            managementBlockLocation = placeManagementBlockSafely(server);
+
+            if (managementBlockLocation.isPresent()) {
+                saveWorldStateSafely();
+            }
+        }
     }
 
     public static TradeRushRuntime create(MinecraftServer server) {
@@ -74,6 +89,10 @@ public final class TradeRushRuntime {
 
     public ShopService shopService() {
         return shopService;
+    }
+
+    public Optional<ManagementBlockLocation> managementBlockLocation() {
+        return managementBlockLocation;
     }
 
     public void saveStateSafely() {
@@ -136,6 +155,49 @@ public final class TradeRushRuntime {
             persistence.shopStateStore().save(snapshot);
         } catch (Exception exception) {
             LOGGER.error("Failed to save TradeRush shop state.", exception);
+        }
+    }
+
+    private Optional<ManagementBlockLocation> loadWorldStateSafely() {
+        try {
+            Optional<WorldStateSnapshot> snapshot = persistence
+                    .worldStateStore()
+                    .load();
+
+            if (snapshot.isEmpty()) {
+                LOGGER.info("No existing TradeRush world state found.");
+                return Optional.empty();
+            }
+
+            return WorldStateMapper.extractManagementBlock(snapshot.get());
+        } catch (Exception exception) {
+            LOGGER.error("Failed to load TradeRush world state.", exception);
+            return Optional.empty();
+        }
+    }
+
+    private void saveWorldStateSafely() {
+        try {
+            WorldStateSnapshot snapshot = WorldStateMapper
+                    .toSnapshot(managementBlockLocation);
+            persistence.worldStateStore().save(snapshot);
+        } catch (Exception exception) {
+            LOGGER.error("Failed to save TradeRush world state.", exception);
+        }
+    }
+
+    /**
+     * @return the placed location, or empty if placement failed
+     */
+    private Optional<ManagementBlockLocation> placeManagementBlockSafely(
+            MinecraftServer server
+    ) {
+        try {
+            LOGGER.info("Placing team management block for new world...");
+            return Optional.of(new MinecraftTeamBlockPlacer(server).place());
+        } catch (Exception exception) {
+            LOGGER.error("Failed to place team management block.", exception);
+            return Optional.empty();
         }
     }
 
