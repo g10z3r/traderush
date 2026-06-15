@@ -161,7 +161,7 @@ public final class TeamServiceDomainTest {
 
         assertError(
             TeamError.TEAM_NOT_EMPTY,
-            harness.service.deleteTeam(team.getId(), false)
+            harness.service.deleteTeam(team.getId())
         );
         assertTrue(
             harness.repository.getById(team.getId()).isPresent(),

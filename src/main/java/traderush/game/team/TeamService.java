@@ -177,6 +177,10 @@ public final class TeamService {
         return TeamOperationResult.success(renamedTeam);
     }
 
+    public TeamOperationResult<Team> deleteTeam(TeamId teamId) {
+        return deleteTeam(teamId, false);
+    }
+
     public TeamOperationResult<Team> deleteTeam(String name, boolean force) {
         String trimmedName = trimName(name);
 

@@ -167,10 +167,7 @@ public final class TeamManagementNetworking {
             return;
         }
 
-        TeamOperationResult<Team> result = teamService.deleteTeam(
-            teamId,
-            false
-        );
+        TeamOperationResult<Team> result = teamService.deleteTeam(teamId);
         sendResult(player, result, "", TeamMessages::deleted);
     }
 
