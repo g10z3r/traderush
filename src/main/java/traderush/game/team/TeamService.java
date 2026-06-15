@@ -150,11 +150,6 @@ public final class TeamService {
         }
 
         Team toRename = team.get();
-
-        if (!toRename.getPlayers().isEmpty()) {
-            return TeamOperationResult.error(TeamError.TEAM_NOT_EMPTY);
-        }
-
         String trimmedNewName = trimName(newName);
         Optional<TeamError> validationError = validateTeamName(trimmedNewName);
 

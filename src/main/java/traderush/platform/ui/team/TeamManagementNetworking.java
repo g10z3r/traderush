@@ -90,7 +90,7 @@ public final class TeamManagementNetworking {
             case JOIN -> handleJoin(teamService, player, payload);
             case LEAVE -> handleLeave(teamService, player, payload);
             case DELETE_EMPTY -> handleDelete(teamService, player, payload);
-            case RENAME_EMPTY -> handleRename(teamService, player, payload);
+            case RENAME -> handleRename(teamService, player, payload);
             case REFRESH -> sendState(
                 player,
                 payload.teamId(),

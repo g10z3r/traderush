@@ -10,8 +10,9 @@ public final class TeamServiceDomainTest {
     public static void main(String[] args) {
         createsJoinsLeavesAndDeletesTeams();
         renamesEmptyTeamWithoutChangingIdentityOrScore();
+        renamesNonEmptyTeamWithoutChangingMembers();
         rejectsDuplicateAndInvalidRenames();
-        rejectsRenameAndDeleteOfNonEmptyTeamsWithoutForce();
+        rejectsDeleteOfNonEmptyTeamsWithoutForce();
     }
 
     private static void createsJoinsLeavesAndDeletesTeams() {
@@ -110,6 +111,45 @@ public final class TeamServiceDomainTest {
         );
     }
 
+    private static void renamesNonEmptyTeamWithoutChangingMembers() {
+        Harness harness = new Harness();
+        PlayerId player = player("00000000-0000-0000-0000-000000000002");
+        Team team = assertSuccess(harness.service.createTeam("Alpha"));
+        assertSuccess(harness.service.joinTeam(player, team.getId()));
+
+        Team renamed = assertSuccess(
+            harness.service.renameTeam(team.getId(), "Omega")
+        );
+
+        assertEquals(
+            team.getId(),
+            renamed.getId(),
+            "non-empty rename should keep the id"
+        );
+        assertEquals(
+            "Omega",
+            renamed.getName(),
+            "non-empty rename should update the name"
+        );
+        assertEquals(
+            1,
+            renamed.getPlayers().size(),
+            "non-empty rename should keep member count"
+        );
+        assertTrue(
+            renamed.getPlayers().contains(player),
+            "non-empty rename should keep members"
+        );
+        assertTrue(
+            harness.repository.getByName("Alpha").isEmpty(),
+            "old non-empty team name index should be removed"
+        );
+        assertTrue(
+            harness.repository.getByName("omega").isPresent(),
+            "new non-empty team name index should be searchable case-insensitively"
+        );
+    }
+
     private static void rejectsDuplicateAndInvalidRenames() {
         Harness harness = new Harness();
         Team alpha = assertSuccess(harness.service.createTeam("Alpha"));
@@ -143,21 +183,11 @@ public final class TeamServiceDomainTest {
         );
     }
 
-    private static void rejectsRenameAndDeleteOfNonEmptyTeamsWithoutForce() {
+    private static void rejectsDeleteOfNonEmptyTeamsWithoutForce() {
         Harness harness = new Harness();
-        PlayerId player = player("00000000-0000-0000-0000-000000000002");
+        PlayerId player = player("00000000-0000-0000-0000-000000000003");
         Team team = assertSuccess(harness.service.createTeam("Alpha"));
         assertSuccess(harness.service.joinTeam(player, team.getId()));
-
-        assertError(
-            TeamError.TEAM_NOT_EMPTY,
-            harness.service.renameTeam(team.getId(), "Omega")
-        );
-        assertEquals(
-            "Alpha",
-            team.getName(),
-            "non-empty rename should not change state"
-        );
 
         assertError(
             TeamError.TEAM_NOT_EMPTY,

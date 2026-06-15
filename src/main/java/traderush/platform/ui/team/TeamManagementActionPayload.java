@@ -5,8 +5,11 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import traderush.TradeRush;
 
-public record TeamManagementActionPayload(Action action, String teamId, String value)
-    implements CustomPacketPayload {
+public record TeamManagementActionPayload(
+    Action action,
+    String teamId,
+    String value
+) implements CustomPacketPayload {
     private static final int MAX_VALUE_LENGTH = 256;
 
     public static final Type<TeamManagementActionPayload> TYPE = new Type<>(
@@ -27,7 +30,11 @@ public record TeamManagementActionPayload(Action action, String teamId, String v
     }
 
     public static TeamManagementActionPayload refresh(String selectedTeamId) {
-        return new TeamManagementActionPayload(Action.REFRESH, selectedTeamId, "");
+        return new TeamManagementActionPayload(
+            Action.REFRESH,
+            selectedTeamId,
+            ""
+        );
     }
 
     private void write(RegistryFriendlyByteBuf buf) {
@@ -36,7 +43,9 @@ public record TeamManagementActionPayload(Action action, String teamId, String v
         buf.writeUtf(value, MAX_VALUE_LENGTH);
     }
 
-    private static TeamManagementActionPayload read(RegistryFriendlyByteBuf buf) {
+    private static TeamManagementActionPayload read(
+        RegistryFriendlyByteBuf buf
+    ) {
         return new TeamManagementActionPayload(
             buf.readEnum(Action.class),
             buf.readUtf(MAX_VALUE_LENGTH),
@@ -58,7 +67,7 @@ public record TeamManagementActionPayload(Action action, String teamId, String v
         JOIN,
         LEAVE,
         DELETE_EMPTY,
-        RENAME_EMPTY,
+        RENAME,
         REFRESH,
     }
 }

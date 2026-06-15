@@ -317,7 +317,7 @@ public final class TeamManagementScreen
                 ),
                 button ->
                     sendAction(
-                        Action.RENAME_EMPTY,
+                        Action.RENAME,
                         selectedTeamId,
                         renameNameInput.getValue()
                     )
@@ -425,7 +425,7 @@ public final class TeamManagementScreen
         ) {
             createNameInput.setValue("");
         } else if (
-            pendingClear.action() == Action.RENAME_EMPTY &&
+            pendingClear.action() == Action.RENAME &&
             renameNameInput != null &&
             renameNameInput.getValue().equals(pendingClear.value())
         ) {
@@ -530,16 +530,14 @@ public final class TeamManagementScreen
 
         if (renameNameInput != null) {
             renameNameInput.visible = renameInputVisible;
-            renameNameInput.active = renameInputVisible && selectedTeamIsEmpty;
-            renameNameInput.setEditable(
-                renameInputVisible && selectedTeamIsEmpty
-            );
+            renameNameInput.active = renameInputVisible && hasSelectedTeam;
+            renameNameInput.setEditable(renameInputVisible && hasSelectedTeam);
         }
 
         if (renameButton != null) {
             renameButton.visible = renameButtonsVisible;
             renameButton.active =
-                renameButtonsVisible && hasRenameName && selectedTeamIsEmpty;
+                renameButtonsVisible && hasSelectedTeam && hasRenameName;
         }
 
         if (deleteButton != null) {
@@ -598,7 +596,7 @@ public final class TeamManagementScreen
     }
 
     private void trackTextInputClearOnSuccess(Action action, String value) {
-        if (action == Action.CREATE || action == Action.RENAME_EMPTY) {
+        if (action == Action.CREATE || action == Action.RENAME) {
             pendingTextInputClear = new PendingTextInputClear(
                 action,
                 value == null ? "" : value
@@ -805,7 +803,7 @@ public final class TeamManagementScreen
             layout.renameLabelY() - actionScrollOffset,
             TEXT_COLOR
         );
-        drawEmptyTeamExplanation(graphics, layout);
+        drawDeleteTeamExplanation(graphics, layout);
         graphics.text(
             this.font,
             Component.translatable(
@@ -922,7 +920,7 @@ public final class TeamManagementScreen
         );
     }
 
-    private void drawEmptyTeamExplanation(
+    private void drawDeleteTeamExplanation(
         GuiGraphicsExtractor graphics,
         TeamManagementScreenLayout layout
     ) {
@@ -935,7 +933,7 @@ public final class TeamManagementScreen
         graphics.textWithWordWrap(
             this.font,
             Component.translatable(
-                "screen.trade-rush.team_management.empty_team_actions_only"
+                "screen.trade-rush.team_management.delete_empty_team_only"
             ),
             layout.actionsContentX(),
             layout.emptyTeamExplanationY() - actionScrollOffset,

@@ -47,10 +47,10 @@ Removes the executing player from their current team.
 
 ### `/traderush team rename <currentName> <newName>`
 
-Renames an existing empty team.
+Renames an existing team.
 
 - Also available through the short alias: `/tr team rename <currentName> <newName>`.
-- The current team must exist and must be empty.
+- The current team must exist; it may have members.
 - `currentName` supports tab completion and quoted names. Use quotes when the current name contains spaces, for example: `/traderush team rename "Red Team" Blue Team`.
 - `newName` is parsed as the rest of the command, so it may contain spaces without quotes.
 - The new name is trimmed, must be between 3 and 64 characters, and must be unique.

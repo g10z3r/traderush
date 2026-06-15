@@ -19,7 +19,7 @@
   "screen.trade-rush.team_management.create_section": "Create team",
   "screen.trade-rush.team_management.rename_input": "New team name",
   "screen.trade-rush.team_management.rename_hint": "Enter a new team name",
-  "screen.trade-rush.team_management.empty_team_actions_only": "This team has members. Rename and delete are available only for empty teams.",
+  "screen.trade-rush.team_management.delete_empty_team_only": "This team has members. Delete is available only for empty teams.",
   "screen.trade-rush.team_management.create": "Create",
   "screen.trade-rush.team_management.rename": "Rename",
   "screen.trade-rush.team_management.join": "Join",
