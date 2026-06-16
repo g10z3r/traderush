@@ -3,9 +3,12 @@ package traderush.game.team;
 import java.util.UUID;
 import traderush.game.player.PlayerId;
 import traderush.platform.ui.TeamUiBroadcasterDomainTest;
+import traderush.platform.ui.rating.RatingPaintingNetworkingDomainTest;
 import traderush.platform.ui.rating.TeamRatingBookSnapshot;
-import traderush.platform.ui.rating.TeamRatingBookSnapshot.Row;
 import traderush.platform.ui.rating.TeamRatingBookSnapshots;
+import traderush.platform.ui.rating.TeamRatingPaintingSnapshot;
+import traderush.platform.ui.rating.TeamRatingPaintingSnapshots;
+import traderush.platform.ui.rating.TeamRatingRow;
 
 public final class TeamServiceDomainTest {
 
@@ -18,7 +21,13 @@ public final class TeamServiceDomainTest {
         rejectsDuplicateAndInvalidRenames();
         rejectsDeleteOfNonEmptyTeamsWithoutForce();
         buildsRatingBookSnapshotFromTeamRanking();
+        buildsEmptyRatingPaintingSnapshot();
+        buildsRatingPaintingSnapshotBelowLimit();
+        limitsRatingPaintingSnapshotToTopRows();
+        buildsRatingPaintingSnapshotInScoreDescendingOrder();
+        buildsRatingPaintingSnapshotWithSequentialPlacesForTies();
         TeamUiBroadcasterDomainTest.run();
+        RatingPaintingNetworkingDomainTest.run();
     }
 
     private static void createsJoinsLeavesAndDeletesTeams() {
@@ -243,8 +252,115 @@ public final class TeamServiceDomainTest {
         assertRow(snapshot.rows().get(2), 3, "Alpha", 10L);
     }
 
+    private static void buildsEmptyRatingPaintingSnapshot() {
+        Harness harness = new Harness();
+
+        TeamRatingPaintingSnapshot snapshot = TeamRatingPaintingSnapshots
+                .create(harness.service);
+
+        assertTrue(
+                snapshot.runtimeReady(),
+                "painting snapshot should be ready"
+        );
+        assertTrue(
+                snapshot.rows().isEmpty(),
+                "empty painting snapshot should have no rows"
+        );
+    }
+
+    private static void buildsRatingPaintingSnapshotBelowLimit() {
+        Harness harness = new Harness();
+        Team alpha = assertSuccess(harness.service.createTeam("Alpha"));
+        Team beta = assertSuccess(harness.service.createTeam("Beta"));
+
+        assertSuccess(harness.service.awardPoints(alpha.getId(), 10));
+        assertSuccess(harness.service.awardPoints(beta.getId(), 20));
+
+        TeamRatingPaintingSnapshot snapshot = TeamRatingPaintingSnapshots
+                .create(harness.service);
+
+        assertEquals(
+                2,
+                snapshot.rows().size(),
+                "painting snapshot should include all rows below the limit"
+        );
+        assertRow(snapshot.rows().get(0), 1, "Beta", 20L);
+        assertRow(snapshot.rows().get(1), 2, "Alpha", 10L);
+    }
+
+    private static void limitsRatingPaintingSnapshotToTopRows() {
+        Harness harness = new Harness();
+
+        int teamCount = TeamRatingPaintingSnapshot.MAX_VISIBLE_ROWS + 2;
+
+        for (int index = 1; index <= teamCount; index++) {
+            Team team = assertSuccess(
+                    harness.service.createTeam("Team " + index)
+            );
+            assertSuccess(harness.service.awardPoints(team.getId(), index));
+        }
+
+        TeamRatingPaintingSnapshot snapshot = TeamRatingPaintingSnapshots
+                .create(harness.service);
+
+        assertEquals(
+                TeamRatingPaintingSnapshot.MAX_VISIBLE_ROWS,
+                snapshot.rows().size(),
+                "painting snapshot should be capped to visible rows"
+        );
+        assertRow(
+                snapshot.rows().get(0),
+                1,
+                "Team " + teamCount,
+                teamCount
+        );
+        assertRow(
+                snapshot.rows()
+                        .get(TeamRatingPaintingSnapshot.MAX_VISIBLE_ROWS - 1),
+                TeamRatingPaintingSnapshot.MAX_VISIBLE_ROWS,
+                "Team 3",
+                3L
+        );
+    }
+
+    private static void buildsRatingPaintingSnapshotInScoreDescendingOrder() {
+        Harness harness = new Harness();
+        Team low = assertSuccess(harness.service.createTeam("Low"));
+        Team high = assertSuccess(harness.service.createTeam("High"));
+        Team middle = assertSuccess(harness.service.createTeam("Middle"));
+
+        assertSuccess(harness.service.awardPoints(low.getId(), 1));
+        assertSuccess(harness.service.awardPoints(high.getId(), 30));
+        assertSuccess(harness.service.awardPoints(middle.getId(), 10));
+
+        TeamRatingPaintingSnapshot snapshot = TeamRatingPaintingSnapshots
+                .create(harness.service);
+
+        assertRow(snapshot.rows().get(0), 1, "High", 30L);
+        assertRow(snapshot.rows().get(1), 2, "Middle", 10L);
+        assertRow(snapshot.rows().get(2), 3, "Low", 1L);
+    }
+
+    private static void buildsRatingPaintingSnapshotWithSequentialPlacesForTies() {
+        Harness harness = new Harness();
+        Team alpha = assertSuccess(harness.service.createTeam("Alpha"));
+        Team beta = assertSuccess(harness.service.createTeam("Beta"));
+        Team gamma = assertSuccess(harness.service.createTeam("Gamma"));
+
+        assertSuccess(harness.service.awardPoints(alpha.getId(), 25));
+        assertSuccess(harness.service.awardPoints(beta.getId(), 25));
+        assertSuccess(harness.service.awardPoints(gamma.getId(), 25));
+
+        TeamRatingPaintingSnapshot snapshot = TeamRatingPaintingSnapshots
+                .create(harness.service);
+
+        assertRow(snapshot.rows().get(0), 1, "Alpha", 25L);
+        assertRow(snapshot.rows().get(1), 2, "Beta", 25L);
+        assertRow(snapshot.rows().get(2), 3, "Gamma", 25L);
+    }
+
     private static void assertRow(
-            Row row,
+            TeamRatingRow row,
             int place,
             String teamName,
             long score
