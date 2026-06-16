@@ -10,6 +10,10 @@ prepare = "lefthook install"
 run = "./gradlew runClient"
 run_windows = "gradlew.bat runClient"
 
+[tasks.server]
+run = "./gradlew runServer"
+run_windows = "gradlew.bat runServer"
+
 [tasks.check]
 run = "./gradlew check"
 run_windows = "gradlew.bat check"
