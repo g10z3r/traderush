@@ -14,7 +14,9 @@ import traderush.platform.offer.OfferDataLoader;
 import traderush.platform.protection.MinecraftShopBlockProtection;
 import traderush.platform.protection.MinecraftTeamBlockProtection;
 import traderush.platform.registry.TradeRushBlocks;
+import traderush.platform.registry.TradeRushItems;
 import traderush.platform.registry.TradeRushMenus;
+import traderush.platform.ui.rating.RatingBookNetworking;
 import traderush.platform.ui.shop.ShopNetworking;
 import traderush.platform.ui.team.TeamManagementNetworking;
 import traderush.runtime.TradeRushRuntime;
@@ -32,8 +34,10 @@ public class TradeRush implements ModInitializer {
         LOGGER.info("Initializing TradeRush");
 
         TradeRushBlocks.register();
+        TradeRushItems.register();
         TradeRushMenus.register();
         TeamManagementNetworking.registerPayloadTypes();
+        RatingBookNetworking.registerPayloadTypes();
         TeamManagementNetworking.registerServerHandlers();
         ShopNetworking.registerPayloadTypes();
         ShopNetworking.registerServerHandlers();

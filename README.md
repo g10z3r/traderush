@@ -16,6 +16,17 @@ Trade Rush adds the following blocks:
 - Includes a matching block item.
 - Provides an in-game UI for the team-management features available through `/traderush team`.
 
+## Items
+
+Trade Rush adds the following standalone items:
+
+### Team Rating Book
+
+- Item ID: `trade-rush:team_rating_book`
+- Opens a read-only rating of teams by score when used in hand.
+- Displays long ratings across book-like pages.
+- Automatically updates while open when server-side team state changes, including score, creation, rename, or deletion changes.
+
 ## Commands
 
 Team commands are available under `/traderush` and the short alias `/tr`.

@@ -2,6 +2,8 @@ package traderush.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.gui.screens.MenuScreens;
+import traderush.client.ui.rating.RatingBookClientNetworking;
+import traderush.client.ui.rating.RatingBookScreen;
 import traderush.client.ui.shop.ShopClientNetworking;
 import traderush.client.ui.shop.ShopOffersScreen;
 import traderush.client.ui.team.TeamManagementClientNetworking;
@@ -20,7 +22,12 @@ public class TradeRushClient implements ClientModInitializer {
                 TradeRushMenus.SHOP_OFFERS,
                 ShopOffersScreen::new
         );
+        MenuScreens.register(
+                TradeRushMenus.TEAM_RATING_BOOK,
+                RatingBookScreen::new
+        );
         TeamManagementClientNetworking.register();
+        RatingBookClientNetworking.register();
         ShopClientNetworking.register();
     }
 }

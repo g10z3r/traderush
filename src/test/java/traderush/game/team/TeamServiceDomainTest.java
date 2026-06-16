@@ -2,6 +2,10 @@ package traderush.game.team;
 
 import java.util.UUID;
 import traderush.game.player.PlayerId;
+import traderush.platform.ui.TeamUiBroadcasterDomainTest;
+import traderush.platform.ui.rating.TeamRatingBookSnapshot;
+import traderush.platform.ui.rating.TeamRatingBookSnapshot.Row;
+import traderush.platform.ui.rating.TeamRatingBookSnapshots;
 
 public final class TeamServiceDomainTest {
 
@@ -13,6 +17,8 @@ public final class TeamServiceDomainTest {
         renamesNonEmptyTeamWithoutChangingMembers();
         rejectsDuplicateAndInvalidRenames();
         rejectsDeleteOfNonEmptyTeamsWithoutForce();
+        buildsRatingBookSnapshotFromTeamRanking();
+        TeamUiBroadcasterDomainTest.run();
     }
 
     private static void createsJoinsLeavesAndDeletesTeams() {
@@ -203,6 +209,49 @@ public final class TeamServiceDomainTest {
                 harness.repository.getById(team.getId()).isEmpty(),
                 "force delete should preserve existing admin/debug behavior"
         );
+    }
+
+    private static void buildsRatingBookSnapshotFromTeamRanking() {
+        Harness harness = new Harness();
+
+        TeamRatingBookSnapshot empty = TeamRatingBookSnapshots
+                .create(harness.service);
+        assertTrue(empty.runtimeReady(), "empty snapshot should be ready");
+        assertTrue(
+                empty.rows().isEmpty(),
+                "empty snapshot should have no rows"
+        );
+
+        Team alpha = assertSuccess(harness.service.createTeam("Alpha"));
+        Team beta = assertSuccess(harness.service.createTeam("Beta"));
+        Team gamma = assertSuccess(harness.service.createTeam("Gamma"));
+
+        assertSuccess(harness.service.awardPoints(alpha.getId(), 10));
+        assertSuccess(harness.service.awardPoints(beta.getId(), 20));
+        assertSuccess(harness.service.awardPoints(gamma.getId(), 20));
+
+        TeamRatingBookSnapshot snapshot = TeamRatingBookSnapshots
+                .create(harness.service);
+
+        assertEquals(
+                3,
+                snapshot.rows().size(),
+                "snapshot should include teams"
+        );
+        assertRow(snapshot.rows().get(0), 1, "Beta", 20L);
+        assertRow(snapshot.rows().get(1), 2, "Gamma", 20L);
+        assertRow(snapshot.rows().get(2), 3, "Alpha", 10L);
+    }
+
+    private static void assertRow(
+            Row row,
+            int place,
+            String teamName,
+            long score
+    ) {
+        assertEquals(place, row.place(), "unexpected rating place");
+        assertEquals(teamName, row.teamName(), "unexpected rating team");
+        assertEquals(score, row.score(), "unexpected rating score");
     }
 
     private static PlayerId player(String uuid) {
