@@ -14,6 +14,10 @@ run_windows = "gradlew.bat runClient"
 run = "./gradlew runServer"
 run_windows = "gradlew.bat runServer"
 
+[tasks.build]
+run = "./gradlew build"
+run_windows = "gradlew.bat build"
+
 [tasks.check]
 run = "./gradlew check"
 run_windows = "gradlew.bat check"
