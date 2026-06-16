@@ -10,10 +10,12 @@ import org.slf4j.LoggerFactory;
 import traderush.platform.command.ShopCommand;
 import traderush.platform.command.StatusCommand;
 import traderush.platform.command.TeamCommand;
+import traderush.platform.offer.OfferDataLoader;
 import traderush.platform.protection.MinecraftShopBlockProtection;
 import traderush.platform.protection.MinecraftTeamBlockProtection;
 import traderush.platform.registry.TradeRushBlocks;
 import traderush.platform.registry.TradeRushMenus;
+import traderush.platform.ui.shop.ShopNetworking;
 import traderush.platform.ui.team.TeamManagementNetworking;
 import traderush.runtime.TradeRushRuntime;
 
@@ -33,6 +35,9 @@ public class TradeRush implements ModInitializer {
         TradeRushMenus.register();
         TeamManagementNetworking.registerPayloadTypes();
         TeamManagementNetworking.registerServerHandlers();
+        ShopNetworking.registerPayloadTypes();
+        ShopNetworking.registerServerHandlers();
+        OfferDataLoader.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(this::startRuntime);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::stopRuntime);

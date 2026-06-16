@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import traderush.game.shop.OfferShop;
@@ -25,6 +24,7 @@ import traderush.game.shop.generation.ShopGenerationPlan;
 import traderush.game.shop.generation.ShopGenerationPlanner;
 import traderush.game.shop.generation.ShopSpec;
 import traderush.platform.protection.ShopProtectionBypass;
+import traderush.platform.registry.TradeRushBlocks;
 
 /**
  * Orchestrates shop generation for a new world. Writes shops into the
@@ -116,7 +116,7 @@ public final class MinecraftShopGenerationCoordinator {
                 .run(
                         () -> level.setBlock(
                                 pos,
-                                Blocks.GOLD_BLOCK.defaultBlockState(),
+                                TradeRushBlocks.SHOP_BLOCK.defaultBlockState(),
                                 3
                         )
                 );

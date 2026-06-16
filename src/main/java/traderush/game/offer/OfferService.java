@@ -2,6 +2,8 @@ package traderush.game.offer;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import traderush.game.shop.ShopId;
 
 public final class OfferService {
@@ -135,5 +137,106 @@ public final class OfferService {
                 .stream()
                 .filter(activeOffer -> activeOffer.isAccepting(currentTick))
                 .toList();
+    }
+
+    public Optional<ActiveOffer> findAcceptingActiveOffer(
+            ShopId shopId,
+            OfferId offerId,
+            long currentTick
+    ) {
+        return activeOfferRepository.getAllByShopId(shopId)
+                .stream()
+                .filter(activeOffer -> activeOffer.getOfferId().equals(offerId))
+                .filter(activeOffer -> activeOffer.isAccepting(currentTick))
+                .findFirst();
+    }
+
+    /**
+     * Returns an accepting active offer for the shop, creating one with a
+     * random reward if none exists yet.
+     */
+    public OfferOperationResult<ActiveOffer> ensureActiveOffer(
+            ShopId shopId,
+            OfferId offerId,
+            long currentTick
+    ) {
+        Optional<ActiveOffer> existing = findAcceptingActiveOffer(
+                shopId,
+                offerId,
+                currentTick
+        );
+
+        if (existing.isPresent()) {
+            return OfferOperationResult.success(existing.get());
+        }
+
+        return offerRepository.getById(offerId)
+                .<OfferOperationResult<ActiveOffer>>map(offer -> {
+                    long reward = randomRewardInRange(offer.getRewardRange());
+
+                    if (offer instanceof TimedOffer timedOffer) {
+                        int duration = randomDurationSeconds(timedOffer);
+                        OfferOperationResult<TimedActiveOffer> result = activateTimedOffer(
+                                shopId,
+                                offerId,
+                                reward,
+                                currentTick,
+                                duration
+                        );
+
+                        if (result.isFailure()) {
+                            return OfferOperationResult
+                                    .<ActiveOffer>failure(result.error());
+                        }
+
+                        return OfferOperationResult
+                                .<ActiveOffer>success(result.value());
+                    }
+
+                    if (offer instanceof LimitedOffer) {
+                        OfferOperationResult<LimitedActiveOffer> result = activateLimitedOffer(
+                                shopId,
+                                offerId,
+                                reward
+                        );
+
+                        if (result.isFailure()) {
+                            return OfferOperationResult
+                                    .<ActiveOffer>failure(result.error());
+                        }
+
+                        return OfferOperationResult
+                                .<ActiveOffer>success(result.value());
+                    }
+
+                    return OfferOperationResult
+                            .<ActiveOffer>failure(OfferError.WRONG_OFFER_TYPE);
+                })
+                .orElseGet(
+                        () -> OfferOperationResult
+                                .failure(OfferError.OFFER_NOT_FOUND)
+                );
+    }
+
+    private static long randomRewardInRange(RewardRange range) {
+        int min = range.minReward();
+        int max = range.maxReward();
+
+        if (min >= max) {
+            return min;
+        }
+
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
+    private static int randomDurationSeconds(TimedOffer timedOffer) {
+        int min = timedOffer.getMinAvailabilityDurationSeconds();
+        int max = timedOffer.getMaxAvailabilityDurationSeconds();
+
+        if (min >= max) {
+            return min;
+        }
+
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 }

@@ -47,4 +47,8 @@ public final class ShopService {
     public List<Shop> listShops() {
         return shopRepository.getAll();
     }
+
+    public java.util.Optional<Shop> findByLocation(ShopLocation location) {
+        return shopRepository.getByLocation(location);
+    }
 }

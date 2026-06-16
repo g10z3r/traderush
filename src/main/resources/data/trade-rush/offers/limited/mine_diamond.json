@@ -1,0 +1,21 @@
+{
+  "id": "LTD_mine_diamond",
+  "name": "Mine Diamond",
+  "description": "Mine diamond",
+  "minReward": 80,
+  "maxReward": 100,
+  "requirements": [
+    [
+      {
+        "item": "minecraft:diamond_block",
+        "quantity": 5
+      }
+    ]
+  ],
+  "completionThreshold": 10,
+  "minProgressScore": 100,
+  "maxProgressScore": 200,
+  "activationEvents": [
+    "minecraft:story/mine_diamond"
+  ]
+}
