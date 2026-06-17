@@ -1,23 +1,22 @@
 package traderush.game.item;
 
 import java.util.Objects;
-import java.util.UUID;
 
-public record ItemId(UUID value) {
+public record ItemId(String value) {
     public ItemId {
         Objects.requireNonNull(value, "item id cannot be null");
-    }
 
-    public static ItemId fromUuid(UUID value) {
-        return new ItemId(value);
+        if (value.isBlank()) {
+            throw new IllegalArgumentException("item id cannot be blank");
+        }
     }
 
     public static ItemId fromString(String value) {
-        return new ItemId(UUID.fromString(value));
+        return new ItemId(value);
     }
 
     @Override
     public String toString() {
-        return value.toString();
+        return value;
     }
 }

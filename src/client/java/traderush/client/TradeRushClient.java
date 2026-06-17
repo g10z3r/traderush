@@ -2,6 +2,8 @@ package traderush.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.gui.screens.MenuScreens;
+import traderush.client.ui.shop.ShopClientNetworking;
+import traderush.client.ui.shop.ShopOffersScreen;
 import traderush.client.ui.team.TeamManagementClientNetworking;
 import traderush.client.ui.team.TeamManagementScreen;
 import traderush.platform.registry.TradeRushMenus;
@@ -14,6 +16,11 @@ public class TradeRushClient implements ClientModInitializer {
                 TradeRushMenus.TEAM_MANAGEMENT,
                 TeamManagementScreen::new
         );
+        MenuScreens.register(
+                TradeRushMenus.SHOP_OFFERS,
+                ShopOffersScreen::new
+        );
         TeamManagementClientNetworking.register();
+        ShopClientNetworking.register();
     }
 }

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "NHJPTKuoHZ",
+    "name": "Stone and Diamond",
+    "description": "Mine stone and diamond",
+    "minReward": 10,
+    "maxReward": 15,
+    "requirements": [
+      [
+        {
+          "item": "minecraft:stone",
+          "quantity": 64
+        },
+        {
+          "item": "minecraft:diamond",
+          "quantity": 3
+        }
+      ]
+    ],
+    "minAvailabilityDurationSeconds": 3600,
+    "maxAvailabilityDurationSeconds": 7200,
+    "completionThreshold": 100,
+    "repeatable": false,
+    "minProgressScore": 100,
+    "maxProgressScore": 200,
+    "activationEvents": [
+      "minecraft:story/mine_diamond"
+    ]
+  }
+]

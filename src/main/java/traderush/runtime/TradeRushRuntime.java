@@ -4,6 +4,11 @@ import java.util.Optional;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import traderush.game.offer.ActiveOfferRepository;
+import traderush.game.offer.InMemoryActiveOfferRepository;
+import traderush.game.offer.InMemoryOfferRepository;
+import traderush.game.offer.OfferRepository;
+import traderush.game.offer.OfferService;
 import traderush.game.shop.InMemoryShopRepository;
 import traderush.game.shop.ShopRepository;
 import traderush.game.shop.ShopService;
@@ -21,6 +26,7 @@ import traderush.game.world.WorldStateSnapshot;
 import traderush.platform.generation.MinecraftShopGenerationCoordinator;
 import traderush.platform.generation.MinecraftSpawnLocator;
 import traderush.platform.generation.MinecraftTeamBlockPlacer;
+import traderush.platform.offer.OfferDataLoader;
 import traderush.platform.storage.TradeRushPersistence;
 
 public final class TradeRushRuntime {
@@ -32,6 +38,9 @@ public final class TradeRushRuntime {
     private final TeamService teamService;
     private final ShopRepository shopRepository;
     private final ShopService shopService;
+    private final OfferRepository offerRepository;
+    private final ActiveOfferRepository activeOfferRepository;
+    private final OfferService offerService;
     private Optional<ManagementBlockLocation> managementBlockLocation;
 
     private TradeRushRuntime(
@@ -65,6 +74,16 @@ public final class TradeRushRuntime {
                 this::saveShopsSafely
         );
 
+        this.offerRepository = new InMemoryOfferRepository();
+        this.activeOfferRepository = new InMemoryActiveOfferRepository();
+        this.offerService = new OfferService(
+                offerRepository,
+                activeOfferRepository,
+                () -> {
+                }
+        );
+        OfferDataLoader.applyCachedOffers(offerRepository);
+
         managementBlockLocation = loadWorldStateSafely();
 
         if (managementBlockLocation.isEmpty()) {
@@ -89,6 +108,14 @@ public final class TradeRushRuntime {
 
     public ShopService shopService() {
         return shopService;
+    }
+
+    public OfferRepository offerRepository() {
+        return offerRepository;
+    }
+
+    public OfferService offerService() {
+        return offerService;
     }
 
     public Optional<ManagementBlockLocation> managementBlockLocation() {
