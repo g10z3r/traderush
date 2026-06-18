@@ -28,8 +28,8 @@ import traderush.platform.registry.TradeRushBlocks;
 
 /**
  * Orchestrates shop generation for a new world. Writes shops into the
- * repository and places gold-block markers in the world. Does NOT trigger saves
- * — the caller is responsible for persisting state.
+ * repository and places shop blocks in the world. Does NOT trigger saves — the
+ * caller is responsible for persisting state.
  */
 public final class MinecraftShopGenerationCoordinator {
     private static final Logger LOGGER = LoggerFactory
