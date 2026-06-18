@@ -28,11 +28,14 @@ import traderush.platform.generation.MinecraftSpawnLocator;
 import traderush.platform.generation.MinecraftTeamBlockPlacer;
 import traderush.platform.offer.OfferDataLoader;
 import traderush.platform.storage.TradeRushPersistence;
+import traderush.platform.ui.TeamUiBroadcaster;
+import traderush.platform.ui.rating.RatingPaintingNetworking;
 
 public final class TradeRushRuntime {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(TradeRushRuntime.class);
 
+    private final MinecraftServer server;
     private final TradeRushPersistence persistence;
     private final TeamRepository teamRepository;
     private final TeamService teamService;
@@ -47,13 +50,14 @@ public final class TradeRushRuntime {
             MinecraftServer server,
             TradeRushPersistence persistence
     ) {
+        this.server = server;
         this.persistence = persistence;
 
         this.teamRepository = new InMemoryTeamRepository();
         loadTeamsSafely();
         this.teamService = new TeamService(
                 teamRepository,
-                this::saveTeamsSafely
+                this::onTeamsChanged
         );
 
         this.shopRepository = new InMemoryShopRepository();
@@ -141,6 +145,12 @@ public final class TradeRushRuntime {
         } catch (Exception exception) {
             LOGGER.error("Failed to load TradeRush team state.", exception);
         }
+    }
+
+    private void onTeamsChanged() {
+        saveTeamsSafely();
+        TeamUiBroadcaster.broadcastTeamSnapshots(server);
+        RatingPaintingNetworking.broadcastSnapshot(server);
     }
 
     private void saveTeamsSafely() {

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import traderush.TradeRush;
+import traderush.platform.ui.rating.RatingBookMenu;
 import traderush.platform.ui.shop.ShopOffersMenu;
 import traderush.platform.ui.team.TeamManagementMenu;
 
@@ -15,6 +16,15 @@ public final class TradeRushMenus {
                     TradeRush.id("team_management"),
                     new ExtendedMenuType<>(
                             TeamManagementMenu::new,
+                            BlockPos.STREAM_CODEC.cast()
+                    )
+            );
+    public static final ExtendedMenuType<RatingBookMenu, BlockPos> TEAM_RATING_BOOK = Registry
+            .register(
+                    BuiltInRegistries.MENU,
+                    TradeRush.id("team_rating_book"),
+                    new ExtendedMenuType<>(
+                            RatingBookMenu::new,
                             BlockPos.STREAM_CODEC.cast()
                     )
             );

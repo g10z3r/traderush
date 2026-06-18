@@ -16,8 +16,8 @@ rules:
     - Сохраняй технические идентификаторы, имена файлов, классов, методов и команд без перевода.
   specs:
     - Пиши текст требований, сценариев и описаний на русском языке.
-    - Сохраняй служебные OpenSpec-заголовки и маркеры в формате, который ожидает OpenSpec: `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements`, `### Requirement:`, `#### Scenario:`.
-    - В тексте каждого `### Requirement:` сохраняй валидаторные модальные ключевые слова OpenSpec на английском: `MUST`, `SHALL`, `MUST NOT` или `SHALL NOT`; не переводи их как `ДОЛЖЕН`, `ДОЛЖНА` или `НЕ ДОЛЖЕН`, потому что `openspec validate --strict` требует буквальные английские ключевые слова.
+    - "Сохраняй служебные OpenSpec-заголовки и маркеры в формате, который ожидает OpenSpec: `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements`, `### Requirement:`, `#### Scenario:`."
+    - "В тексте каждого `### Requirement:` сохраняй валидаторные модальные ключевые слова OpenSpec на английском: `MUST`, `SHALL`, `MUST NOT` или `SHALL NOT`; не переводи их как `ДОЛЖЕН`, `ДОЛЖНА` или `НЕ ДОЛЖЕН`, потому что `openspec validate --strict` требует буквальные английские ключевые слова."
     - В сценариях сохраняй маркеры `**WHEN**`, `**THEN**` и `**AND**`, но пиши условия и ожидаемые результаты на русском языке.
     - Используй kebab-case для имён capabilities и путей specs, если существующие соглашения проекта не требуют другого.
   tasks:

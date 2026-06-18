@@ -62,6 +62,14 @@ public final class TeamManagementNetworking {
         sendState(player, "", Component.empty(), false);
     }
 
+    public static void sendSnapshotIfManagementOpen(ServerPlayer player) {
+        if (!hasValidTeamManagementMenu(player)) {
+            return;
+        }
+
+        sendState(player, "", Component.empty(), false);
+    }
+
     private static void handleAction(
             TeamManagementActionPayload payload,
             ServerPlayer player
@@ -97,14 +105,23 @@ public final class TeamManagementNetworking {
         case LEAVE -> handleLeave(teamService, player, payload);
         case DELETE_EMPTY -> handleDelete(teamService, player, payload);
         case RENAME -> handleRename(teamService, player, payload);
-        case REFRESH ->
-            sendState(player, payload.teamId(), Component.empty(), false);
+        case REFRESH -> sendState(
+                player,
+                payload.teamId(),
+                Component.empty(),
+                false
+        );
         }
     }
 
+    public static boolean hasOpenManagementMenu(ServerPlayer player) {
+        return player != null
+                && player.containerMenu instanceof TeamManagementMenu menu
+                && menu.stillValid(player);
+    }
+
     private static boolean hasValidTeamManagementMenu(ServerPlayer player) {
-        return (player.containerMenu instanceof TeamManagementMenu menu
-                && menu.stillValid(player));
+        return hasOpenManagementMenu(player);
     }
 
     private static void handleCreate(
@@ -230,9 +247,25 @@ public final class TeamManagementNetworking {
             return;
         }
 
+        TeamService teamService;
+
+        try {
+            teamService = TradeRush.runtime().teamService();
+        } catch (IllegalStateException exception) {
+            sendRawState(
+                    player,
+                    TeamManagementSnapshot.EMPTY,
+                    Component.translatable(
+                            "message.trade-rush.team.error.runtime_not_ready"
+                    ),
+                    true
+            );
+            return;
+        }
+
         TeamManagementSnapshot snapshot = TeamManagementSnapshots
                 .create(
-                        TradeRush.runtime().teamService(),
+                        teamService,
                         player,
                         selectedTeamId
                 );
