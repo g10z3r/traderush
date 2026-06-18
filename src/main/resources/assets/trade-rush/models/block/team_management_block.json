@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/iron_block",
   "textures": {
     "8": "trade-rush:block/team_management_block_bottom",
     "11": "trade-rush:block/team_management_block_side",
