@@ -2,10 +2,12 @@ package traderush.platform.ui.shop;
 
 import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import traderush.game.offer.ActiveOffer;
 import traderush.game.offer.ItemRequirement;
 import traderush.game.offer.Offer;
 import traderush.game.offer.OfferKind;
 import traderush.game.offer.OfferUnit;
+import traderush.game.offer.TimedActiveOffer;
 
 /**
  * A serialisable snapshot of a single offer, used for the shop UI packet.
@@ -18,15 +20,18 @@ public record ShopOfferEntry(
         int minReward,
         int maxReward,
         int fixedReward,
+        long expiresAtTick,
         OfferKind kind,
         List<UnitEntry> units
 ) {
+
+    public static final long NO_EXPIRY_TICK = -1L;
 
     public ShopOfferEntry {
         units = units == null ? List.of() : List.copyOf(units);
     }
 
-    public static ShopOfferEntry from(Offer offer, long fixedReward) {
+    public static ShopOfferEntry from(Offer offer, ActiveOffer activeOffer) {
         List<UnitEntry> units = offer.getUnits()
                 .stream()
                 .map(UnitEntry::from)
@@ -38,10 +43,19 @@ public record ShopOfferEntry(
                 offer.getDescription(),
                 offer.getRewardRange().minReward(),
                 offer.getRewardRange().maxReward(),
-                Math.toIntExact(fixedReward),
+                Math.toIntExact(activeOffer.getRewardPerUnit()),
+                expiresAtTick(activeOffer),
                 offer.getKind(),
                 units
         );
+    }
+
+    private static long expiresAtTick(ActiveOffer activeOffer) {
+        if (activeOffer instanceof TimedActiveOffer timed) {
+            return timed.getEndsAtTick();
+        }
+
+        return NO_EXPIRY_TICK;
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
@@ -51,6 +65,7 @@ public record ShopOfferEntry(
         buf.writeInt(minReward);
         buf.writeInt(maxReward);
         buf.writeInt(fixedReward);
+        buf.writeLong(expiresAtTick);
         buf.writeUtf(kind.name());
         buf.writeVarInt(units.size());
 
@@ -66,6 +81,7 @@ public record ShopOfferEntry(
         int minReward = buf.readInt();
         int maxReward = buf.readInt();
         int fixedReward = buf.readInt();
+        long expiresAtTick = buf.readLong();
         OfferKind kind = OfferKind.valueOf(buf.readUtf());
         int unitCount = buf.readVarInt();
         List<UnitEntry> units = new java.util.ArrayList<>(unitCount);
@@ -81,6 +97,7 @@ public record ShopOfferEntry(
                 minReward,
                 maxReward,
                 fixedReward,
+                expiresAtTick,
                 kind,
                 List.copyOf(units)
         );

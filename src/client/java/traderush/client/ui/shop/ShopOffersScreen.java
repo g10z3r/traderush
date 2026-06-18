@@ -74,6 +74,8 @@ public final class ShopOffersScreen
     private static final int ICON_SLOT = 18;
     /** How long (ticks) the trade-result message is shown — 1 second. */
     private static final long MESSAGE_TICKS = 20L;
+    private static final long TICKS_PER_SECOND = 20L;
+    private static final long HOUR_TICKS = 60L * 60L * TICKS_PER_SECOND;
 
     private static ShopOffersPayload pendingPayload;
 
@@ -83,6 +85,8 @@ public final class ShopOffersScreen
     private String shopId = "";
     private String shopName = "";
     private List<ShopOfferEntry> offers = List.of();
+    private long serverTickAtSnapshot = 0L;
+    private long clientTickAtSnapshot = 0L;
     private int selectedIndex = -1;
     private int scrollOffset = 0;
     private String resultMessage = "";
@@ -183,6 +187,8 @@ public final class ShopOffersScreen
         this.shopId = payload.shopId();
         this.shopName = payload.shopName();
         this.offers = payload.offers();
+        this.serverTickAtSnapshot = payload.serverTick();
+        this.clientTickAtSnapshot = gameTime();
         this.selectedIndex = offers.isEmpty() ? -1 : 0;
         this.scrollOffset = 0;
         syncRowButtons();
@@ -213,6 +219,11 @@ public final class ShopOffersScreen
         }
 
         ShopOfferEntry entry = offers.get(selectedIndex);
+
+        if (isExpiredTimedOffer(entry)) {
+            return;
+        }
+
         ClientPlayNetworking.send(
                 new ShopTradeActionPayload(
                         shopId,
@@ -241,8 +252,15 @@ public final class ShopOffersScreen
         }
 
         boolean hasOffer = selectedIndex >= 0 && selectedIndex < offers.size();
-        tradeButton.active = hasOffer
-                && playerHasItems(offers.get(selectedIndex));
+
+        if (!hasOffer) {
+            tradeButton.active = false;
+            return;
+        }
+
+        ShopOfferEntry entry = offers.get(selectedIndex);
+        tradeButton.active = !isExpiredTimedOffer(entry)
+                && playerHasItems(entry);
     }
 
     private boolean playerHasItems(ShopOfferEntry entry) {
@@ -307,12 +325,13 @@ public final class ShopOffersScreen
         // Vanilla dark tiled stone background — identical to every MC screen
         extractMenuBackground(graphics);
         drawPanels(graphics);
+        updateTradeButton();
 
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         drawTitle(graphics);
         drawListRows(graphics, mouseX, mouseY);
-        drawDetailPanel(graphics);
+        drawDetailPanel(graphics, mouseX, mouseY);
         drawResultMessage(graphics);
     }
 
@@ -430,7 +449,7 @@ public final class ShopOffersScreen
                 );
             }
 
-            drawRowContent(graphics, entry, lx, rowY);
+            drawRowContent(graphics, entry, lx, rowY, mouseX, mouseY);
         }
 
         drawScrollbar(graphics);
@@ -444,7 +463,9 @@ public final class ShopOffersScreen
             GuiGraphicsExtractor graphics,
             ShopOfferEntry entry,
             int lx,
-            int rowY
+            int rowY,
+            int mouseX,
+            int mouseY
     ) {
         boolean timed = "TIMED".equals(entry.kind().name());
         int kindColor = timed ? C_TIMED : C_LIMITED;
@@ -479,29 +500,45 @@ public final class ShopOffersScreen
         List<RequirementEntry> reqs = firstUnitRequirements(entry);
         int iconX = lx + 4;
         int iconY = rowY + ROW_H - ICON_SLOT - 3;
+        int iconLimitX = lx + LIST_W - 56;
 
         for (RequirementEntry req : reqs) {
             Item item = resolveClientItem(req.itemId());
 
             if (item != null) {
                 ItemStack stack = new ItemStack(item, req.quantity());
-                graphics.item(stack, iconX, iconY);
-                graphics.itemDecorations(font, stack, iconX, iconY);
+                drawItemIcon(graphics, stack, iconX, iconY, mouseX, mouseY);
             }
 
             iconX += ICON_SLOT + 2;
 
-            // Don't draw past the points area
-            if (iconX + ICON_SLOT > lx + LIST_W - 40) {
+            // Don't draw past the points/countdown area
+            if (iconX + ICON_SLOT > iconLimitX) {
                 break;
             }
         }
 
-        // ── points (right-aligned, vertically centred) ───────────────────────
+        // ── points + timed countdown (right-aligned) ─────────────────────────
+        boolean hasCountdown = isTimedEntry(entry);
         String pts = entry.fixedReward() + " pts";
         int ptsX = lx + LIST_W - PAD - font.width(pts);
-        int ptsY = rowY + (ROW_H - 8) / 2;
+        int ptsY = hasCountdown ? rowY + 3 : rowY + (ROW_H - 8) / 2;
         graphics.text(font, Component.literal(pts), ptsX, ptsY, C_REWARD);
+
+        if (hasCountdown) {
+            long remainingTicks = remainingTicks(entry);
+            String countdown = formatCountdown(remainingTicks);
+            int countdownX = lx + LIST_W - PAD - font.width(countdown);
+            int countdownY = rowY + 15;
+            int countdownColor = remainingTicks <= 0L ? C_ERROR : C_TIMED;
+            graphics.text(
+                    font,
+                    Component.literal(countdown),
+                    countdownX,
+                    countdownY,
+                    countdownColor
+            );
+        }
     }
 
     private static List<RequirementEntry> firstUnitRequirements(
@@ -512,6 +549,52 @@ public final class ShopOffersScreen
         }
 
         return entry.units().get(0).requirements();
+    }
+
+    private static boolean isTimedEntry(ShopOfferEntry entry) {
+        return "TIMED".equals(entry.kind().name())
+                && entry.expiresAtTick() >= 0L;
+    }
+
+    private boolean isExpiredTimedOffer(ShopOfferEntry entry) {
+        return isTimedEntry(entry) && remainingTicks(entry) <= 0L;
+    }
+
+    private long remainingTicks(ShopOfferEntry entry) {
+        if (!isTimedEntry(entry)) {
+            return 0L;
+        }
+
+        return Math.max(0L, entry.expiresAtTick() - estimatedServerTick());
+    }
+
+    private long estimatedServerTick() {
+        long elapsedClientTicks = Math
+                .max(0L, gameTime() - clientTickAtSnapshot);
+        return serverTickAtSnapshot + elapsedClientTicks;
+    }
+
+    private static String formatCountdown(long ticks) {
+        if (ticks <= 0L) {
+            return "Expired";
+        }
+
+        long totalSeconds = (ticks + TICKS_PER_SECOND - 1L) / TICKS_PER_SECOND;
+
+        if (ticks >= HOUR_TICKS) {
+            long hours = totalSeconds / 3600L;
+            long minutes = totalSeconds % 3600L / 60L;
+            long seconds = totalSeconds % 60L;
+            return hours + ":" + twoDigits(minutes) + ":" + twoDigits(seconds);
+        }
+
+        long minutes = totalSeconds / 60L;
+        long seconds = totalSeconds % 60L;
+        return minutes + ":" + twoDigits(seconds);
+    }
+
+    private static String twoDigits(long value) {
+        return value < 10L ? "0" + value : Long.toString(value);
     }
 
     private void drawScrollbar(GuiGraphicsExtractor graphics) {
@@ -542,7 +625,11 @@ public final class ShopOffersScreen
     // ── detail panel
     // ──────────────────────────────────────────────────────────
 
-    private void drawDetailPanel(GuiGraphicsExtractor graphics) {
+    private void drawDetailPanel(
+            GuiGraphicsExtractor graphics,
+            int mouseX,
+            int mouseY
+    ) {
         int dx = detailX();
         int dw = detailW();
 
@@ -599,6 +686,22 @@ public final class ShopOffersScreen
         );
         y += 17;
 
+        if (isTimedEntry(entry)) {
+            graphics.text(font, Component.literal("TIME LEFT"), cx, y, C_MUTED);
+            y += 11;
+
+            long remainingTicks = remainingTicks(entry);
+            int countdownColor = remainingTicks <= 0L ? C_ERROR : C_TIMED;
+            graphics.text(
+                    font,
+                    Component.literal(formatCountdown(remainingTicks)),
+                    cx,
+                    y,
+                    countdownColor
+            );
+            y += 17;
+        }
+
         graphics.fill(cx, y, dx + dw - PAD, y + 1, C_DIVIDER);
         y += 8;
 
@@ -611,7 +714,7 @@ public final class ShopOffersScreen
         );
         y += 13;
 
-        drawItemIcons(graphics, entry, cx, y, dw - PAD * 2);
+        drawItemIcons(graphics, entry, cx, y, dw - PAD * 2, mouseX, mouseY);
     }
 
     private void drawItemIcons(
@@ -619,7 +722,9 @@ public final class ShopOffersScreen
             ShopOfferEntry entry,
             int startX,
             int startY,
-            int maxW
+            int maxW,
+            int mouseX,
+            int mouseY
     ) {
         int x = startX;
         int y = startY;
@@ -645,12 +750,27 @@ public final class ShopOffersScreen
 
                 if (item != null) {
                     ItemStack stack = new ItemStack(item, req.quantity());
-                    graphics.item(stack, x + 1, y + 1);
-                    graphics.itemDecorations(font, stack, x + 1, y + 1);
+                    drawItemIcon(graphics, stack, x + 1, y + 1, mouseX, mouseY);
                 }
 
                 x += ICON_SLOT + gap;
             }
+        }
+    }
+
+    private void drawItemIcon(
+            GuiGraphicsExtractor graphics,
+            ItemStack stack,
+            int x,
+            int y,
+            int mouseX,
+            int mouseY
+    ) {
+        graphics.item(stack, x, y);
+        graphics.itemDecorations(font, stack, x, y);
+
+        if (mouseX >= x && mouseX < x + 16 && mouseY >= y && mouseY < y + 16) {
+            graphics.setTooltipForNextFrame(font, stack, mouseX, mouseY);
         }
     }
 

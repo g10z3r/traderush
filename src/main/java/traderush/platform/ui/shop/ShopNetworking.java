@@ -92,10 +92,11 @@ public final class ShopNetworking {
             return;
         }
 
+        long serverTick = player.level().getGameTime();
         List<ShopOfferEntry> entries = buildOfferEntries(
                 runtime,
                 shopId,
-                player.level().getGameTime()
+                serverTick
         );
 
         ServerPlayNetworking.send(
@@ -103,6 +104,7 @@ public final class ShopNetworking {
                 new ShopOffersPayload(
                         shopId.toString(),
                         shop.getName(),
+                        serverTick,
                         entries
                 )
         );
@@ -144,19 +146,6 @@ public final class ShopNetworking {
         }
 
         OfferUnit unit = offer.getUnits().get(0);
-
-        if (!hasRequiredItems(player, unit)) {
-            sendTradeResult(
-                    player,
-                    false,
-                    "Not enough items in inventory.",
-                    0
-            );
-            return;
-        }
-
-        removeRequiredItems(player, unit);
-
         ShopId shopId = parseShopId(payload.shopId());
         long currentTick = player.level().getGameTime();
         Optional<ActiveOffer> activeOffer = runtime.offerService()
@@ -170,6 +159,18 @@ public final class ShopNetworking {
             sendTradeResult(player, false, "Offer is not active.", 0);
             return;
         }
+
+        if (!hasRequiredItems(player, unit)) {
+            sendTradeResult(
+                    player,
+                    false,
+                    "Not enough items in inventory.",
+                    0
+            );
+            return;
+        }
+
+        removeRequiredItems(player, unit);
 
         long reward = activeOffer.get().getRewardPerUnit();
 
@@ -223,10 +224,7 @@ public final class ShopNetworking {
                         return null;
                     }
 
-                    return ShopOfferEntry.from(
-                            offer,
-                            result.value().getRewardPerUnit()
-                    );
+                    return ShopOfferEntry.from(offer, result.value());
                 })
                 .filter(entry -> entry != null)
                 .toList();
