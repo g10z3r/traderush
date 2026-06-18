@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
-public record TeamRatingBookSnapshot(
+public record TeamRatingPaintingSnapshot(
         List<TeamRatingRow> rows,
         boolean runtimeReady
 ) {
-    public static final TeamRatingBookSnapshot EMPTY = new TeamRatingBookSnapshot(
+    public static final int MAX_VISIBLE_ROWS = 8;
+    public static final TeamRatingPaintingSnapshot EMPTY = new TeamRatingPaintingSnapshot(
             List.of(),
             true
     );
-    public static final TeamRatingBookSnapshot RUNTIME_NOT_READY = new TeamRatingBookSnapshot(
+    public static final TeamRatingPaintingSnapshot RUNTIME_NOT_READY = new TeamRatingPaintingSnapshot(
             List.of(),
             false
     );
 
-    public TeamRatingBookSnapshot {
+    public TeamRatingPaintingSnapshot {
         rows = rows == null ? List.of() : List.copyOf(rows);
     }
 
@@ -30,7 +31,7 @@ public record TeamRatingBookSnapshot(
         }
     }
 
-    public static TeamRatingBookSnapshot read(RegistryFriendlyByteBuf buf) {
+    public static TeamRatingPaintingSnapshot read(RegistryFriendlyByteBuf buf) {
         boolean runtimeReady = buf.readBoolean();
         int rowCount = buf.readVarInt();
         List<TeamRatingRow> rows = new ArrayList<>(Math.max(0, rowCount));
@@ -39,6 +40,6 @@ public record TeamRatingBookSnapshot(
             rows.add(TeamRatingRow.read(buf));
         }
 
-        return new TeamRatingBookSnapshot(rows, runtimeReady);
+        return new TeamRatingPaintingSnapshot(rows, runtimeReady);
     }
 }

@@ -9,8 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import traderush.platform.ui.rating.RatingBookMenu;
 import traderush.platform.ui.rating.TeamRatingBookSnapshot;
-import traderush.platform.ui.rating.TeamRatingBookSnapshot.Row;
 import traderush.platform.ui.rating.TeamRatingBookStatePayload;
+import traderush.platform.ui.rating.TeamRatingRow;
 
 public final class RatingBookScreen
         extends Screen
@@ -248,7 +248,7 @@ public final class RatingBookScreen
         );
 
         for (int index = first; index < last; index++) {
-            Row row = snapshot.rows().get(index);
+            TeamRatingRow row = snapshot.rows().get(index);
             int y = layout.rowsY() + (index - first) * ROW_STRIDE;
             drawRow(graphics, layout, row, y);
         }
@@ -300,7 +300,7 @@ public final class RatingBookScreen
     private void drawRow(
             GuiGraphicsExtractor graphics,
             RatingBookLayout layout,
-            Row row,
+            TeamRatingRow row,
             int y
     ) {
         String place = Integer.toString(row.place());

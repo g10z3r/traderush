@@ -29,6 +29,7 @@ import traderush.platform.generation.MinecraftTeamBlockPlacer;
 import traderush.platform.offer.OfferDataLoader;
 import traderush.platform.storage.TradeRushPersistence;
 import traderush.platform.ui.TeamUiBroadcaster;
+import traderush.platform.ui.rating.RatingPaintingNetworking;
 
 public final class TradeRushRuntime {
     private static final Logger LOGGER = LoggerFactory
@@ -149,6 +150,7 @@ public final class TradeRushRuntime {
     private void onTeamsChanged() {
         saveTeamsSafely();
         TeamUiBroadcaster.broadcastTeamSnapshots(server);
+        RatingPaintingNetworking.broadcastSnapshot(server);
     }
 
     private void saveTeamsSafely() {

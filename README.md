@@ -27,6 +27,13 @@ Trade Rush adds the following standalone items:
 - Displays long ratings across book-like pages.
 - Automatically updates while open when server-side team state changes, including score, creation, rename, or deletion changes.
 
+### Team Rating Painting
+
+- Item ID: `trade-rush:team_rating_painting`
+- Places a 4×4 wall-mounted world-space painting on a supported vertical surface.
+- Displays the top team-rating rows by score directly in the world, including place, team name, and score.
+- Automatically live-updates for online clients when server-side team state changes, including score, creation, rename, or deletion changes.
+
 ## Commands
 
 Team commands are available under `/traderush` and the short alias `/tr`.

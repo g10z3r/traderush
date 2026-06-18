@@ -10,6 +10,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import traderush.TradeRush;
 import traderush.platform.item.TeamRatingBook;
+import traderush.platform.item.TeamRatingPaintingItem;
 
 public final class TradeRushItems {
     public static final String TEAM_RATING_BOOK_PATH = "team_rating_book";
@@ -20,6 +21,14 @@ public final class TradeRushItems {
                     .setId(itemKey(TEAM_RATING_BOOK_ID))
                     .stacksTo(1)
     );
+    public static final String TEAM_RATING_PAINTING_PATH = "team_rating_painting";
+    public static final Identifier TEAM_RATING_PAINTING_ID = TradeRush
+            .id(TEAM_RATING_PAINTING_PATH);
+    public static final TeamRatingPaintingItem TEAM_RATING_PAINTING = new TeamRatingPaintingItem(
+            new Item.Properties()
+                    .setId(itemKey(TEAM_RATING_PAINTING_ID))
+                    .stacksTo(16)
+    );
 
     private TradeRushItems() {}
 
@@ -29,9 +38,17 @@ public final class TradeRushItems {
                 TEAM_RATING_BOOK_ID,
                 TEAM_RATING_BOOK
         );
+        Registry.register(
+                BuiltInRegistries.ITEM,
+                TEAM_RATING_PAINTING_ID,
+                TEAM_RATING_PAINTING
+        );
         CreativeModeTabEvents
                 .modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
-                .register(output -> output.accept(TEAM_RATING_BOOK));
+                .register(output -> {
+                    output.accept(TEAM_RATING_BOOK);
+                    output.accept(TEAM_RATING_PAINTING);
+                });
     }
 
     private static ResourceKey<Item> itemKey(Identifier id) {
