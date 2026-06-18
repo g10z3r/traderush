@@ -55,6 +55,10 @@ public final class TimedActiveOffer extends ActiveOffer {
         return currentTick >= startsAtTick && currentTick <= endsAtTick;
     }
 
+    public long getEndsAtTick() {
+        return endsAtTick;
+    }
+
     @Override
     public int remainingUnitCapacity(long currentTick) {
         return (int) (endsAtTick - currentTick);

@@ -13,6 +13,7 @@ import traderush.TradeRush;
 public record ShopOffersPayload(
         String shopId,
         String shopName,
+        long serverTick,
         List<ShopOfferEntry> offers
 ) implements CustomPacketPayload {
 
@@ -34,6 +35,7 @@ public record ShopOffersPayload(
     private void write(RegistryFriendlyByteBuf buf) {
         buf.writeUtf(shopId);
         buf.writeUtf(shopName);
+        buf.writeLong(serverTick);
         buf.writeVarInt(offers.size());
 
         for (ShopOfferEntry entry : offers) {
@@ -44,6 +46,7 @@ public record ShopOffersPayload(
     private static ShopOffersPayload read(RegistryFriendlyByteBuf buf) {
         String shopId = buf.readUtf();
         String shopName = buf.readUtf();
+        long serverTick = buf.readLong();
         int count = buf.readVarInt();
         List<ShopOfferEntry> offers = new ArrayList<>(count);
 
@@ -51,7 +54,12 @@ public record ShopOffersPayload(
             offers.add(ShopOfferEntry.read(buf));
         }
 
-        return new ShopOffersPayload(shopId, shopName, List.copyOf(offers));
+        return new ShopOffersPayload(
+                shopId,
+                shopName,
+                serverTick,
+                List.copyOf(offers)
+        );
     }
 
     @Override
