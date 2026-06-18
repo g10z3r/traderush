@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "trade-rush:block/shop_block"
+    }
+  }
+}
