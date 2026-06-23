@@ -1,0 +1,33 @@
+project:
+  name: traderush
+  description: A Fabric mod for Minecraft
+  copyright: Copyright © 2026 g10z3r, seniorkonung
+  authors:
+    - g10z3r
+    - seniorkonung
+  license: MIT
+  links:
+    homepage: https://github.com/g10z3r/traderush
+    documentation: https://github.com/g10z3r/traderush#readme
+
+release:
+  github:
+    owner: g10z3r
+    name: traderush
+    tagName: v{{projectVersion}}
+    releaseName: "{{projectName}} {{projectVersion}}"
+    draft: false
+    prerelease:
+      enabled: false
+    changelog:
+      enabled: true
+      formatted: ALWAYS
+      skipMergeCommits: true
+      contributors:
+        enabled: false
+
+distributions:
+  traderush:
+    type: SINGLE_JAR
+    artifacts:
+      - path: build/libs/trade-rush-{{projectVersion}}.jar

@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: 25
+          distribution: "temurin"
+
+      - name: Load JReleaser env
+        shell: bash
+        run: |
+          source ./scripts/jreleaser-env.sh
+
+          echo "JRELEASER_PROJECT_VERSION=$JRELEASER_PROJECT_VERSION" >> "$GITHUB_ENV"
+
+          if [ -n "${JRELEASER_PROJECT_JAVA_GROUP_ID:-}" ]; then
+            echo "JRELEASER_PROJECT_JAVA_GROUP_ID=$JRELEASER_PROJECT_JAVA_GROUP_ID" >> "$GITHUB_ENV"
+          fi
+
+      - name: Show release variables
+        run: |
+          echo "JRELEASER_PROJECT_VERSION=$JRELEASER_PROJECT_VERSION"
+          echo "JRELEASER_PROJECT_JAVA_GROUP_ID=${JRELEASER_PROJECT_JAVA_GROUP_ID:-<not set>}"
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Run JReleaser
+        uses: jreleaser/release-action@v2
+        with:
+          setup-java: "false"
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: JReleaser release output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jreleaser-release
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties
