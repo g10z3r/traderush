@@ -17,10 +17,8 @@ jobs:
       - name: setup jdk
         uses: actions/setup-java@v5
         with:
-          java-version: '25'
-          distribution: 'microsoft'
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
+          java-version: "25"
+          distribution: "temurin"
       - name: build
         run: ./gradlew build
       - name: capture build artifacts
